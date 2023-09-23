@@ -6,7 +6,7 @@
 using namespace ng;
 
 int main() {
-    DMatrix matrix(5, 5);
+    FMatrix matrix(5, 5);
 
     matrix.add(0.11);
     std::cout << matrix << std::endl;
@@ -40,6 +40,9 @@ int main() {
 
     matrix.fill_random(0, 9);
     std::cout << matrix << std::endl;
+
+    auto one_dim_vector = matrix.convert_to_vector();
+    auto two_dim_vector = matrix.convert_to_matrix_vector();
 
     return EXIT_SUCCESS;
 }

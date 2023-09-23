@@ -79,6 +79,15 @@ namespace ng {
         void ceil();
         void zero();
 
+        void to_identity();
+
+    public:
+        template<typename ConvertType>
+        Matrix<ConvertType> convert_to() const;
+
+        std::vector<value_type> convert_to_vector() const;
+        std::vector<std::vector<value_type>> convert_to_matrix_vector() const;
+
     private:
         size_type rows_ {}, cols_ {};
         pointer data_ = nullptr;

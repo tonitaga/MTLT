@@ -187,6 +187,42 @@ namespace ng {
     }
 
     template <typename T>
+    void Matrix<T>::to_identity() {
+        if (rows_ != cols_)
+            throw std::logic_error("Only square matrices can be identity");
+
+        for (size_type row = 0; row != rows_; ++row)
+            for (size_type col = 0; col != cols_; ++col)
+                (*this)(row, col) = row == col ? value_type{1} : value_type{};
+    }
+
+    template <typename T>
+    template <typename ConvertType>
+    Matrix<ConvertType> Matrix<T>::convert_to() const {
+        Matrix<ConvertType> convert(rows_, cols_);
+        std::copy(begin(), end(), convert.begin());
+        return convert;
+    }
+
+    template <typename T>
+    std::vector<typename Matrix<T>::value_type> Matrix<T>::convert_to_vector() const {
+        std::vector<value_type> v(rows_ * cols_);
+        std::copy(begin(), end(), v.begin());
+        return v;
+    }
+
+    template <typename T>
+    std::vector<std::vector<typename Matrix<T>::value_type>> Matrix<T>::convert_to_matrix_vector() const {
+        std::vector<std::vector<value_type>> v(rows_, std::vector<value_type>(cols_));
+
+        for (size_type row = 0; row != rows_; ++row)
+            for (size_type col = 0; col != cols_; ++col)
+                v[row][col] = (*this)(row, col);
+
+        return v;
+    }
+
+    template <typename T>
     std::ostream &operator<<(std::ostream &out, const Matrix<T> &rhs) {
         rhs.print(out);
         return out;
