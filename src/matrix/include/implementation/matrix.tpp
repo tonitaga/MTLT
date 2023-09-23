@@ -11,6 +11,12 @@
 
 namespace ng {
     template <typename T>
+    constexpr Matrix<T>::Matrix(size_type rows, size_type cols, value_type f)
+        : rows_(rows), cols_(cols), data_(new value_type[rows * cols]{}) {
+        fill(f);
+    };
+
+    template <typename T>
     constexpr Matrix<T>::Matrix(const Matrix &other)
         : Matrix(other.rows_, other.cols_) {
         std::copy(other.begin(), other.end(), begin());
@@ -21,6 +27,13 @@ namespace ng {
     constexpr Matrix<T>::Matrix(const Matrix<U> &other)
         : Matrix(other.rows(), other.cols()) {
         std::copy(other.begin(), other.end(), begin());
+    }
+
+    template <typename T>
+    Matrix<T> Matrix<T>::identity(size_type rows, size_type cols) {
+        Matrix identity(rows, cols);
+        identity.to_identity();
+        return identity;
     }
 
     template <typename T>

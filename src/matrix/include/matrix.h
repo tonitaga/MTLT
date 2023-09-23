@@ -25,11 +25,13 @@ namespace ng {
     public:
         constexpr Matrix() noexcept = default;
 
-        constexpr Matrix(size_type rows, size_type cols) : rows_(rows), cols_(cols), data_(new value_type[rows * cols]{}) {};
+        constexpr Matrix(size_type rows, size_type cols, value_type fill = {});
         constexpr explicit Matrix(size_type square) : Matrix(square, square) {};
 
         template<typename U>
         constexpr Matrix(const Matrix<U> &);
+
+        static Matrix identity(size_type rows, size_type cols);
 
         constexpr Matrix(const Matrix &);
         constexpr Matrix(Matrix &&) noexcept;
