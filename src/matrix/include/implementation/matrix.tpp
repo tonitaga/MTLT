@@ -145,6 +145,13 @@ namespace ng {
     }
 
     template <typename T>
+    void Matrix<T>::clear() noexcept {
+        rows_ = cols_ = value_type {};
+        delete [] data_;
+        data_ = nullptr;
+    }
+
+    template <typename T>
     void Matrix<T>::print(std::ostream &os, MatrixDebugSettings settings) const {
         auto [width, precision, separator, end, is_double_end] = settings;
 
@@ -240,6 +247,9 @@ namespace ng {
 
     template <typename T>
     void Matrix<T>::div(const value_type &number) {
+        if (std::is_integral_v<T> and number == 0)
+            throw std::logic_error("Dividing by zero");
+
         transform([&number](const value_type &item) {
             return item / number;
         });

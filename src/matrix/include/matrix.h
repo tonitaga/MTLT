@@ -64,6 +64,7 @@ namespace ng {
         void rows(size_type rows);
         void cols(size_type cols);
         void resize(size_type rows, size_type cols);
+        void clear() noexcept;
 
     public:
         void print(std::ostream &os, MatrixDebugSettings settings = default_debug) const;
