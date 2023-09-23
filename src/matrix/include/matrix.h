@@ -28,6 +28,9 @@ namespace ng {
         constexpr Matrix(size_type rows, size_type cols) : rows_(rows), cols_(cols), data_(new value_type[rows * cols]{}) {};
         constexpr explicit Matrix(size_type square) : Matrix(square, square) {};
 
+        template<typename U>
+        constexpr Matrix(const Matrix<U> &);
+
         constexpr Matrix(const Matrix &);
         constexpr Matrix(Matrix &&) noexcept;
 
@@ -52,6 +55,13 @@ namespace ng {
 
         reference at(size_type row, size_type col);
         const_reference at(size_type row, size_type col) const;
+
+        size_type rows() const noexcept { return rows_; }
+        size_type cols() const noexcept { return cols_; }
+
+        void rows(size_type rows);
+        void cols(size_type cols);
+        void resize(size_type rows, size_type cols);
 
     public:
         void print(std::ostream &os, MatrixDebugSettings settings = default_debug) const;

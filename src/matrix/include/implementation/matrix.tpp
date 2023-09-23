@@ -13,14 +13,21 @@ namespace ng {
     template <typename T>
     constexpr Matrix<T>::Matrix(const Matrix &other)
         : Matrix(other.rows_, other.cols_) {
-        std::copy(other.begin(), other.end(), data_);
+        std::copy(other.begin(), other.end(), begin());
     }
 
     template <typename T>
-    constexpr Matrix<T>::Matrix(Matrix &&other) noexcept {
-        std::swap(rows_, other.rows_);
-        std::swap(cols_, other.cols_);
-        std::swap(data_, other.data_);
+    template <typename U>
+    constexpr Matrix<T>::Matrix(const Matrix<U> &other)
+        : Matrix(other.rows(), other.cols()) {
+        std::copy(other.begin(), other.end(), begin());
+    }
+
+    template <typename T>
+    constexpr Matrix<T>::Matrix(Matrix &&other) noexcept
+        : rows_(other.rows_), cols_(other.cols_), data_(other.data_) {
+        other.rows_ = other.cols_ = size_type{};
+        other.data_ = nullptr;
     }
 
     template <typename T>
@@ -75,6 +82,52 @@ namespace ng {
             throw std::out_of_range("row or col is out of range of matrix");
 
         return (*this)(row, col);
+    }
+
+    template <typename T>
+    void Matrix<T>::rows(size_type rows) {
+        if (rows_ == rows)
+            return;
+
+        Matrix tmp(rows, cols_);
+        const size_type min_rows = std::min(rows, rows_);
+
+        for (size_type row = 0; row != min_rows; ++row)
+            for (size_type col = 0; col != cols_; ++col)
+                tmp(row, col) = (*this)(row, col);
+
+        *this = std::move(tmp);
+    }
+
+    template <typename T>
+    void Matrix<T>::cols(size_type cols) {
+        if (cols_ == cols)
+            return;
+
+        Matrix tmp(rows_, cols);
+        const size_type min_cols = std::min(cols, cols_);
+
+        for (size_type row = 0; row != rows_; ++row)
+            for (size_type col = 0; col != min_cols; ++col)
+                tmp(row, col) = (*this)(row, col);
+
+        *this = std::move(tmp);
+    }
+
+    template <typename T>
+    void Matrix<T>::resize(size_type rows, size_type cols) {
+        if (cols_ == cols and rows_ == rows)
+            return;
+
+        Matrix tmp(rows, cols);
+        const size_type min_cols = std::min(cols, cols_);
+        const size_type min_rows = std::min(rows, rows_);
+
+        for (size_type row = 0; row != min_rows; ++row)
+            for (size_type col = 0; col != min_cols; ++col)
+                tmp(row, col) = (*this)(row, col);
+
+        *this = std::move(tmp);
     }
 
     template <typename T>

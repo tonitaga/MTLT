@@ -38,11 +38,12 @@ int main() {
     matrix.fill(1.5);
     std::cout << matrix << std::endl;
 
-    matrix.fill_random(0, 9);
+    matrix.fill_random(5, 6);
     std::cout << matrix << std::endl;
 
-    auto one_dim_vector = matrix.convert_to_vector();
-    auto two_dim_vector = matrix.convert_to_matrix_vector();
+    matrix.resize(6, 6);
+
+    std::cout << matrix << std::endl;
 
     return EXIT_SUCCESS;
 }
