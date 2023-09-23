@@ -8,11 +8,11 @@ using namespace ng;
 int main() {
     FMatrix matrix(10, 10);
 
-    float value_start = 0.13;
-    for (auto &item : matrix) {
-        item = value_start;
-        value_start += 0.1;
-    }
+    float value_start = 0;
+    matrix.transform([&](float) {
+        value_start += 0.13;
+        return value_start;
+    });
 
     std::cout << matrix << std::endl;
 

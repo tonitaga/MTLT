@@ -13,12 +13,12 @@ namespace ng {
                       "Template parameter T must be integral or floating point!");
 
     public:
-        using value_type = T;
-        using pointer = T *;
-        using reference = T &;
-        using const_reference = const T &;
-        using const_pointer = const pointer;
-        using size_type = std::size_t;
+        using value_type = typename std::allocator_traits<std::allocator<T>>::value_type;
+        using pointer = typename std::allocator_traits<std::allocator<T>>::pointer;
+        using const_pointer = typename std::allocator_traits<std::allocator<T>>::const_pointer;
+        using size_type = typename std::allocator_traits<std::allocator<T>>::size_type;
+        using reference = value_type &;
+        using const_reference = const value_type &;
         using iterator = __internal::MatrixNormalIterator<pointer>;
         using const_iterator = __internal::MatrixNormalIterator<const_pointer>;
 
@@ -43,6 +43,9 @@ namespace ng {
         const_iterator begin() const noexcept { return const_iterator(data_); }
         const_iterator end() const noexcept { return const_iterator(data_ + rows_ * cols_); }
 
+        const_iterator cbegin() const noexcept { return const_iterator(data_); }
+        const_iterator cend() const noexcept { return const_iterator(data_ + rows_ * cols_); }
+
     public:
         reference operator()(size_type row, size_type col);
         const_reference operator()(size_type row, size_type col) const;
@@ -53,9 +56,16 @@ namespace ng {
     public:
         void print(std::ostream &os, MatrixDebugSettings settings = default_debug) const;
 
+    public:
+        template<typename UnaryOperation>
+        void transform(UnaryOperation &&op);
+
+        template<typename BinaryOperation>
+        void transform(const Matrix &other, BinaryOperation &&op);
+
     private:
         size_type rows_ {}, cols_ {};
-        value_type *data_ = nullptr;
+        pointer data_ = nullptr;
     };
 
     template <typename T>

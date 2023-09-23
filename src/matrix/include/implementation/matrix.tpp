@@ -10,7 +10,7 @@ namespace ng {
     template <typename T>
     constexpr Matrix<T>::Matrix(const Matrix &other)
         : Matrix(other.rows_, other.cols_) {
-        std::copy(other.data_, other.data_ + rows_ * cols_, data_);
+        std::copy(other.begin(), other.end(), data_);
     }
 
     template <typename T>
@@ -90,6 +90,18 @@ namespace ng {
 
         if (is_double_end)
             os << end;
+    }
+
+    template <typename T>
+    template <typename UnaryOperation>
+    void Matrix<T>::transform(UnaryOperation &&op) {
+        std::transform(begin(), end(), begin(), std::forward<UnaryOperation>(op));
+    }
+
+    template <typename T>
+    template <typename BinaryOperation>
+    void Matrix<T>::transform(const Matrix &other, BinaryOperation &&op) {
+        std::transform(begin(), end(), other.begin(), begin(), std::forward<BinaryOperation>(op));
     }
 
     template <typename T>
