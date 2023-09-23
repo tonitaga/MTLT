@@ -25,6 +25,13 @@ namespace ng {
         Matrix(size_type rows, size_type cols) : rows_(rows), cols_(cols), data_(new value_type[rows * cols]{}) {};
         explicit Matrix(size_type square) : Matrix(square, square) {};
 
+        Matrix(const Matrix &);
+        Matrix(Matrix &&) noexcept;
+
+        Matrix &operator=(const Matrix &);
+        Matrix &operator=(Matrix &&) noexcept;
+
+        ~Matrix() noexcept;
 
     public:
         iterator begin() noexcept { return iterator(data_); }
