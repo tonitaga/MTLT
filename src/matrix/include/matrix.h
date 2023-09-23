@@ -79,9 +79,15 @@ namespace ng {
         void generate(Operation &&op);
 
         void mul(const value_type &number);
+        void mul(const Matrix &);
+
         void div(const value_type &number);
+
         void add(const value_type &number);
+        void add(const Matrix &rhs);
+
         void sub(const value_type &number);
+        void sub(const Matrix &rhs);
 
         void fill(const value_type &number);
         void fill_random(const value_type &left, const value_type &right);
