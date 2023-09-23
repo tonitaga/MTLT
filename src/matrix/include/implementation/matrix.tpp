@@ -311,6 +311,17 @@ namespace ng {
     }
 
     template <typename T>
+    Matrix<T> Matrix<T>::transpose() const {
+        Matrix transposed(cols_, rows_);
+
+        for (size_type row = 0; row != rows_; ++row)
+            for (size_type col = 0; col != cols_; ++col)
+                transposed(col, row) = (*this)(row, col);
+
+        return transposed;
+    }
+
+    template <typename T>
     template <typename ConvertType>
     Matrix<ConvertType> Matrix<T>::convert_to() const {
         Matrix<ConvertType> convert(rows_, cols_);

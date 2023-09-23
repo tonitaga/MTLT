@@ -101,6 +101,9 @@ namespace ng {
         void to_identity();
 
     public:
+        Matrix transpose() const;
+
+    public:
         template<typename ConvertType>
         Matrix<ConvertType> convert_to() const;
 
