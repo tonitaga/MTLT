@@ -63,6 +63,11 @@ namespace ng {
         template<typename BinaryOperation>
         void transform(const Matrix &other, BinaryOperation &&op);
 
+        void multiply(const value_type &number);
+        void divide(const value_type &number);
+        void add(const value_type &number);
+        void substract(const value_type &number);
+
     private:
         size_type rows_ {}, cols_ {};
         pointer data_ = nullptr;

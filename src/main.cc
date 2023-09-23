@@ -6,18 +6,19 @@
 using namespace ng;
 
 int main() {
-    FMatrix matrix(10, 10);
+    IMatrix matrix(10, 10);
 
-    float value_start = 0;
-    matrix.transform([&](float) {
-        value_start += 0.13;
-        return value_start;
-    });
-
+    matrix.add(10);
     std::cout << matrix << std::endl;
 
-    FMatrix copy = std::move(matrix);
-    std::cout << copy << std::endl;
+    matrix.substract(2);
+    std::cout << matrix << std::endl;
+
+    matrix.multiply(3);
+    std::cout << matrix << std::endl;
+
+    matrix.divide(3);
+    std::cout << matrix << std::endl;
 
     return EXIT_SUCCESS;
 }

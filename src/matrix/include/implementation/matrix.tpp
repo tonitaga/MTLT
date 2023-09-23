@@ -105,6 +105,34 @@ namespace ng {
     }
 
     template <typename T>
+    void Matrix<T>::multiply(const value_type &number) {
+        transform([&number](float item) {
+           return item * number;
+        });
+    }
+
+    template <typename T>
+    void Matrix<T>::add(const value_type &number) {
+        transform([&number](float item) {
+            return item + number;
+        });
+    }
+
+    template <typename T>
+    void Matrix<T>::substract(const value_type &number) {
+        transform([&number](float item) {
+            return item - number;
+        });
+    }
+
+    template <typename T>
+    void Matrix<T>::divide(const value_type &number) {
+        transform([&number](float item) {
+            return item / number;
+        });
+    }
+
+    template <typename T>
     std::ostream &operator<<(std::ostream &out, const Matrix<T> &rhs) {
         rhs.print(out);
         return out;
