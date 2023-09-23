@@ -3,24 +3,10 @@
 
 #include <type_traits>
 
+#include "matrix_debug.h"
 #include "matrix_normal_iterator.h"
 
 namespace ng {
-    struct MatrixDebugSettings {
-        int width = 0, precision = 0;
-        char separator = ' ', end = '\n';
-        bool is_double_end = false;
-    };
-
-    constexpr MatrixDebugSettings default_debug = {
-            .width = 3,
-            .precision = 3,
-            .separator = ' ',
-            .end = '\n',
-            .is_double_end = true
-    };
-
-
     template <typename T>
     class Matrix {
         static_assert(std::is_integral_v<T> or std::is_floating_point_v<T>,
@@ -71,6 +57,9 @@ namespace ng {
         size_type rows_ {}, cols_ {};
         value_type *data_ = nullptr;
     };
+
+    template <typename T>
+    std::ostream &operator<<(std::ostream &out, const Matrix<T> &rhs);
 
     using IMatrix = Matrix<int>;
     using UMatrix = Matrix<unsigned>;

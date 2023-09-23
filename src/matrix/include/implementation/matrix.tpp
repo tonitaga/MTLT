@@ -91,6 +91,12 @@ namespace ng {
         if (is_double_end)
             os << end;
     }
+
+    template <typename T>
+    std::ostream &operator<<(std::ostream &out, const Matrix<T> &rhs) {
+        rhs.print(out);
+        return out;
+    }
 }
 
 #endif //MATRIX_LIBRARY_CPP_MATRIX_TPP_
