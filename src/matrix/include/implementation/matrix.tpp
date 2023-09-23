@@ -3,6 +3,9 @@
 
 #include "matrix.h"
 
+#include <cmath>
+#include <random>
+#include <chrono>
 #include <iomanip>
 #include <algorithm>
 
@@ -105,30 +108,81 @@ namespace ng {
     }
 
     template <typename T>
-    void Matrix<T>::multiply(const value_type &number) {
-        transform([&number](float item) {
+    template <typename Operation>
+    void Matrix<T>::generate(Operation &&op) {
+        std::generate(begin(), end(), std::forward<Operation>(op));
+    }
+
+    template <typename T>
+    void Matrix<T>::mul(const value_type &number) {
+        transform([&number](const value_type &item) {
            return item * number;
         });
     }
 
     template <typename T>
     void Matrix<T>::add(const value_type &number) {
-        transform([&number](float item) {
+        transform([&number](const value_type &item) {
             return item + number;
         });
     }
 
     template <typename T>
-    void Matrix<T>::substract(const value_type &number) {
-        transform([&number](float item) {
+    void Matrix<T>::sub(const value_type &number) {
+        transform([&number](const value_type &item) {
             return item - number;
         });
     }
 
     template <typename T>
-    void Matrix<T>::divide(const value_type &number) {
-        transform([&number](float item) {
+    void Matrix<T>::div(const value_type &number) {
+        transform([&number](const value_type &item) {
             return item / number;
+        });
+    }
+
+    template <typename T>
+    void Matrix<T>::round() {
+        transform([](const value_type &item) {
+           return std::round(item);
+        });
+    }
+
+    template <typename T>
+    void Matrix<T>::floor() {
+        transform([](const value_type &item) {
+            return std::floor(item);
+        });
+    }
+
+    template <typename T>
+    void Matrix<T>::ceil() {
+        transform([](const value_type &item) {
+            return std::ceil(item);
+        });
+    }
+
+    template <typename T>
+    void Matrix<T>::zero() {
+        generate([]() { return value_type{}; });
+    }
+
+    template <typename T>
+    void Matrix<T>::fill(const value_type &number) {
+        generate([&number]() { return number; });
+    }
+
+    template <typename T>
+    void Matrix<T>::fill_random(const value_type &left, const value_type &right) {
+        using namespace std::chrono;
+
+        std::default_random_engine re(system_clock::now().time_since_epoch().count());
+        auto distribution = std::conditional_t<std::is_integral_v<T>,
+                                               std::uniform_int_distribution<T>,
+                                               std::uniform_real_distribution<T>>(left, right);
+
+        generate([&distribution, &re]() {
+            return distribution(re);
         });
     }
 

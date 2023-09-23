@@ -6,18 +6,39 @@
 using namespace ng;
 
 int main() {
-    IMatrix matrix(10, 10);
+    DMatrix matrix(5, 5);
 
-    matrix.add(10);
+    matrix.add(0.11);
     std::cout << matrix << std::endl;
 
-    matrix.substract(2);
+    matrix.sub(0.05);
     std::cout << matrix << std::endl;
 
-    matrix.multiply(3);
+    matrix.mul(1.15);
     std::cout << matrix << std::endl;
 
-    matrix.divide(3);
+    matrix.div(2.2);
+    std::cout << matrix << std::endl;
+
+    matrix.ceil();
+    std::cout << matrix << std::endl;
+
+    matrix.sub(0.1);
+    std::cout << matrix << std::endl;
+
+    matrix.round();
+    std::cout << matrix << std::endl;
+
+    matrix.sub(0.1);
+    std::cout << matrix << std::endl;
+
+    matrix.floor();
+    std::cout << matrix << std::endl;
+
+    matrix.fill(1.5);
+    std::cout << matrix << std::endl;
+
+    matrix.fill_random(0, 9);
     std::cout << matrix << std::endl;
 
     return EXIT_SUCCESS;
