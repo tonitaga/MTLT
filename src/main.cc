@@ -6,28 +6,21 @@
 int main() {
     std::cout << "Hello world!" << std::endl;
 
-    ng::Matrix<int> matrix(5, 5);
-    *matrix.begin() = 5;
-
-    std::cout << "Matrix1: ";
-    for (auto item : matrix) {
-        std::cout << item << ' ';
+    ng::Matrix<float> matrix(10, 10);
+    float value_start = 0.13;
+    for (auto &item : matrix) {
+        item = value_start;
+        value_start += 0.1;
     }
-    std::cout << std::endl;
+
+    matrix.print(std::cout);
 
     auto copyied = std::move(matrix);
+    copyied.print(std::cout);
 
-    std::cout << "Matrix2: ";
-    for (const auto &item : copyied) {
-        std::cout << item << ' ';
-    }
-    std::cout << std::endl;
+    matrix.print(std::cout);
 
-    std::cout << "Matrix1: ";
-    for (auto item : matrix) {
-        std::cout << item << ' ';
-    }
-    std::cout << std::endl;
+
 
     return EXIT_SUCCESS;
 }

@@ -3,6 +3,7 @@
 
 #include "matrix.h"
 
+#include <iomanip>
 #include <algorithm>
 
 namespace ng {
@@ -71,6 +72,24 @@ namespace ng {
             throw std::out_of_range("row or col is out of range of matrix");
 
         return (*this)(row, col);
+    }
+
+    template <typename T>
+    void Matrix<T>::print(std::ostream &os, MatrixDebugSettings settings) const {
+        auto [width, precision, separator, end, is_double_end] = settings;
+
+        for (size_type row = 0; row != rows_; ++row) {
+            for (size_type col = 0; col != cols_; ++col) {
+                os << std::setw(width)
+                   << std::setprecision(precision)
+                   << (*this)(row, col)
+                   << separator;
+            }
+            os << end;
+        }
+
+        if (is_double_end)
+            os << end;
     }
 }
 

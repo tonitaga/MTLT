@@ -6,6 +6,21 @@
 #include "matrix_normal_iterator.h"
 
 namespace ng {
+    struct MatrixDebugSettings {
+        int width = 0, precision = 0;
+        char separator = ' ', end = '\n';
+        bool is_double_end = false;
+    };
+
+    constexpr MatrixDebugSettings default_debug = {
+            .width = 3,
+            .precision = 3,
+            .separator = ' ',
+            .end = '\n',
+            .is_double_end = true
+    };
+
+
     template <typename T>
     class Matrix {
         static_assert(std::is_integral_v<T> or std::is_floating_point_v<T>,
@@ -48,6 +63,9 @@ namespace ng {
 
         reference at(size_type row, size_type col);
         const_reference at(size_type row, size_type col) const;
+
+    public:
+        void print(std::ostream &os, MatrixDebugSettings settings = default_debug) const;
 
     private:
         size_type rows_ {}, cols_ {};
