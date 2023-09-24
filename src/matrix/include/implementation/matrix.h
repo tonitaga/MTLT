@@ -4,14 +4,14 @@
 #include <vector>
 #include <type_traits>
 
-#include "matrix_debug.h"
+#include "matrix_state.h"
 #include "matrix_normal_iterator.h"
 
-namespace std {
+namespace ng {
     template <typename T>
     class Matrix {
-        static_assert(std::is_integral_v<T> or std::is_floating_point_v<T>,
-                      "Template parameter T must be integral or floating point!");
+        static_assert(std::is_fundamental_v<T>,
+                      "Template parameter T must be fundamental!");
 
     public:
         using value_type = typename std::allocator_traits<std::allocator<T>>::value_type;
@@ -100,18 +100,23 @@ namespace std {
         template<typename U>
         void sub(const Matrix<U> &rhs);
 
-        void fill(const value_type &number);
-        void fill_random(const value_type &left, const value_type &right);
+        Matrix &fill(const value_type &number);
+        Matrix &fill_random(const value_type &left, const value_type &right);
 
-        void round();
-        void floor();
-        void ceil();
-        void zero();
+        Matrix &round();
+        Matrix &floor();
+        Matrix &ceil();
+        Matrix &zero();
 
-        void to_identity();
+        Matrix &to_identity();
+
+        value_type sum() const;
 
     public:
         Matrix transpose() const;
+
+    public:
+        bool equal_to(const Matrix &rhs) const;
 
     public:
         template<typename ConvertType>
@@ -172,6 +177,9 @@ namespace std {
 
     template <typename T>
     Matrix<T> inline operator /(const Matrix<T> &lhs, const T &value);
+
+    template <typename T>
+    bool inline operator ==(const Matrix<T> &lhs, const Matrix<T> &rhs);
 
     using IMatrix = Matrix<int>;
     using BMatrix = Matrix<bool>;

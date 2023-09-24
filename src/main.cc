@@ -4,17 +4,13 @@
 #include "matrix"
 
 int main() {
-    std::Matrix<int> matrix(5, 5);
-    matrix.fill_random(0, 5);
-    std::cout << matrix << std::endl;
+    std::default_random_engine re(std::chrono::system_clock::now().time_since_epoch().count());
+    std::uniform_int_distribution dist(4, 5);
 
-    std::Matrix<unsigned> matrix2(5, 5);
-    matrix2.fill_random(0, 5);
-    std::cout << matrix2 << std::endl;
+    const ng::DMatrix cm1 = ng::DMatrix(5, 5).fill_random(4, 5).round();
 
-    std::cout << matrix << std::endl;
-
-    auto result = matrix * 2;
+    std::cout << cm1 << std::endl;
+    std::cout << "sum of elements: " << cm1.sum() << std::endl;
 
     return EXIT_SUCCESS;
 }

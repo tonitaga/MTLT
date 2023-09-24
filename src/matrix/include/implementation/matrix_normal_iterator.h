@@ -3,7 +3,7 @@
 
 #include <iterator>
 
-namespace std::__internal {
+namespace ng::__internal {
     template <typename Iterator>
     class MatrixNormalIterator {
     protected:

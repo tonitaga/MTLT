@@ -7,9 +7,10 @@
 #include <random>
 #include <chrono>
 #include <iomanip>
+#include <iostream>
 #include <algorithm>
 
-namespace std {
+namespace ng {
     template <typename T>
     constexpr Matrix<T>::Matrix(size_type rows, size_type cols, value_type f)
         : rows_(rows), cols_(cols), data_(new value_type[rows * cols]{}) {
@@ -305,38 +306,43 @@ namespace std {
     }
 
     template <typename T>
-    void Matrix<T>::round() {
+    Matrix<T> &Matrix<T>::round() {
         transform([](const value_type &item) {
            return std::round(item);
         });
+        return *this;
     }
 
     template <typename T>
-    void Matrix<T>::floor() {
+    Matrix<T> &Matrix<T>::floor() {
         transform([](const value_type &item) {
             return std::floor(item);
         });
+        return *this;
     }
 
     template <typename T>
-    void Matrix<T>::ceil() {
+    Matrix<T> &Matrix<T>::ceil() {
         transform([](const value_type &item) {
             return std::ceil(item);
         });
+        return *this;
     }
 
     template <typename T>
-    void Matrix<T>::zero() {
+    Matrix<T> &Matrix<T>::zero() {
         generate([]() { return value_type{}; });
+        return *this;
     }
 
     template <typename T>
-    void Matrix<T>::fill(const value_type &number) {
+    Matrix<T> &Matrix<T>::fill(const value_type &number) {
         generate([&number]() { return number; });
+        return *this;
     }
 
     template <typename T>
-    void Matrix<T>::fill_random(const value_type &left, const value_type &right) {
+    Matrix<T> &Matrix<T>::fill_random(const value_type &left, const value_type &right) {
         using namespace std::chrono;
 
         std::default_random_engine re(system_clock::now().time_since_epoch().count());
@@ -347,16 +353,25 @@ namespace std {
         generate([&distribution, &re]() {
             return distribution(re);
         });
+
+        return *this;
     }
 
     template <typename T>
-    void Matrix<T>::to_identity() {
+    Matrix<T> &Matrix<T>::to_identity() {
         if (rows_ != cols_)
             throw std::logic_error("Only square matrices can be identity");
 
         for (size_type row = 0; row != rows_; ++row)
             for (size_type col = 0; col != cols_; ++col)
                 (*this)(row, col) = row == col ? value_type{1} : value_type{};
+
+        return *this;
+    }
+
+    template <typename T>
+    typename Matrix<T>::value_type Matrix<T>::sum() const {
+        return std::accumulate(begin(), end(), value_type{});
     }
 
     template <typename T>
@@ -368,6 +383,35 @@ namespace std {
                 transposed(col, row) = (*this)(row, col);
 
         return transposed;
+    }
+
+    template <typename T>
+    bool Matrix<T>::equal_to(const Matrix &rhs) const {
+        if (rhs.rows() != rows_ or rhs.cols() != cols_)
+            throw std::logic_error("Can't add different sized matrices");
+
+        T epsilon;
+        constexpr bool is_bool = std::is_same_v<bool, T>;
+
+        if constexpr (!is_bool) {
+            epsilon = MatrixEpsilon<T>::epsilon;
+        }
+
+        bool equal = true;
+        for (size_type row = 0; row != rows_; ++row)
+            for (size_type col = 0; col != cols_; ++col) {
+                if constexpr (is_bool) {
+                    if ((*this)(row, col) != rhs(row, col))
+                        equal = false;
+                } else {
+                    if (fabs((*this)(row, col) - rhs(row, col)) > epsilon)
+                        equal = false;
+                }
+
+                if (!equal) break;
+            }
+
+        return equal;
     }
 
     template <typename T>
@@ -496,6 +540,11 @@ namespace std {
         Matrix<T> result(lhs);
         result /= value;
         return result;
+    }
+
+    template <typename T>
+    bool inline operator ==(const Matrix<T> &lhs, const Matrix<T> &rhs) {
+        return lhs.equal_to(rhs);
     }
 }
 
