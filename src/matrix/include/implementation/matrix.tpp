@@ -447,49 +447,54 @@ namespace std {
     template <typename T, typename U>
     Matrix<T> operator +(const Matrix<T> &lhs, const Matrix<U> &rhs) {
         Matrix<T> result(lhs);
-        result.add(rhs);
+        result += rhs;
         return result;
     }
 
     template <typename T, typename U>
     Matrix<T> operator -(const Matrix<T> &lhs, const Matrix<U> &rhs) {
         Matrix<T> result(lhs);
-        result.sub(rhs);
+        result -= rhs;
         return result;
     }
 
     template <typename T, typename U>
     Matrix<T> operator *(const Matrix<T> &lhs, const Matrix<U> &rhs) {
         Matrix<T> result(lhs);
-        result.mul(rhs);
+        result *= rhs;
         return result;
     }
 
     template <typename T>
     Matrix<T> operator +(const Matrix<T> &lhs, const T &value) {
         Matrix<T> result(lhs);
-        result.add(value);
+        result += value;
         return result;
     }
 
     template <typename T>
     Matrix<T> operator -(const Matrix<T> &lhs, const T &value) {
         Matrix<T> result(lhs);
-        result.sub(value);
+        result -= value;
         return result;
     }
 
     template <typename T>
     Matrix<T> operator *(const Matrix<T> &lhs, const T &value) {
         Matrix<T> result(lhs);
-        result.mul(value);
+        result *= value;
         return result;
+    }
+
+    template <typename T>
+    Matrix<T> operator *(const T &value, const Matrix<T> &lhs) {
+        return lhs * value;
     }
 
     template <typename T>
     Matrix<T> operator /(const Matrix<T> &lhs, const T &value) {
         Matrix<T> result(lhs);
-        result.div(value);
+        result /= value;
         return result;
     }
 }

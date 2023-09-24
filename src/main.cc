@@ -14,5 +14,7 @@ int main() {
 
     std::cout << matrix << std::endl;
 
+    auto result = matrix * 2;
+
     return EXIT_SUCCESS;
 }

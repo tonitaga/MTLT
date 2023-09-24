@@ -168,6 +168,9 @@ namespace std {
     Matrix<T> inline operator *(const Matrix<T> &lhs, const T &value);
 
     template <typename T>
+    Matrix<T> inline operator *(const T &value, const Matrix<T> &lhs);
+
+    template <typename T>
     Matrix<T> inline operator /(const Matrix<T> &lhs, const T &value);
 
     using IMatrix = Matrix<int>;
