@@ -4,13 +4,25 @@
 #include "matrix"
 
 int main() {
-    std::default_random_engine re(std::chrono::system_clock::now().time_since_epoch().count());
-    std::uniform_int_distribution dist(4, 5);
+    ng::Matrix<int> matrix = ng::Matrix<int>(3, 3).fill_random(0, 5);
 
-    const ng::DMatrix cm1 = ng::DMatrix(5, 5).fill_random(4, 5).round();
+    auto begin = matrix.begin();
+    auto end = matrix.end();
 
-    std::cout << cm1 << std::endl;
-    std::cout << "sum of elements: " << cm1.sum() << std::endl;
+    auto rbegin = matrix.rbegin();
+    auto rend = matrix.rend();
 
-    return EXIT_SUCCESS;
+    while (begin != end) {
+        std::cout << *begin << ' ';
+        ++begin;
+    }
+
+    std::cout << std::endl;
+
+    while (rbegin != rend) {
+        std::cout << *rbegin << ' ';
+        ++rbegin;
+    }
+
+    std::cout << std::endl;
 }

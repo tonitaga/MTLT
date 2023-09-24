@@ -98,7 +98,7 @@ namespace ng::__internal {
 
     template <typename Iterator>
     [[__nodiscard__]]  inline bool operator>=(const MatrixNormalIterator<Iterator> &lhs,
-                                             const MatrixNormalIterator<Iterator> &rhs) {
+                                              const MatrixNormalIterator<Iterator> &rhs) {
         return lhs.Base() > rhs.Base();
     }
 

@@ -6,6 +6,7 @@
 
 #include "matrix_state.h"
 #include "matrix_normal_iterator.h"
+#include "matrix_reverse_iterator.h"
 
 namespace ng {
     template <typename T>
@@ -22,6 +23,8 @@ namespace ng {
         using const_reference = const value_type &;
         using iterator = __internal::MatrixNormalIterator<pointer>;
         using const_iterator = __internal::MatrixNormalIterator<const_pointer>;
+        using reverse_iterator = __internal::MatrixReverseInterator<iterator>;
+        using const_reverse_iterator = __internal::MatrixReverseInterator<const_iterator>;
 
     public:
         constexpr Matrix() noexcept = default;
@@ -49,8 +52,17 @@ namespace ng {
         const_iterator begin() const noexcept { return const_iterator(data_); }
         const_iterator end() const noexcept { return const_iterator(data_ + rows_ * cols_); }
 
-        const_iterator cbegin() const noexcept { return const_iterator(data_); }
-        const_iterator cend() const noexcept { return const_iterator(data_ + rows_ * cols_); }
+        reverse_iterator rbegin() noexcept { return reverse_iterator(data_ + rows_ * cols_ - 1); }
+        reverse_iterator rend() noexcept { return reverse_iterator(data_ - 1); }
+
+        const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
+        const_reverse_iterator rend() const noexcept { return const_reverse_iterator(data_ - 1); }
+
+        const_iterator cbegin() const noexcept { return begin(); }
+        const_iterator cend() const noexcept { return end(); }
+
+        const_reverse_iterator crbegin() const noexcept { return rbegin(); }
+        const_reverse_iterator crend() const noexcept { return rend(); }
 
     public:
         reference operator()(size_type row, size_type col);
