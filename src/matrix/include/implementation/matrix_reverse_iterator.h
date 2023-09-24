@@ -103,13 +103,13 @@ namespace ng::__internal {
     template <typename NormalIterator>
     [[__nodiscard__]]  inline auto operator-(const MatrixReverseInterator<NormalIterator> &lhs,
                                              const MatrixReverseInterator<NormalIterator> &rhs) {
-        return lhs.Base() - rhs.Base();
+        return rhs.Base() - lhs.Base();
     }
 
     template <typename NormalIterator>
     [[__nodiscard__]]  inline auto operator+(const MatrixReverseInterator<NormalIterator> &lhs,
                                              const MatrixReverseInterator<NormalIterator> &rhs) {
-        return lhs.Base() + rhs.Base();
+        return rhs.Base() + lhs.Base();
     }
 }
 
