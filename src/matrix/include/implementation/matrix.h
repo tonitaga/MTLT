@@ -1,12 +1,13 @@
 #ifndef MATRIX_LIBRARY_CPP_MATRIX_H_
 #define MATRIX_LIBRARY_CPP_MATRIX_H_
 
+#include <vector>
 #include <type_traits>
 
 #include "matrix_debug.h"
 #include "matrix_normal_iterator.h"
 
-namespace ng {
+namespace std {
     template <typename T>
     class Matrix {
         static_assert(std::is_integral_v<T> or std::is_floating_point_v<T>,
@@ -82,13 +83,22 @@ namespace ng {
         void mul(const value_type &number);
         void mul(const Matrix &);
 
+        template<typename U>
+        void mul(const Matrix<U> &rhs);
+
         void div(const value_type &number);
 
         void add(const value_type &number);
         void add(const Matrix &rhs);
 
+        template<typename U>
+        void add(const Matrix<U> &rhs);
+
         void sub(const value_type &number);
         void sub(const Matrix &rhs);
+
+        template<typename U>
+        void sub(const Matrix<U> &rhs);
 
         void fill(const value_type &number);
         void fill_random(const value_type &left, const value_type &right);
@@ -118,7 +128,51 @@ namespace ng {
     template <typename T>
     std::ostream &operator<<(std::ostream &out, const Matrix<T> &rhs);
 
+    template <typename T, typename U>
+    Matrix<T> inline &operator +=(const Matrix<T> &lhs, const Matrix<U> &rhs);
+
+    template <typename T, typename U>
+    Matrix<T> inline &operator -=(const Matrix<T> &lhs, const Matrix<U> &rhs);
+
+    template <typename T, typename U>
+    Matrix<T> inline &operator *=(const Matrix<T> &lhs, const Matrix<U> &rhs);
+
+    template <typename T>
+    Matrix<T> inline &operator +=(const Matrix<T> &lhs, const T &value);
+
+    template <typename T>
+    Matrix<T> inline &operator -=(const Matrix<T> &lhs, const T &value);
+
+    template <typename T>
+    Matrix<T> inline &operator *=(const Matrix<T> &lhs, const T &value);
+
+    template <typename T>
+    Matrix<T> inline &operator /=(Matrix<T> &lhs, const T &value);
+
+    template <typename T, typename U>
+    Matrix<T> inline operator +(const Matrix<T> &lhs, const Matrix<U> &rhs);
+
+    template <typename T, typename U>
+    Matrix<T> inline operator -(const Matrix<T> &lhs, const Matrix<U> &rhs);
+
+    template <typename T, typename U>
+    Matrix<T> inline operator *(const Matrix<T> &lhs, const Matrix<U> &rhs);
+
+    template <typename T>
+    Matrix<T> inline operator +(const Matrix<T> &lhs, const T &value);
+
+    template <typename T>
+    Matrix<T> inline operator -(const Matrix<T> &lhs, const T &value);
+
+    template <typename T>
+    Matrix<T> inline operator *(const Matrix<T> &lhs, const T &value);
+
+    template <typename T>
+    Matrix<T> inline operator /(const Matrix<T> &lhs, const T &value);
+
     using IMatrix = Matrix<int>;
+    using BMatrix = Matrix<bool>;
+    using CMatrix = Matrix<char>;
     using UMatrix = Matrix<unsigned>;
     using FMatrix = Matrix<float>;
     using DMatrix = Matrix<double>;

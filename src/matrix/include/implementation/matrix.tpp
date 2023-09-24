@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <algorithm>
 
-namespace ng {
+namespace std {
     template <typename T>
     constexpr Matrix<T>::Matrix(size_type rows, size_type cols, value_type f)
         : rows_(rows), cols_(cols), data_(new value_type[rows * cols]{}) {
@@ -212,6 +212,27 @@ namespace ng {
     }
 
     template <typename T>
+    template <typename U>
+    void Matrix<T>::mul(const Matrix<U> &rhs) {
+        if (cols_ != rhs.rows())
+            throw std::logic_error("Can't multiply two matrices because lhs.cols() != rhs.rows()");
+
+        if (!std::is_convertible_v<U, T>)
+            throw std::logic_error("Can't convert U to T type!");
+
+        const size_type cols = rhs.cols();
+        const size_type rows = rows_;
+
+        Matrix multiplied(rows, cols);
+        for (size_type row = 0; row != rows; ++row)
+            for (size_type col = 0; col != cols; ++col)
+                for (size_type k = 0; k != cols_; ++k)
+                    multiplied(row, col) = (*this)(row, k) * rhs(k, col);
+
+        *this = std::move(multiplied);
+    }
+
+    template <typename T>
     void Matrix<T>::add(const value_type &number) {
         transform([&number](const value_type &item) {
             return item + number;
@@ -229,6 +250,20 @@ namespace ng {
     }
 
     template <typename T>
+    template <typename U>
+    void Matrix<T>::add(const Matrix<U> &rhs) {
+        if (rhs.rows() != rows_ or rhs.cols() != cols_)
+            throw std::logic_error("Can't add different sized matrices");
+
+        if (!std::is_convertible_v<U, T>)
+            throw std::logic_error("Can't convert U to T type!");
+
+        transform(rhs, [](const T &lhs, const U &rhs) {
+            return lhs + rhs;
+        });
+    }
+
+    template <typename T>
     void Matrix<T>::sub(const value_type &number) {
         transform([&number](const value_type &item) {
             return item - number;
@@ -241,6 +276,20 @@ namespace ng {
             throw std::logic_error("Can't sub different sized matrices");
 
         transform(rhs, [](const value_type &lhs, const value_type &rhs) {
+            return lhs - rhs;
+        });
+    }
+
+    template <typename T>
+    template <typename U>
+    void Matrix<T>::sub(const Matrix<U> &rhs) {
+        if (rhs.rows() != rows_ or rhs.cols() != cols_)
+            throw std::logic_error("Can't add different sized matrices");
+
+        if (!std::is_convertible_v<U, T>)
+            throw std::logic_error("Can't convert U to T type!");
+
+        transform(rhs, [](const T &lhs, const U &rhs) {
             return lhs - rhs;
         });
     }
@@ -351,6 +400,97 @@ namespace ng {
     std::ostream &operator<<(std::ostream &out, const Matrix<T> &rhs) {
         rhs.print(out);
         return out;
+    }
+
+    template <typename T, typename U>
+    Matrix<T> &operator +=(Matrix<T> &lhs, const Matrix<U> &rhs) {
+        lhs.add(rhs);
+        return lhs;
+    }
+
+    template <typename T, typename U>
+    Matrix<T> &operator -=(Matrix<T> &lhs, const Matrix<U> &rhs) {
+        lhs.sub(rhs);
+        return lhs;
+    }
+
+    template <typename T, typename U>
+    Matrix<T> &operator *=(Matrix<T> &lhs, const Matrix<U> &rhs) {
+        lhs.mul(rhs);
+        return lhs;
+    }
+
+    template <typename T>
+    Matrix<T> &operator +=(Matrix<T> &lhs, const T &value) {
+        lhs.add(value);
+        return lhs;
+    }
+
+    template <typename T>
+    Matrix<T> &operator -=(Matrix<T> &lhs, const T &value) {
+        lhs.sub(value);
+        return lhs;
+    }
+
+    template <typename T>
+    Matrix<T> &operator *=(Matrix<T> &lhs, const T &value) {
+        lhs.mul(value);
+        return lhs;
+    }
+
+    template <typename T>
+    Matrix<T> &operator /=(Matrix<T> &lhs, const T &value) {
+        lhs.div(value);
+        return lhs;
+    }
+
+    template <typename T, typename U>
+    Matrix<T> operator +(const Matrix<T> &lhs, const Matrix<U> &rhs) {
+        Matrix<T> result(lhs);
+        result.add(rhs);
+        return result;
+    }
+
+    template <typename T, typename U>
+    Matrix<T> operator -(const Matrix<T> &lhs, const Matrix<U> &rhs) {
+        Matrix<T> result(lhs);
+        result.sub(rhs);
+        return result;
+    }
+
+    template <typename T, typename U>
+    Matrix<T> operator *(const Matrix<T> &lhs, const Matrix<U> &rhs) {
+        Matrix<T> result(lhs);
+        result.mul(rhs);
+        return result;
+    }
+
+    template <typename T>
+    Matrix<T> operator +(const Matrix<T> &lhs, const T &value) {
+        Matrix<T> result(lhs);
+        result.add(value);
+        return result;
+    }
+
+    template <typename T>
+    Matrix<T> operator -(const Matrix<T> &lhs, const T &value) {
+        Matrix<T> result(lhs);
+        result.sub(value);
+        return result;
+    }
+
+    template <typename T>
+    Matrix<T> operator *(const Matrix<T> &lhs, const T &value) {
+        Matrix<T> result(lhs);
+        result.mul(value);
+        return result;
+    }
+
+    template <typename T>
+    Matrix<T> operator /(const Matrix<T> &lhs, const T &value) {
+        Matrix<T> result(lhs);
+        result.div(value);
+        return result;
     }
 }
 

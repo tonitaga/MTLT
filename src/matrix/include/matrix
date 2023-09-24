@@ -1,0 +1,6 @@
+#ifndef MATRIX_LIBRARY_CPP_MAXTRIX_H
+#define MATRIX_LIBRARY_CPP_MAXTRIX_H
+
+#include "matrix.h"
+
+#endif //MATRIX_LIBRARY_CPP_MAXTRIX_H

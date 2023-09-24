@@ -1,30 +1,18 @@
 #include <iostream>
 #include <vector>
 
-#include <matrix.h>
-
-using namespace ng;
+#include "matrix"
 
 int main() {
-    FMatrix matrix(5, 5);
-    matrix.fill_random(1, 9);
-
+    std::Matrix<int> matrix(5, 5);
+    matrix.fill_random(0, 5);
     std::cout << matrix << std::endl;
 
-    matrix.mul(2);
+    std::Matrix<unsigned> matrix2(5, 5);
+    matrix2.fill_random(0, 5);
+    std::cout << matrix2 << std::endl;
 
     std::cout << matrix << std::endl;
-
-    matrix.div(2);
-
-    std::cout << matrix << std::endl;
-
-    try {
-        matrix.div(0);
-        std::cout << matrix << std::endl;
-    } catch (std::logic_error &e) {
-        std::cout << e.what() << std::endl;
-    }
 
     return EXIT_SUCCESS;
 }

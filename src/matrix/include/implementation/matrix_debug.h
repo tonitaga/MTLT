@@ -1,7 +1,7 @@
 #ifndef MATRIX_LIBRARY_CPP_MATRIX_DEBUG_H
 #define MATRIX_LIBRARY_CPP_MATRIX_DEBUG_H
 
-namespace ng {
+namespace std {
     struct MatrixDebugSettings {
         int width = 0, precision = 0;
         char separator = ' ', end = '\n';
