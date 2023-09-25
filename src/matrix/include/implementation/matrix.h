@@ -35,6 +35,11 @@ namespace ng {
         template<typename U>
         constexpr Matrix(const Matrix<U> &);
 
+        constexpr Matrix(const std::vector<std::vector<value_type>> &);
+
+        template<typename Container>
+        constexpr Matrix(size_type rows, size_type cols, const Container &container);
+
         static Matrix identity(size_type rows, size_type cols);
 
         constexpr Matrix(const Matrix &);
@@ -92,25 +97,25 @@ namespace ng {
         template<typename Operation>
         void generate(Operation &&op);
 
-        void mul(const value_type &number);
-        void mul(const Matrix &);
+        Matrix &mul(const value_type &number);
+        Matrix &mul(const Matrix &);
 
         template<typename U>
-        void mul(const Matrix<U> &rhs);
+        Matrix &mul(const Matrix<U> &rhs);
 
-        void div(const value_type &number);
+        Matrix &div(const value_type &number);
 
-        void add(const value_type &number);
-        void add(const Matrix &rhs);
-
-        template<typename U>
-        void add(const Matrix<U> &rhs);
-
-        void sub(const value_type &number);
-        void sub(const Matrix &rhs);
+        Matrix &add(const value_type &number);
+        Matrix &add(const Matrix &rhs);
 
         template<typename U>
-        void sub(const Matrix<U> &rhs);
+        Matrix &add(const Matrix<U> &rhs);
+
+        Matrix &sub(const value_type &number);
+        Matrix &sub(const Matrix &rhs);
+
+        template<typename U>
+        Matrix &sub(const Matrix<U> &rhs);
 
         Matrix &fill(const value_type &number);
         Matrix &fill_random(const value_type &left, const value_type &right);
@@ -126,6 +131,11 @@ namespace ng {
 
     public:
         Matrix transpose() const;
+        auto determinant() const;
+
+        Matrix inverse() const;
+        Matrix calc_complements() const;
+        Matrix minor(size_type row, size_type col) const;
 
     public:
         bool equal_to(const Matrix &rhs) const;
