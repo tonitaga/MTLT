@@ -51,23 +51,23 @@ namespace ng {
         ~Matrix() noexcept;
 
     public:
-        iterator begin() noexcept { return iterator(data_); }
-        iterator end() noexcept { return iterator(data_ + rows_ * cols_); }
+        constexpr iterator begin() noexcept { return iterator(data_); }
+        constexpr iterator end() noexcept { return iterator(data_ + rows_ * cols_); }
 
-        const_iterator begin() const noexcept { return const_iterator(data_); }
-        const_iterator end() const noexcept { return const_iterator(data_ + rows_ * cols_); }
+        constexpr const_iterator begin() const noexcept { return const_iterator(data_); }
+        constexpr const_iterator end() const noexcept { return const_iterator(data_ + rows_ * cols_); }
 
-        reverse_iterator rbegin() noexcept { return reverse_iterator(data_ + rows_ * cols_ - 1); }
-        reverse_iterator rend() noexcept { return reverse_iterator(data_ - 1); }
+        constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(data_ + rows_ * cols_ - 1); }
+        constexpr reverse_iterator rend() noexcept { return reverse_iterator(data_ - 1); }
 
-        const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
-        const_reverse_iterator rend() const noexcept { return const_reverse_iterator(data_ - 1); }
+        constexpr const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
+        constexpr const_reverse_iterator rend() const noexcept { return const_reverse_iterator(data_ - 1); }
 
-        const_iterator cbegin() const noexcept { return begin(); }
-        const_iterator cend() const noexcept { return end(); }
+        constexpr const_iterator cbegin() const noexcept { return begin(); }
+        constexpr const_iterator cend() const noexcept { return end(); }
 
-        const_reverse_iterator crbegin() const noexcept { return rbegin(); }
-        const_reverse_iterator crend() const noexcept { return rend(); }
+        constexpr const_reverse_iterator crbegin() const noexcept { return rbegin(); }
+        constexpr const_reverse_iterator crend() const noexcept { return rend(); }
 
     public:
         reference operator()(size_type row, size_type col);

@@ -88,4 +88,6 @@ namespace ng {
     using SquareMatrix = StaticMatrix<T, Square, Square>;
 }
 
+#include "static_matrix.tpp"
+
 #endif //MATRIX_LIBRARY_CPP_STATIC_MATRIX_H

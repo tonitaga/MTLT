@@ -1,15 +1,17 @@
 #include <iostream>
-#include <array>
 #include <vector>
-
 #include "static_matrix"
 
 using namespace ng;
 
 int main() {
-    constexpr StaticMatrix<int, 5, 5> matrix1;
-    constexpr SquareMatrix<int, 5> matrix2;
+    std::vector<int> vector1 {
+        1, 2,
+        2, 1,
+    };
 
+    StaticMatrix<bool, 2, 2> matrix1(vector1);
+    matrix1.print();
 
-
+    return EXIT_SUCCESS;
 }
