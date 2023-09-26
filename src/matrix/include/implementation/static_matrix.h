@@ -79,6 +79,18 @@ namespace ng {
         template<typename Operation>
         void generate(Operation &&op);
 
+        StaticMatrix &fill(const value_type &number);
+        StaticMatrix &fill_random(const value_type &left, const value_type &right);
+
+        StaticMatrix &round();
+        StaticMatrix &floor();
+        StaticMatrix &ceil();
+        StaticMatrix &zero();
+
+        StaticMatrix &to_identity();
+
+        value_type sum() const;
+
     private:
         size_type rows_ = Rows, cols_ = Cols;
         value_type data_[Rows * Cols] {};

@@ -103,6 +103,68 @@ namespace ng {
     void StaticMatrix<T, Rows, Cols>::generate(Operation &&op) {
         std::generate(begin(), end(), std::forward<Operation>(op));
     }
+
+    template <typename T, std::size_t Rows, std::size_t Cols>
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::fill(const value_type &number) {
+        std::fill(begin(), end(), number);
+    }
+
+    template <typename T, std::size_t Rows, std::size_t Cols>
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::fill_random(const value_type &left, const value_type &right) {
+        using namespace std::chrono;
+
+        std::default_random_engine re(system_clock::now().time_since_epoch().count());
+        auto distribution = std::conditional_t<std::is_integral_v<T>,
+                std::uniform_int_distribution<T>,
+                std::uniform_real_distribution<T>>(left, right);
+
+        generate([&distribution, &re]() {
+            return distribution(re);
+        });
+
+        return *this;
+    }
+
+    template <typename T, std::size_t Rows, std::size_t Cols>
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::round() {
+        transform([](const value_type &item) { return std::round(item); });
+        return *this;
+    }
+
+    template <typename T, std::size_t Rows, std::size_t Cols>
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::floor() {
+        transform([](const value_type &item) { return std::floor(item); });
+        return *this;
+    }
+
+    template <typename T, std::size_t Rows, std::size_t Cols>
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::ceil() {
+        transform([](const value_type &item) { return std::ceil(item); });
+        return *this;
+    }
+
+    template <typename T, std::size_t Rows, std::size_t Cols>
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::zero() {
+        generate([]() { return value_type{}; });
+        return *this;
+    }
+
+    template <typename T, std::size_t Rows, std::size_t Cols>
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::to_identity() {
+        if (Rows != Cols)
+            throw std::logic_error("Only square matrices can be identity");
+
+        for (size_type row = 0; row != rows_; ++row)
+            for (size_type col = 0; col != cols_; ++col)
+                (*this)(row, col) = row == col ? value_type{1} : value_type{};
+
+        return *this;
+    }
+
+    template <typename T, std::size_t Rows, std::size_t Cols>
+    typename StaticMatrix<T, Rows, Cols>::value_type StaticMatrix<T, Rows, Cols>::sum() const {
+        return std::accumulate(begin(), end(), value_type{});
+    }
 }
 
 #endif //MATRIX_LIBRARY_CPP_STATIC_MATRIX_TPP
