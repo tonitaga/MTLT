@@ -4,6 +4,7 @@
 #include <vector>
 #include <type_traits>
 
+#include "matrix.h"
 #include "matrix_state.h"
 #include "matrix_normal_iterator.h"
 #include "matrix_reverse_iterator.h"
@@ -29,29 +30,54 @@ namespace ng {
     public:
         constexpr StaticMatrix() noexcept = default;
         constexpr explicit StaticMatrix(value_type fill) noexcept;
+        constexpr explicit StaticMatrix(const Matrix<T> &);
 
-        constexpr StaticMatrix(const StaticMatrix &);
-        constexpr Stati
+        template<typename Container>
+        constexpr explicit StaticMatrix(const Container &);
 
+        constexpr StaticMatrix &operator=(const Matrix<T> &);
 
     public:
-        iterator begin() noexcept { return iterator(data_); }
-        iterator end() noexcept { return iterator(data_ + rows_ * cols_); }
+        constexpr iterator begin() noexcept { return iterator(data_); }
+        constexpr iterator end() noexcept { return iterator(data_ + rows_ * cols_); }
 
-        const_iterator begin() const noexcept { return const_iterator(data_); }
-        const_iterator end() const noexcept { return const_iterator(data_ + rows_ * cols_); }
+        constexpr const_iterator begin() const noexcept { return const_iterator(data_); }
+        constexpr const_iterator end() const noexcept { return const_iterator(data_ + rows_ * cols_); }
 
-        const_iterator cbegin() const noexcept { return const_iterator(data_); }
-        const_iterator cend() const noexcept { return const_iterator(data_ + rows_ * cols_); }
+        constexpr const_iterator cbegin() const noexcept { return const_iterator(data_); }
+        constexpr const_iterator cend() const noexcept { return const_iterator(data_ + rows_ * cols_); }
 
-        reverse_iterator rbegin() noexcept { return reverse_iterator(data_ + rows_ * cols_ - 1); }
-        reverse_iterator rend() noexcept { return reverse_iterator(data_ - 1); }
+        constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(data_ + rows_ * cols_ - 1); }
+        constexpr reverse_iterator rend() noexcept { return reverse_iterator(data_ - 1); }
 
-        const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
-        const_reverse_iterator rend() const noexcept { return const_reverse_iterator(data_ - 1); }
+        constexpr const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
+        constexpr const_reverse_iterator rend() const noexcept { return const_reverse_iterator(data_ - 1); }
 
-        const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
-        const_reverse_iterator crend() const noexcept { return const_reverse_iterator(data_ - 1); }
+        constexpr const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
+        constexpr const_reverse_iterator crend() const noexcept { return const_reverse_iterator(data_ - 1); }
+
+    public:
+        reference operator()(size_type row, size_type col);
+        const_reference operator()(size_type row, size_type col) const;
+
+        reference at(size_type row, size_type col);
+        const_reference at(size_type row, size_type col) const;
+
+        size_type rows() const noexcept;
+        size_type cols() const noexcept;
+
+    public:
+        void print(std::ostream &os = std::cout, MatrixDebugSettings settings = default_debug) const;
+
+    public:
+        template<typename UnaryOperation>
+        void transform(UnaryOperation &&op);
+
+        template<typename BinaryOperation>
+        void transform(const StaticMatrix &other, BinaryOperation &&op);
+
+        template<typename Operation>
+        void generate(Operation &&op);
 
     private:
         size_type rows_ = Rows, cols_ = Cols;

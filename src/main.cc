@@ -10,4 +10,6 @@ int main() {
     constexpr StaticMatrix<int, 5, 5> matrix1;
     constexpr SquareMatrix<int, 5> matrix2;
 
+
+
 }
