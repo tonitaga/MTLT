@@ -1,0 +1,6 @@
+#ifndef MATRIX_LIBRARY_CPP_STATIC_MATRIX_
+#define MATRIX_LIBRARY_CPP_STATIC_MATRIX_
+
+#include "static_matrix.h"
+
+#endif //MATRIX_LIBRARY_CPP_STATIC_MATRIX_
