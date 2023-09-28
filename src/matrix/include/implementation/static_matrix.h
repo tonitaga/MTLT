@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <type_traits>
+#include <concepts>
 
 #include "matrix.h"
 #include "matrix_state.h"
@@ -10,11 +11,8 @@
 #include "matrix_reverse_iterator.h"
 
 namespace ng {
-    template <typename T, std::size_t Rows, std::size_t Cols>
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
     class StaticMatrix {
-        static_assert(std::is_fundamental_v<T>,
-                      "Template parameter T must be fundamental!");
-
     public:
         using value_type = typename std::allocator_traits<std::allocator<T>>::value_type;
         using pointer = typename std::allocator_traits<std::allocator<T>>::pointer;
@@ -30,10 +28,12 @@ namespace ng {
     public:
         constexpr StaticMatrix() noexcept = default;
         constexpr explicit StaticMatrix(value_type fill) noexcept;
-        constexpr explicit StaticMatrix(const Matrix<T> &);
+        constexpr StaticMatrix(const Matrix<T> &);
 
-        template<typename Container>
-        constexpr explicit StaticMatrix(const Container &);
+        constexpr StaticMatrix(const std::array<T, Rows * Cols> &initializer);
+
+        template<typename Container> requires(std::convertible_to<typename Container::value_type, T>)
+        constexpr StaticMatrix(const Container &);
 
         constexpr StaticMatrix &operator=(const Matrix<T> &);
 
@@ -57,14 +57,14 @@ namespace ng {
         constexpr const_reverse_iterator crend() const noexcept { return const_reverse_iterator(data_ - 1); }
 
     public:
-        reference operator()(size_type row, size_type col);
-        const_reference operator()(size_type row, size_type col) const;
+        constexpr reference operator()(size_type row, size_type col);
+        constexpr const_reference operator()(size_type row, size_type col) const;
 
-        reference at(size_type row, size_type col);
-        const_reference at(size_type row, size_type col) const;
+        constexpr reference at(size_type row, size_type col);
+        constexpr const_reference at(size_type row, size_type col) const;
 
-        size_type rows() const noexcept;
-        size_type cols() const noexcept;
+        constexpr size_type rows() const noexcept;
+        constexpr size_type cols() const noexcept;
 
     public:
         void print(std::ostream &os = std::cout, MatrixDebugSettings settings = default_debug) const;
@@ -87,9 +87,49 @@ namespace ng {
         StaticMatrix &ceil();
         StaticMatrix &zero();
 
-        StaticMatrix &to_identity();
+        StaticMatrix &to_identity() requires(Rows == Cols);
+        constexpr StaticMatrix identity() const requires(Rows == Cols);
 
-        value_type sum() const;
+        StaticMatrix &mul(const value_type &value);
+
+        template<fundamental U, size_type Rows2, size_type Cols2>
+        requires(non_zero_dimension<Rows2, Cols2> and std::convertible_to<U, T> and Cols == Rows2)
+        constexpr StaticMatrix<T, Rows, Cols2> mul(const StaticMatrix<U, Rows2, Cols2> &rhs) const {
+            StaticMatrix<T, Rows, Cols2> multiplied;
+
+            for (size_type row = 0; row != Rows; ++row)
+                for (size_type col = 0; col != Cols2; ++col)
+                    for (size_type k = 0; k != Cols; ++k)
+                        multiplied(row, col) = (*this)(row, k) * rhs(k, col);
+
+            return multiplied;
+        }
+
+        template<fundamental U, size_type Rows2, size_type Cols2>
+        requires(non_zero_dimension<Rows2, Cols2> and std::convertible_to<U, T> and Rows == Rows2 and Cols == Cols2)
+        constexpr StaticMatrix<T, Rows, Cols> add(const StaticMatrix<U, Rows2, Cols2> &rhs) const {
+            StaticMatrix<T, Rows, Cols> addition;
+
+            for (size_type row = 0; row != Rows; ++row)
+                for (size_type col = 0; col != Cols; ++col)
+                    addition(row, col) = (*this)(row, col) + rhs(row, col);
+
+            return addition;
+        }
+
+        template<fundamental U, size_type Rows2, size_type Cols2>
+        requires(non_zero_dimension<Rows2, Cols2> and std::convertible_to<U, T> and Rows == Rows2 and Cols == Cols2)
+        constexpr StaticMatrix<T, Rows, Cols> sub(const StaticMatrix<U, Rows2, Cols2> &rhs) const {
+            StaticMatrix<T, Rows, Cols> substraction;
+
+            for (size_type row = 0; row != Rows; ++row)
+                for (size_type col = 0; col != Cols; ++col)
+                    substraction(row, col) = (*this)(row, col) - rhs(row, col);
+
+            return substraction;
+        }
+
+        constexpr value_type sum() const;
 
     private:
         size_type rows_ = Rows, cols_ = Cols;

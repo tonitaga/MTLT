@@ -2,6 +2,12 @@
 #define MATRIX_LIBRARY_CPP_MATRIX_DEBUG_H
 
 namespace ng {
+    template <typename T>
+    concept fundamental = std::is_fundamental_v<T>;
+
+    template <std::size_t Rows, std::size_t Cols>
+    concept non_zero_dimension = requires { Rows != 0 and Cols != 0; };
+
     struct MatrixDebugSettings {
         int width = 0, precision = 0;
         char separator = ' ', end = '\n';

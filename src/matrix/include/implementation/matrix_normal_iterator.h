@@ -61,7 +61,7 @@ namespace ng::__internal {
             return MatrixNormalIterator(current_ - n);
         }
         
-        const Iterator &Base() const noexcept {
+        constexpr const Iterator &Base() const noexcept {
             return current_;
         }
     };

@@ -9,11 +9,8 @@
 #include "matrix_reverse_iterator.h"
 
 namespace ng {
-    template <typename T>
+    template <fundamental T>
     class Matrix {
-        static_assert(std::is_fundamental_v<T>,
-                      "Template parameter T must be fundamental!");
-
     public:
         using value_type = typename std::allocator_traits<std::allocator<T>>::value_type;
         using pointer = typename std::allocator_traits<std::allocator<T>>::pointer;
@@ -101,6 +98,7 @@ namespace ng {
         Matrix &mul(const Matrix &);
 
         template<typename U>
+        requires(std::convertible_to<U, T>)
         Matrix &mul(const Matrix<U> &rhs);
 
         Matrix &div(const value_type &number);
@@ -109,12 +107,14 @@ namespace ng {
         Matrix &add(const Matrix &rhs);
 
         template<typename U>
+        requires(std::convertible_to<U, T>)
         Matrix &add(const Matrix<U> &rhs);
 
         Matrix &sub(const value_type &number);
         Matrix &sub(const Matrix &rhs);
 
         template<typename U>
+        requires(std::convertible_to<U, T>)
         Matrix &sub(const Matrix<U> &rhs);
 
         Matrix &fill(const value_type &number);
