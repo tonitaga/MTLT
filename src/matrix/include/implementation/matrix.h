@@ -30,12 +30,10 @@ namespace ng {
         constexpr Matrix(size_type rows, size_type cols, value_type fill = {});
         constexpr explicit Matrix(size_type square) : Matrix(square, square) {};
 
-        template<typename U>
-        constexpr Matrix(const Matrix<U> &);
-
         constexpr Matrix(const std::vector<std::vector<value_type>> &);
 
         template<typename Container>
+        requires(std::convertible_to<typename Container::value_type, T>)
         constexpr Matrix(size_type rows, size_type cols, const Container &container);
 
         static Matrix identity(size_type rows, size_type cols);

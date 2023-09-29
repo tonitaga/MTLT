@@ -123,109 +123,33 @@ namespace ng {
 
         template<fundamental U>
         requires(std::convertible_to<U, T>)
-        constexpr StaticMatrix<T, Rows, Cols> add(const StaticMatrix<U, Rows, Cols> &rhs) const {
-            StaticMatrix<T, Rows, Cols> addition;
-
-            for (size_type row = 0; row != Rows; ++row)
-                for (size_type col = 0; col != Cols; ++col)
-                    addition(row, col) = (*this)(row, col) + rhs(row, col);
-
-            return addition;
-        }
+        constexpr StaticMatrix<T, Rows, Cols> add(const StaticMatrix<U, Rows, Cols> &rhs) const;
 
         template<fundamental U>
         requires(std::convertible_to<U, T>)
-        constexpr StaticMatrix<T, Rows, Cols> sub(const StaticMatrix<U, Rows, Cols> &rhs) const {
-            StaticMatrix<T, Rows, Cols> substraction;
-
-            for (size_type row = 0; row != Rows; ++row)
-                for (size_type col = 0; col != Cols; ++col)
-                    substraction(row, col) = (*this)(row, col) - rhs(row, col);
-
-            return substraction;
-        }
+        constexpr StaticMatrix<T, Rows, Cols> sub(const StaticMatrix<U, Rows, Cols> &rhs) const;
 
         template<fundamental U>
         requires(std::convertible_to<U, T>)
-        constexpr StaticMatrix<T, Rows, Cols> div_by_element(const StaticMatrix<U, Rows, Cols> &rhs) const {
-            StaticMatrix<T, Rows, Cols> division;
-
-            for (size_type row = 0; row != Rows; ++row)
-                for (size_type col = 0; col != Cols; ++col)
-                    division(row, col) = (*this)(row, col) / rhs(row, col);
-
-            return division;
-        }
+        constexpr StaticMatrix<T, Rows, Cols> div_by_element(const StaticMatrix<U, Rows, Cols> &rhs) const;
 
         template<fundamental U>
         requires(std::convertible_to<U, T>)
-        constexpr StaticMatrix<T, Rows, Cols> mul_by_element(const StaticMatrix<U, Rows, Cols> &rhs) const {
-            StaticMatrix<T, Rows, Cols> multpipled;
-
-            for (size_type row = 0; row != Rows; ++row)
-                for (size_type col = 0; col != Cols; ++col)
-                    multpipled(row, col) = (*this)(row, col) * rhs(row, col);
-
-            return multpipled;
-        }
+        constexpr StaticMatrix<T, Rows, Cols> mul_by_element(const StaticMatrix<U, Rows, Cols> &rhs) const;
 
         constexpr value_type sum() const;
 
-        constexpr StaticMatrix<T, Cols, Rows> transpose() const {
-            StaticMatrix<T, Cols, Rows> transposed;
-
-            for (size_type row = 0; row != rows_; ++row)
-                for (size_type col = 0; col != cols_; ++col)
-                    transposed(col, row) = (*this)(row, col);
-
-            return transposed;
-        }
-
-        constexpr StaticMatrix<T, Rows - 1, Cols - 1> minor(size_type row, size_type col) const requires (non_zero_dimension<Rows - 1, Cols - 1>) {
-            StaticMatrix<T, Rows - 1, Cols - 1> minored;
-
-            size_type skip_row = 0, skip_col = 0;
-            for (size_type r = 0; r != Rows - 1; ++r) {
-                if (row == r)
-                    skip_row = 1;
-
-                skip_col = 0;
-                for (size_type c = 0; c != Cols - 1; ++c) {
-                    if (col == c)
-                        skip_col = 1;
-
-                    minored(r, c) = (*this)(r + skip_col, c + skip_row);
-                }
-            }
-
-            return minored;
-        }
+        constexpr StaticMatrix<T, Cols, Rows> transpose() const;
+        constexpr StaticMatrix<T, Rows - 1, Cols - 1> minor(size_type row, size_type col) const requires (non_zero_dimension<Rows - 1, Cols - 1>);
 
     public:
-        template<typename U = T>
+        template <fundamental U = T>
         requires(std::convertible_to<U, T>)
-        constexpr std::array<U, Rows * Cols> to_array() const {
-            std::array<U, Rows * Cols> arr;
+        constexpr std::array<U, Rows * Cols> to_array() const;
 
-            size_type current = 0;
-            for (size_type row = 0; row != rows_; ++row)
-                for (size_type col = 0; col != cols_; ++col)
-                    arr[current++] = (*this)(row, col);
-
-            return arr;
-        }
-
-        template <typename U>
+        template <fundamental U>
         requires(std::convertible_to<U, T>)
-        constexpr StaticMatrix<U, Rows, Cols> to() const {
-            StaticMatrix<U, Rows, Cols> converted;
-
-            for (size_type row = 0; row != rows_; ++row)
-                for (size_type col = 0; col != cols_; ++col)
-                    converted(row, col) = (*this)(row, col);
-
-            return converted;
-        }
+        constexpr StaticMatrix<U, Rows, Cols> convert_to() const;
 
     private:
         size_type rows_ = Rows, cols_ = Cols;

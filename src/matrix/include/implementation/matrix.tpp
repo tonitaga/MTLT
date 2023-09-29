@@ -25,13 +25,6 @@ namespace ng {
     }
 
     template <fundamental T>
-    template <typename U>
-    constexpr Matrix<T>::Matrix(const Matrix<U> &other)
-        : Matrix(other.rows(), other.cols()) {
-        std::copy(other.begin(), other.end(), begin());
-    }
-
-    template <fundamental T>
     constexpr Matrix<T>::Matrix(const std::vector<std::vector<value_type>> &matrix_vector)
         : Matrix(matrix_vector.size(), matrix_vector[0].size()) {
         for (size_type row = 0; row != rows_; ++row)
@@ -41,6 +34,7 @@ namespace ng {
 
     template <fundamental T>
     template <typename Container>
+    requires (std::convertible_to<typename Container::value_type, T>)
     constexpr Matrix<T>::Matrix(size_type rows, size_type cols, const Container &container)
         : Matrix(rows, cols) {
         std::copy(container.begin(), container.end(), begin());

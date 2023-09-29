@@ -231,6 +231,116 @@ namespace ng {
     constexpr typename StaticMatrix<T, Rows, Cols>::value_type StaticMatrix<T, Rows, Cols>::sum() const {
         return std::accumulate(begin(), end(), value_type{});
     }
+
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    template <fundamental U> requires(std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::mul_by_element(const StaticMatrix<U, Rows, Cols> &rhs) const {
+        StaticMatrix<T, Rows, Cols> multpipled;
+
+        for (size_type row = 0; row != Rows; ++row)
+            for (size_type col = 0; col != Cols; ++col)
+                multpipled(row, col) = (*this)(row, col) * rhs(row, col);
+
+        return multpipled;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    template <fundamental U> requires(std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::div_by_element(const StaticMatrix<U, Rows, Cols> &rhs) const {
+        StaticMatrix<T, Rows, Cols> division;
+
+        for (size_type row = 0; row != Rows; ++row)
+            for (size_type col = 0; col != Cols; ++col)
+                division(row, col) = (*this)(row, col) / rhs(row, col);
+
+        return division;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    template <fundamental U> requires(std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::add(const StaticMatrix<U, Rows, Cols> &rhs) const {
+        StaticMatrix<T, Rows, Cols> addition;
+
+        for (size_type row = 0; row != Rows; ++row)
+            for (size_type col = 0; col != Cols; ++col)
+                addition(row, col) = (*this)(row, col) + rhs(row, col);
+
+        return addition;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    template <fundamental U> requires(std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::sub(const StaticMatrix<U, Rows, Cols> &rhs) const {
+        StaticMatrix<T, Rows, Cols> substraction;
+
+        for (size_type row = 0; row != Rows; ++row)
+            for (size_type col = 0; col != Cols; ++col)
+                substraction(row, col) = (*this)(row, col) - rhs(row, col);
+
+        return substraction;
+    }
+
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    constexpr StaticMatrix<T, Cols, Rows> StaticMatrix<T, Rows, Cols>::transpose() const {
+        StaticMatrix<T, Cols, Rows> transposed;
+
+        for (size_type row = 0; row != rows_; ++row)
+            for (size_type col = 0; col != cols_; ++col)
+                transposed(col, row) = (*this)(row, col);
+
+        return transposed;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    constexpr StaticMatrix<T, Rows - 1, Cols - 1> StaticMatrix<T, Rows, Cols>::minor(size_type row, size_type col) const requires(non_zero_dimension<Rows - 1, Cols - 1>) {
+        StaticMatrix<T, Rows - 1, Cols - 1> minored;
+
+        size_type skip_row = 0, skip_col = 0;
+        for (size_type r = 0; r != Rows - 1; ++r) {
+            if (row == r)
+                skip_row = 1;
+
+            skip_col = 0;
+            for (size_type c = 0; c != Cols - 1; ++c) {
+                if (col == c)
+                    skip_col = 1;
+
+                minored(r, c) = (*this)(r + skip_col, c + skip_row);
+            }
+        }
+
+        return minored;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    template <fundamental U>
+    requires(std::convertible_to<U, T>)
+    constexpr std::array<U, Rows * Cols> StaticMatrix<T, Rows, Cols>::to_array() const {
+        std::array<U, Rows * Cols> arr;
+
+        size_type current = 0;
+        for (size_type row = 0; row != rows_; ++row)
+            for (size_type col = 0; col != cols_; ++col)
+                arr[current++] = (*this)(row, col);
+
+        return arr;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    template <fundamental U>
+    requires(std::convertible_to<U, T>)
+    constexpr StaticMatrix<U, Rows, Cols> StaticMatrix<T, Rows, Cols>::convert_to() const {
+        StaticMatrix<U, Rows, Cols> converted;
+
+        for (size_type row = 0; row != rows_; ++row)
+            for (size_type col = 0; col != cols_; ++col)
+                converted(row, col) = (*this)(row, col);
+
+        return converted;
+    }
+
 }
 
 #endif //MATRIX_LIBRARY_CPP_STATIC_MATRIX_TPP
