@@ -1,38 +1,57 @@
 #include "matrix"
+#include "static_matrix"
 
 using namespace ng;
 
-int main() {
-    Matrix<int> m1(5, 5);
+struct S{};
 
-    // default printing
-    for (std::size_t row = 0; row != m1.rows(); ++row) {
-        for (std::size_t col = 0; col != m1.cols(); ++col) {
-            std::cout << m1(row, col) << ' ';
+int main() {
+    Matrix<int> dynamic_matrix(3, 3);
+    StaticMatrix<int, 3, 3> static_matrix;
+
+    using size_type = typename Matrix<int>::size_type;
+
+    //
+    // Matrix and StaticMatrix classes supports different ways to print your matrix
+    //
+
+    // Default printing using rows and cols sizes
+    for (size_type r = 0; r != dynamic_matrix.rows(); ++r) {
+        for (size_type c = 0; c != dynamic_matrix.cols(); ++c) {
+            std::cout << dynamic_matrix(r, c) << ' ';
+            std::cout << static_matrix(r, c) << ' ';
         }
-        std::cout << std::endl;
+        std::cout << '\n';
     }
 
-    // printing row-type
-    for (auto item : m1)
-        std::cout << item << ' ';
-    std::cout << std::endl;
+    // Using iterators in range-based-for (Print matrix in a row style)
+    for (auto item : dynamic_matrix)
+        std::cout << item;
 
-    // public method of Matrix class
-    m1.print(std::cout);
+    for (auto item : static_matrix)
+        std::cout << item;
 
-    // using overloading operator <<
-    std::cout << m1 << std::endl;
+    // Using special method of both classes
+    dynamic_matrix.print(std::cout);
+    static_matrix.print(std::cout);
 
-    // print method supports print settings
-    MatrixDebugSettings settings {
-        .width = 6,
-        .precision = 12,
-        .separator = ' ',
-        .end = '\n',
-        .is_double_end = false
+    // Using overloaded operator << of both classes
+    std::cout << dynamic_matrix << '\n';
+    std::cout << static_matrix << '\n';
+
+    // Also print method supports print/debug settings
+    MatrixDebugSettings s {
+            .width = 6,
+            .precision = 12,
+            .separator = '\t',
+            .end = '\t',
+            .is_double_end = true
     };
-    m1.print(std::cout, settings);
+    dynamic_matrix.print(std::cout, s);
+    static_matrix.print(std::cout, s);
 
-    return EXIT_SUCCESS;
+    // Variadic template function
+    // Variadic params must be printable with std::ostream
+    // Guard by concept 'printable'
+    print(dynamic_matrix, static_matrix);
 }
