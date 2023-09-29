@@ -1,24 +1,22 @@
 #include "matrix"
+#include "static_matrix"
 
 using namespace ng;
 
 int main() {
-    Matrix<int> m1(5, 5);
+    Matrix<int> dynamic_matrix(3, 3);
+    Matrix3x3<int> static_matrix;
 
-    // rows cols
-    m1.rows(), m1.cols();
+    // Rows Cols Size methods
+    // Size is Rows * Cols
+    dynamic_matrix.rows(), dynamic_matrix.cols(), dynamic_matrix.size();
+    static_matrix.rows(), static_matrix.cols(), static_matrix.size();
 
-    // row col item
-    m1(0, 0), m1.at(0, 0);
+    // Elements access
+    dynamic_matrix(0, 0), static_matrix(0, 0);
 
-    // change rows cols of matrix
-    m1.rows(6), m1.cols(6);
-
-    // resize matrix
-    m1.resize(6, 6);
-
-    // sum of elements
-    m1.sum();
+    // Sum of elements
+    dynamic_matrix.sum(), static_matrix.sum();
 
     return EXIT_SUCCESS;
 }

@@ -1,30 +1,45 @@
 #include "matrix"
-
-#include <cassert>
+#include "static_matrix"
 
 using namespace ng;
 
 int main() {
-    Matrix<int> m1(5, 5);
+    Matrix<int> dynamic_matrix(3, 3);
+    StaticMatrix<int, 3, 3> static_matrix;
 
-    // normal iterator
-    auto begin = m1.begin();
-    auto end = m1.end();
-    auto cbegin = m1.cbegin();
-    auto cend = m1.cend();
+    //
+    //  Matrix and StaticMatrix classes are containers, so they have their own iterators
+    //
+    //  ng::__internal::MatrixNormalIterator (random_access_iterator)
+    //  ng::__internal::MatrixReverseInterator (random_access_iterator)
+    //
+    //  Don't create them manually, get them from classes
+    //
 
-    // reverse iterator
-    auto rbegin = m1.rbegin();
-    auto rend = m1.rend();
-    auto crbegin = m1.crbegin();
-    auto crend = m1.crend();
+    // MatrixNormalIterator
+    dynamic_matrix.begin();
+    static_matrix.begin();
 
-    // containers construction from matrix data
-    std::vector<int> normal(begin, end);
-    std::vector<int> reverse(rbegin, rend);
+    dynamic_matrix.end();
+    static_matrix.end();
 
-    auto random_access_iterator1 = std::iterator_traits<Matrix<int>::iterator>::iterator_category{};
-    auto random_access_iterator2 = std::iterator_traits<Matrix<int>::reverse_iterator>::iterator_category{};
+    dynamic_matrix.cbegin();
+    static_matrix.cbegin();
 
-    return EXIT_SUCCESS;
+    // MatrixReverseIterator
+    dynamic_matrix.rbegin();
+    static_matrix.rbegin();
+
+    dynamic_matrix.rend();
+    static_matrix.rend();
+
+    dynamic_matrix.crbegin();
+    static_matrix.crbegin();
+
+    // Support of matrix iteration is useful, you can create other container from your matrix
+    std::vector<int> vec1(dynamic_matrix.begin(), dynamic_matrix.end());
+    std::vector<int> vec2(static_matrix.begin(), static_matrix.end());
+
+    std::vector<int> vec3(dynamic_matrix.rbegin(), dynamic_matrix.rend());
+    std::vector<int> vec4(static_matrix.rbegin(), static_matrix.rend());
 }

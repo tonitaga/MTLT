@@ -1,40 +1,53 @@
 #include "matrix"
+#include "static_matrix"
 
 using namespace ng;
 
 int main() {
-    // Empty
-    Matrix<int> m1;
+    //
+    // Matrix classes supports different ways of creation
+    //
 
-    // Rows Cols
-    Matrix<int> m2(5, 5);
+    // Empty Dynamic matrix
+    Matrix<int> matrix1;
 
-    // Square
-    Matrix<int> m3(5);
+    // Rows Cols matrix
+    Matrix<int> matrix2(3, 3);
+    StaticMatrix<int, 3, 3> matrix3;
 
-    // Rows Cols Filled
-    Matrix<int> m4(5, 5, 1);
+    // Square matrix
+    Matrix<int> matrix4(5);
+    SquareMatrix<int, 5> matrix5;
 
-    // Identity
-    Matrix<int> m5 = Matrix<int>::identity(5, 5);
+    // Filled matrix
+    Matrix<int> matrix6(5, 5, 1);
+    StaticMatrix<int, 2, 4> matrix7(1);
 
-    // Random filled
-    Matrix<int> m6 = Matrix<int>(5, 5).fill_random(0, 5);
+    // Identity matrix
+    Matrix matrix8 = Matrix<int>::identity(5, 5);
+    StaticMatrix matrix9 = StaticMatrix<int, 5, 5>().identity();
 
-    // Copy construction matrix
-    Matrix<int> m7 = m6;
+    // Construction from container
+    std::vector<int> vec1 {
+        1, 2, 3,
+        4, 5, 6,
+        7, 8, 9
+    };
 
-    // Move construction matrix
-    Matrix<int> m8 = std::move(m7);
+    Matrix<int> matrix10(3, 3, vec1);
+    StaticMatrix<int, 3, 3> matrix11(vec1);
 
-    // Copy assignment matrix
-    m1 = m2;
+    // Static matrix creation in compile(non-compile) time using array
+    StaticMatrix<int, 3, 3> matrix12({ 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+    constexpr StaticMatrix<int, 3, 3> matrix13({ 1, 2, 3, 4, 5, 6, 7, 8, 9 });
 
-    // Move assignment matrix
-    m1 = std::move(m2);
-
-    // Creating from other type of matrix
-    Matrix<int> m9 = Matrix<float>(5, 5);
+    // Dynamic matrix creation from matrix vector
+    std::vector<std::vector<int>> vec2 {
+            {1, 2, 3},
+            {4, 5, 6},
+            {7, 8, 9}
+    };
+    Matrix<int> matrix14(vec2);
 
     return EXIT_SUCCESS;
 }

@@ -3,8 +3,6 @@
 
 using namespace ng;
 
-struct S{};
-
 int main() {
     Matrix<int> dynamic_matrix(3, 3);
     StaticMatrix<int, 3, 3> static_matrix;

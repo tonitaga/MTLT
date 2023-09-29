@@ -4,7 +4,7 @@ using namespace ng;
 
 int main() {
     //
-    // Static matrix support also compile time initialization
+    // Static matrix support also compile time work
     //
 
     using size_type = Matrix3x3<int>::size_type;
@@ -35,16 +35,21 @@ int main() {
     constexpr StaticMatrix sub2 = matrix1.sub(two);
     constexpr StaticMatrix div1 = matrix1.div_by_element(two);
 
-    // Also you can get transposed matrix and minor matrix
+    // Also you can get transposed matrix, minor matrix, identity
     constexpr StaticMatrix transposed = matrix1.transpose();
     constexpr StaticMatrix minored = matrix1.minor(0, 0);
+    constexpr StaticMatrix identity = matrix1.identity();
 
     // Useful for floating point types
     _GLIBCXX23_CONSTEXPR StaticMatrix round = matrix1.round();
     _GLIBCXX23_CONSTEXPR StaticMatrix floor = matrix1.floor();
     _GLIBCXX23_CONSTEXPR StaticMatrix ceil  = matrix1.ceil();
 
-    // Also data access is compile time useful
+    // Conversion to is compiled time to
+    constexpr std::array arr1 = matrix1.to_array();
+    constexpr StaticMatrix matrix3 = matrix1.to<float>();
+
+    // Also data access is compile time
     constexpr size_type size = matrix1.size();
     constexpr size_type cols = matrix1.cols();
     constexpr size_type rows = matrix1.rows();
