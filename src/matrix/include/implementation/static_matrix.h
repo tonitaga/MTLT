@@ -201,6 +201,32 @@ namespace ng {
             return minored;
         }
 
+    public:
+        template<typename U = T>
+        requires(std::convertible_to<U, T>)
+        constexpr std::array<U, Rows * Cols> to_array() const {
+            std::array<U, Rows * Cols> arr;
+
+            size_type current = 0;
+            for (size_type row = 0; row != rows_; ++row)
+                for (size_type col = 0; col != cols_; ++col)
+                    arr[current++] = (*this)(row, col);
+
+            return arr;
+        }
+
+        template <typename U>
+        requires(std::convertible_to<U, T>)
+        constexpr StaticMatrix<U, Rows, Cols> to() const {
+            StaticMatrix<U, Rows, Cols> converted;
+
+            for (size_type row = 0; row != rows_; ++row)
+                for (size_type col = 0; col != cols_; ++col)
+                    converted(row, col) = (*this)(row, col);
+
+            return converted;
+        }
+
     private:
         size_type rows_ = Rows, cols_ = Cols;
         value_type data_[Rows * Cols] {};

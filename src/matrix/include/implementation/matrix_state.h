@@ -9,8 +9,8 @@ namespace ng {
     concept non_zero_dimension = requires { Rows != 0 and Cols != 0; };
 
     template <typename T>
-    concept printable = requires(T t) {
-        std::cout << t;
+    concept printable = requires(T t, std::ostream os) {
+        os << t;
     };
 
     struct MatrixDebugSettings {
