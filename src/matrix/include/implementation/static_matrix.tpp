@@ -298,20 +298,73 @@ namespace ng {
         StaticMatrix<T, Rows - 1, Cols - 1> minored;
 
         size_type skip_row = 0, skip_col = 0;
-        for (size_type r = 0; r != Rows - 1; ++r) {
+        for (size_type r = 0; r != minored.rows(); ++r) {
             if (row == r)
                 skip_row = 1;
 
             skip_col = 0;
-            for (size_type c = 0; c != Cols - 1; ++c) {
+            for (size_type c = 0; c != minored.cols(); ++c) {
                 if (col == c)
                     skip_col = 1;
 
-                minored(r, c) = (*this)(r + skip_col, c + skip_row);
+                minored(r, c) = (*this)(r + skip_row, c + skip_col);
             }
         }
 
         return minored;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    constexpr typename StaticMatrix<T, Rows, Cols>::value_type StaticMatrix<T, Rows, Cols>::minor_item(size_type row, size_type col) const {
+        return minor(row, col).determinant();
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    constexpr typename StaticMatrix<T, Rows, Cols>::value_type StaticMatrix<T, Rows, Cols>::determinant() const requires(Rows == Cols) {
+        value_type determinant_value {};
+        int sign = 1;
+
+        if constexpr (Rows == 1 and Cols == 1)
+            determinant_value = (*this)(0, 0);
+        else if constexpr (Rows == 2 and Cols == 2)
+            determinant_value = ((*this)(0, 0) * (*this)(1, 1)) - ((*this)(1, 0) * (*this)(0, 1));
+        else {
+            for (size_type col = 0; col != Cols; ++col) {
+                StaticMatrix<value_type, Rows - 1, Cols - 1> minored = this->minor(0, col);
+                determinant_value += sign * (*this)(0, col) * minored.determinant();
+                sign = -sign;
+            }
+        }
+
+        return determinant_value;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    constexpr StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::calc_complements() const requires(Rows == Cols){
+        StaticMatrix<value_type, Rows, Cols> complements;
+
+        for (size_type row = 0; row != Rows; ++row) {
+            for (size_type col = 0; col != Cols; ++col) {
+                complements(row, col) = minor_item(row, col);
+
+                if ((row + col) % 2 != 0)
+                    complements(row, col) = -complements(row, col);
+            }
+        }
+
+        return complements;
+    }
+
+    // Convert your matrix to double before use inverse method
+    // If Determinant of your matrix is 0 returns zero matrix
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    constexpr StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::inverse() const requires(Rows == Cols) {
+        value_type det = determinant();
+
+        if (det != value_type{})
+            return calc_complements().transpose().mul_by_element(StaticMatrix<T, Rows, Cols>(1 / determinant()));
+
+        return zero();
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)

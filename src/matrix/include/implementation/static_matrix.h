@@ -139,8 +139,13 @@ namespace ng {
 
         constexpr value_type sum() const;
 
+    public:
         constexpr StaticMatrix<T, Cols, Rows> transpose() const;
         constexpr StaticMatrix<T, Rows - 1, Cols - 1> minor(size_type row, size_type col) const requires (non_zero_dimension<Rows - 1, Cols - 1>);
+        constexpr value_type minor_item(size_type row, size_type col) const;
+        constexpr value_type determinant() const requires(Rows == Cols);
+        constexpr StaticMatrix calc_complements() const requires(Rows == Cols);
+        constexpr StaticMatrix inverse() const requires(Rows == Cols);
 
     public:
         template <fundamental U = T>
@@ -154,19 +159,21 @@ namespace ng {
     private:
         size_type rows_ = Rows, cols_ = Cols;
         value_type data_[Rows * Cols] {};
-    };
 
-    template <fundamental T, std::size_t Rows, std::size_t Cols>
-    std::ostream &operator<<(std::ostream &out, const StaticMatrix<T, Rows, Cols> &rhs) {
-        rhs.print(out);
-        return out;
-    }
+    private:
+    };
 
     template <fundamental T, std::size_t Square>
     using SquareMatrix = StaticMatrix<T, Square, Square>;
 
     template <fundamental T>
     using Matrix3x3 = SquareMatrix<T, 3>;
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols>
+    std::ostream &operator<<(std::ostream &out, const StaticMatrix<T, Rows, Cols> &rhs) {
+        rhs.print(out);
+        return out;
+    }
 }
 
 #include "static_matrix.tpp"

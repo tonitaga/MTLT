@@ -342,22 +342,6 @@ namespace ng {
     }
 
     template <fundamental T>
-    auto Matrix<T>::determinant() const {
-        using result_type = std::conditional_t<std::is_integral_v<T>, long long int, std::conditional_t<std::is_same_v<T, double>, double, float>>;
-        return result_type{};
-    }
-
-    template <fundamental T>
-    Matrix<T> Matrix<T>::inverse() const {
-
-    }
-
-    template <fundamental T>
-    Matrix<T> Matrix<T>::calc_complements() const {
-
-    }
-
-    template <fundamental T>
     Matrix<T> Matrix<T>::minor(size_type row, size_type col) const {
         Matrix minor(rows() - 1, cols() - 1);
 

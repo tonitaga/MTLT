@@ -128,10 +128,6 @@ namespace ng {
 
     public:
         Matrix transpose() const;
-        auto determinant() const;
-
-        Matrix inverse() const;
-        Matrix calc_complements() const;
         Matrix minor(size_type row, size_type col) const;
 
     public:
