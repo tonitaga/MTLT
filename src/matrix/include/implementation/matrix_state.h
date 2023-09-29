@@ -8,6 +8,11 @@ namespace ng {
     template <std::size_t Rows, std::size_t Cols>
     concept non_zero_dimension = requires { Rows != 0 and Cols != 0; };
 
+    template <typename T>
+    concept printable = requires(T t) {
+        std::cout << t;
+    };
+
     struct MatrixDebugSettings {
         int width = 0, precision = 0;
         char separator = ' ', end = '\n';
@@ -40,6 +45,17 @@ namespace ng {
 
     template <> struct MatrixEpsilon<double> { static constexpr double epsilon = 1e-6; };
     template <> struct MatrixEpsilon<long double> { static constexpr long double epsilon = 1e-6; };
+
+    template <typename Object>
+    void print(Object &&object) requires printable<Object> {
+        std::cout << object << '\n';
+    }
+
+    template <typename Head, typename ...Tail>
+    void print(Head &&head, Tail &&...tail) {
+        print(std::forward<Head>(head));
+        print(std::forward<Tail>(tail)...);
+    }
 }
 
 #endif //MATRIX_LIBRARY_CPP_MATRIX_DEBUG_H

@@ -210,24 +210,6 @@ namespace ng {
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::mul(const Matrix &rhs) {
-        if (cols_ != rhs.rows())
-            throw std::logic_error("Can't multiply two matrices because lhs.cols() != rhs.rows()");
-
-        const size_type cols = rhs.cols();
-        const size_type rows = rows_;
-
-        Matrix multiplied(rows, cols);
-        for (size_type row = 0; row != rows; ++row)
-            for (size_type col = 0; col != cols; ++col)
-                for (size_type k = 0; k != cols_; ++k)
-                    multiplied(row, col) = (*this)(row, k) * rhs(k, col);
-
-        *this = std::move(multiplied);
-        return *this;
-    }
-
-    template <fundamental T>
     template <typename U>
     requires(std::convertible_to<U, T>)
     Matrix<T> &Matrix<T>::mul(const Matrix<U> &rhs) {
@@ -241,7 +223,7 @@ namespace ng {
         for (size_type row = 0; row != rows; ++row)
             for (size_type col = 0; col != cols; ++col)
                 for (size_type k = 0; k != cols_; ++k)
-                    multiplied(row, col) = (*this)(row, k) * rhs(k, col);
+                    multiplied(row, col) += (*this)(row, k) * rhs(k, col);
 
         *this = std::move(multiplied);
         return *this;
@@ -253,14 +235,6 @@ namespace ng {
         return *this;
     }
 
-    template <fundamental T>
-    Matrix<T> &Matrix<T>::add(const Matrix &rhs) {
-        if (rhs.rows() != rows_ or rhs.cols() != cols_)
-            throw std::logic_error("Can't add different sized matrices");
-
-        transform(rhs, [](const value_type &lhs, const value_type &rhs) { return lhs + rhs; });
-        return *this;
-    }
 
     template <fundamental T>
     template <typename U>
@@ -276,15 +250,6 @@ namespace ng {
     template <fundamental T>
     Matrix<T> &Matrix<T>::sub(const value_type &number) {
         transform([&number](const value_type &item) { return item - number; });
-        return *this;
-    }
-
-    template <fundamental T>
-    Matrix<T> &Matrix<T>::sub(const Matrix &rhs) {
-        if (rhs.rows() != rows_ or rhs.cols() != cols_)
-            throw std::logic_error("Can't sub different sized matrices");
-
-        transform(rhs, [](const value_type &lhs, const value_type &rhs) { return lhs - rhs; });
         return *this;
     }
 

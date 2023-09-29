@@ -2,6 +2,7 @@
 #define MATRIX_LIBRARY_CPP_MATRIX_H_
 
 #include <vector>
+#include <iostream>
 #include <type_traits>
 
 #include "matrix_state.h"
@@ -75,6 +76,7 @@ namespace ng {
 
         size_type rows() const noexcept { return rows_; }
         size_type cols() const noexcept { return cols_; }
+        size_type size() const noexcept { return rows_ * cols_; }
 
         void rows(size_type rows);
         void cols(size_type cols);
@@ -95,7 +97,6 @@ namespace ng {
         void generate(Operation &&op);
 
         Matrix &mul(const value_type &number);
-        Matrix &mul(const Matrix &);
 
         template<typename U>
         requires(std::convertible_to<U, T>)
@@ -104,14 +105,12 @@ namespace ng {
         Matrix &div(const value_type &number);
 
         Matrix &add(const value_type &number);
-        Matrix &add(const Matrix &rhs);
 
         template<typename U>
         requires(std::convertible_to<U, T>)
         Matrix &add(const Matrix<U> &rhs);
 
         Matrix &sub(const value_type &number);
-        Matrix &sub(const Matrix &rhs);
 
         template<typename U>
         requires(std::convertible_to<U, T>)

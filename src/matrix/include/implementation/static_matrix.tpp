@@ -3,17 +3,19 @@
 
 #include "static_matrix.h"
 
+#include <cmath>
+#include <random>
+#include <chrono>
+#include <iomanip>
+#include <iostream>
+#include <algorithm>
+
 namespace ng {
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
     constexpr StaticMatrix<T, Rows, Cols>::StaticMatrix(value_type fill) noexcept {
         if (fill != value_type{})
             for (size_type i = 0; i != Rows * Cols; ++i)
                 data_[i] = fill;
-    }
-
-    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
-    constexpr StaticMatrix<T, Rows, Cols>::StaticMatrix(const Matrix<T> &other) {
-        *this = other;
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
@@ -30,14 +32,6 @@ namespace ng {
             throw std::logic_error("container has more/less items than in matrix");
 
         std::copy(container.begin(), container.end(), begin());
-    }
-
-    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
-    constexpr StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::operator=(const Matrix<T> &other) {
-        if (Rows != other.rows() or Cols != other.cols())
-            throw std::logic_error("Can't copy data from other dimension sized matrix");
-
-        std::copy(other.begin(), other.end(), begin());
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
@@ -75,6 +69,11 @@ namespace ng {
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    constexpr typename StaticMatrix<T, Rows, Cols>::size_type StaticMatrix<T, Rows, Cols>::size() const noexcept {
+        return rows_ * cols_;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
     void StaticMatrix<T, Rows, Cols>::print(std::ostream &os, MatrixDebugSettings settings) const {
         auto [width, precision, separator, end, is_double_end] = settings;
 
@@ -94,7 +93,7 @@ namespace ng {
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
     template <typename UnaryOperation>
-    void StaticMatrix<T, Rows, Cols>::transform(UnaryOperation &&op) {
+    constexpr void StaticMatrix<T, Rows, Cols>::transform(UnaryOperation &&op) {
         std::transform(begin(), end(), begin(), std::forward<UnaryOperation>(op));
     }
 
@@ -132,27 +131,53 @@ namespace ng {
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
-    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::round() {
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::to_round() {
         transform([](const value_type &item) { return std::round(item); });
         return *this;
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
-    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::floor() {
+    _GLIBCXX23_CONSTEXPR StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::round() const {
+        StaticMatrix<T, Rows, Cols> m(*this);
+        std::transform(m.begin(), m.end(), m.begin(), [](const auto &item) { return std::round(item); });
+        return m;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::to_floor() {
         transform([](const value_type &item) { return std::floor(item); });
         return *this;
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
-    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::ceil() {
+    _GLIBCXX23_CONSTEXPR StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::floor() const {
+        StaticMatrix<T, Rows, Cols> m(*this);
+        std::transform(m.begin(), m.end(),  m.begin(), [](const auto &item) { return std::floor(item); });
+        return m;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::to_ceil() {
         transform([](const value_type &item) { return std::ceil(item); });
         return *this;
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
-    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::zero() {
+    _GLIBCXX23_CONSTEXPR StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::ceil() const {
+        StaticMatrix<T, Rows, Cols> m(*this);
+        std::transform(m.begin(), m.end(), m.begin(), [](const auto &item) { return std::ceil(item); });
+        return m;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::to_zero() {
         generate([]() { return value_type{}; });
         return *this;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    constexpr StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::zero() const {
+        return StaticMatrix<T, Rows, Cols>();
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
@@ -176,6 +201,30 @@ namespace ng {
                     identity(row, col) = one;
 
         return identity;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::mul(const value_type &value) {
+        transform([&value](const auto &item) { return item * value; });
+        return *this;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::add(const value_type &value) {
+        transform([&value](const auto &item) { return item + value; });
+        return *this;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::sub(const value_type &value) {
+        transform([&value](const auto &item) { return item - value; });
+        return *this;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    StaticMatrix<T, Rows, Cols> &StaticMatrix<T, Rows, Cols>::div(const value_type &value) {
+        transform([&value](const auto &item) { return item / value; });
+        return *this;
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
