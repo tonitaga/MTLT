@@ -368,6 +368,14 @@ namespace ng {
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    constexpr typename StaticMatrix<T, Rows, Cols>::value_type StaticMatrix<T, Rows, Cols>::trace() const requires(Rows == Cols) {
+        value_type tr {};
+        for (size_type i = 0; i != Rows; ++i)
+            tr += (*this)(i, i);
+        return tr;
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
     template <fundamental U>
     requires(std::convertible_to<U, T>)
     constexpr std::array<U, Rows * Cols> StaticMatrix<T, Rows, Cols>::to_array() const {

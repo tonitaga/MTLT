@@ -91,4 +91,5 @@ int main() {
     constexpr StaticMatrix<int, 3, 3> three(3);
     constexpr bool is_equal1 = three.equal_to(StaticMatrix<int, 3, 3>(3));
     constexpr bool is_equal2 = three == StaticMatrix<int, 3, 3>(3);
+    constexpr value_type trace = matrix1.trace();
 }

@@ -146,6 +146,7 @@ namespace ng {
         constexpr value_type determinant() const requires(Rows == Cols);
         constexpr StaticMatrix calc_complements() const requires(Rows == Cols);
         constexpr StaticMatrix inverse() const requires(Rows == Cols);
+        constexpr value_type trace() const requires(Rows == Cols);
 
     public:
         template <fundamental U = T>
