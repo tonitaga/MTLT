@@ -174,6 +174,53 @@ namespace ng {
         rhs.print(out);
         return out;
     }
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> operator+(const StaticMatrix<T, Rows, Cols>&lhs, const U &value);
+
+    template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
+    requires (std::convertible_to<U, T> and Rows1 == Rows2 and Cols1 == Cols2)
+    constexpr StaticMatrix<T, Rows1, Cols1> operator+(const StaticMatrix<T, Rows1, Cols1> &lhs, const StaticMatrix<U, Rows2, Cols2> &rhs);
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    StaticMatrix<T, Rows, Cols> &operator+=(StaticMatrix<T, Rows, Cols>&lhs, const U &value);
+
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> operator-(const StaticMatrix<T, Rows, Cols>&lhs, const U &value);
+
+    template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
+    requires (std::convertible_to<U, T> and Rows1 == Rows2 and Cols1 == Cols2)
+    constexpr StaticMatrix<T, Rows1, Cols1> operator-(const StaticMatrix<T, Rows1, Cols1> &lhs, const StaticMatrix<U, Rows2, Cols2> &rhs);
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    StaticMatrix<T, Rows, Cols> &operator-=(StaticMatrix<T, Rows, Cols>&lhs, const U &value);
+
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> operator*(const StaticMatrix<T, Rows, Cols>&lhs, const U &value);
+
+    template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
+    requires (std::convertible_to<U, T> and Cols1 == Rows2)
+    constexpr StaticMatrix<T, Rows1, Cols2> operator*(const StaticMatrix<T, Rows1, Cols1> &lhs, const StaticMatrix<U, Rows2, Cols2> &rhs);
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    StaticMatrix<T, Rows, Cols> &operator*=(StaticMatrix<T, Rows, Cols>&lhs, const U &value);
+
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> operator/(const StaticMatrix<T, Rows, Cols>&lhs, const U &value);
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    StaticMatrix<T, Rows, Cols> &operator/=(StaticMatrix<T, Rows, Cols>&lhs, const U &value);
 }
 
 #include "static_matrix.tpp"

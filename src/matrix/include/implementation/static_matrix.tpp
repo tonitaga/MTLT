@@ -394,6 +394,82 @@ namespace ng {
         return converted;
     }
 
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> operator+(const StaticMatrix<T, Rows, Cols>&lhs, const U &value) {
+        StaticMatrix<T, Rows, Cols> addition = lhs.add(StaticMatrix<T, Rows, Cols>(value));
+        return addition;
+    }
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> operator-(const StaticMatrix<T, Rows, Cols>&lhs, const U &value) {
+        StaticMatrix<T, Rows, Cols> substract = lhs.sub(StaticMatrix<T, Rows, Cols>(value));
+        return substract;
+    }
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> operator*(const StaticMatrix<T, Rows, Cols>&lhs, const U &value) {
+        StaticMatrix<T, Rows, Cols> multiplication = lhs.mul_by_element(StaticMatrix<T, Rows, Cols>(value));
+        return multiplication;
+    }
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    constexpr StaticMatrix<T, Rows, Cols> operator/(const StaticMatrix<T, Rows, Cols>&lhs, const U &value) {
+        StaticMatrix<T, Rows, Cols> division = lhs.div_by_element(StaticMatrix<T, Rows, Cols>(value));
+        return division;
+    }
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    StaticMatrix<T, Rows, Cols> &operator+=(StaticMatrix<T, Rows, Cols>&lhs, const U &value) {
+        lhs.add(value);
+        return lhs;
+    }
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    StaticMatrix<T, Rows, Cols> &operator-=(StaticMatrix<T, Rows, Cols>&lhs, const U &value) {
+        lhs.sub(value);
+        return lhs;
+    }
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    StaticMatrix<T, Rows, Cols> &operator*=(StaticMatrix<T, Rows, Cols>&lhs, const U &value) {
+        lhs.mul(value);
+        return lhs;
+    }
+
+    template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
+    requires (std::convertible_to<U, T>)
+    StaticMatrix<T, Rows, Cols> &operator/=(const StaticMatrix<T, Rows, Cols>&lhs, const U &value) {
+        lhs.div(value);
+        return lhs;
+    }
+
+    template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
+    requires (std::convertible_to<U, T> and Rows1 == Rows2 and Cols1 == Cols2)
+    constexpr StaticMatrix<T, Rows1, Cols1> operator+(const StaticMatrix<T, Rows1, Cols1> &lhs, const StaticMatrix<U, Rows2, Cols2> &rhs) {
+        StaticMatrix<T, Rows1, Cols1> addition = lhs.add(rhs);
+        return addition;
+    }
+
+    template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
+    requires (std::convertible_to<U, T> and Rows1 == Rows2 and Cols1 == Cols2)
+    constexpr StaticMatrix<T, Rows1, Cols1> operator-(const StaticMatrix<T, Rows1, Cols1> &lhs, const StaticMatrix<U, Rows2, Cols2> &rhs) {
+        StaticMatrix<T, Rows1, Cols1> substract = lhs.sub(rhs);
+        return substract;
+    }
+
+    template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
+    requires (std::convertible_to<U, T> and Cols1 == Rows2)
+    constexpr StaticMatrix<T, Rows1, Cols2> operator*(const StaticMatrix<T, Rows1, Cols1> &lhs, const StaticMatrix<U, Rows2, Cols2> &rhs) {
+        StaticMatrix<T, Rows1, Cols2> multiplication = lhs.mul(rhs);
+        return multiplication;
+    }
 }
 
 #endif //MATRIX_LIBRARY_CPP_STATIC_MATRIX_TPP
