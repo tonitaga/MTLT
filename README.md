@@ -24,7 +24,7 @@ To install the matrix template library, follow these steps:
    make install
 ```
 
-5. Create empty project and use Matrix-Library-CPP
+5. Create empty file and use Matrix-Library-CPP
 
 ```cpp
 #include <matrix>
@@ -41,6 +41,13 @@ int main() {
     
     return EXIT_SUCCESS;
 }
+```
+
+6. Compile file and run
+
+```shell
+   g++ -std=c++20 -Wall -Werror -Wextra main.cc -o use_matrix
+   ./use_matrix
 ```
 
 ## Uninstallation
