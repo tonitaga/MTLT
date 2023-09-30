@@ -137,7 +137,7 @@ namespace ng {
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
-    _GLIBCXX23_CONSTEXPR StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::round() const {
+    StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::round() const {
         StaticMatrix<T, Rows, Cols> m(*this);
         std::transform(m.begin(), m.end(), m.begin(), [](const auto &item) { return std::round(item); });
         return m;
@@ -150,7 +150,7 @@ namespace ng {
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
-    _GLIBCXX23_CONSTEXPR StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::floor() const {
+    StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::floor() const {
         StaticMatrix<T, Rows, Cols> m(*this);
         std::transform(m.begin(), m.end(),  m.begin(), [](const auto &item) { return std::floor(item); });
         return m;
@@ -163,7 +163,7 @@ namespace ng {
     }
 
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
-    _GLIBCXX23_CONSTEXPR StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::ceil() const {
+    StaticMatrix<T, Rows, Cols> StaticMatrix<T, Rows, Cols>::ceil() const {
         StaticMatrix<T, Rows, Cols> m(*this);
         std::transform(m.begin(), m.end(), m.begin(), [](const auto &item) { return std::ceil(item); });
         return m;

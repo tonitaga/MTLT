@@ -89,13 +89,13 @@ namespace ng {
         StaticMatrix &fill_random(const value_type &left, const value_type &right);
 
         StaticMatrix &to_round();
-        _GLIBCXX23_CONSTEXPR StaticMatrix round() const;
+        StaticMatrix round() const;
 
         StaticMatrix &to_floor();
-        _GLIBCXX23_CONSTEXPR StaticMatrix floor() const;
+        StaticMatrix floor() const;
 
         StaticMatrix &to_ceil();
-        _GLIBCXX23_CONSTEXPR StaticMatrix ceil() const;
+        StaticMatrix ceil() const;
 
         StaticMatrix &to_zero();
         constexpr StaticMatrix zero() const;
