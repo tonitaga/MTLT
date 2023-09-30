@@ -11,12 +11,12 @@ To install the matrix template library, follow these steps:
 
 ```shell
    git clone https://github.com/tonitaga/Matrix-Library-CPP.git
-   git checkout v1.0
 ```
 3. Open a terminal and navigate to the repository's root directory.
 
 ```shell
    cd Matrix-Library-CPP
+   git checkout v1.0
 ```
 
 4. To install library use makefile
