@@ -138,7 +138,6 @@ namespace ng {
         Matrix calc_complements() const;
         Matrix inverse() const;
 
-
     public:
         bool equal_to(const Matrix &rhs) const;
 

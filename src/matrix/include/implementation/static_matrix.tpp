@@ -394,6 +394,34 @@ namespace ng {
         return converted;
     }
 
+    template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
+    constexpr bool StaticMatrix<T, Rows, Cols>::equal_to(const StaticMatrix<T, Rows, Cols> &rhs) const {
+        T epsilon;
+        constexpr bool is_bool = std::is_same_v<bool, T>;
+
+        if constexpr (!is_bool)
+            epsilon = MatrixEpsilon<T>::epsilon;
+
+        for (size_type row = 0; row != Rows; ++row) {
+            for (size_type col = 0; col != Cols; ++col) {
+                value_type left = (*this)(row, col), right = rhs(row, col);
+
+                if constexpr (is_bool) {
+                    if (left != right)
+                        return false;
+                } else {
+                    if (left < 0) left = -left;
+                    if (right < 0) right = -right;
+
+                    if (left - right > epsilon)
+                        return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
     requires (std::convertible_to<U, T>)
     constexpr StaticMatrix<T, Rows, Cols> operator+(const StaticMatrix<T, Rows, Cols>&lhs, const U &value) {

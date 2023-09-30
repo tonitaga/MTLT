@@ -86,4 +86,8 @@ int main() {
     constexpr value_type m00 = matrix1(0, 0);
     // ... //
     constexpr value_type m22 = matrix1(2, 2);
+
+    // Check equal in compile time
+    constexpr StaticMatrix<int, 3, 3> three(3);
+    constexpr bool is_equal = three.equal_to(StaticMatrix<int, 3, 3>(3));
 }

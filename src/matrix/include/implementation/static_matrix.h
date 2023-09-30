@@ -156,6 +156,9 @@ namespace ng {
         requires(std::convertible_to<U, T>)
         constexpr StaticMatrix<U, Rows, Cols> convert_to() const;
 
+    public:
+        constexpr bool equal_to(const StaticMatrix &rhs) const;
+
     private:
         size_type rows_ = Rows, cols_ = Cols;
         value_type data_[Rows * Cols] {};
