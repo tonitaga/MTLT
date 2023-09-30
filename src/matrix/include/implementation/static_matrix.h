@@ -224,6 +224,12 @@ namespace ng {
     template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
     requires (std::convertible_to<U, T>)
     StaticMatrix<T, Rows, Cols> &operator/=(StaticMatrix<T, Rows, Cols>&lhs, const U &value);
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols>
+    [[__nodiscard__]] constexpr bool operator==(const StaticMatrix<T, Rows, Cols> &lhs, const StaticMatrix<T, Rows, Cols> &rhs);
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols>
+    [[__nodiscard__]] constexpr bool operator!=(const StaticMatrix<T, Rows, Cols> &lhs, const StaticMatrix<T, Rows, Cols> &rhs);
 }
 
 #include "static_matrix.tpp"

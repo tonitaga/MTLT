@@ -498,6 +498,16 @@ namespace ng {
         StaticMatrix<T, Rows1, Cols2> multiplication = lhs.mul(rhs);
         return multiplication;
     }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols>
+    constexpr bool operator==(const StaticMatrix<T, Rows, Cols> &lhs, const StaticMatrix<T, Rows, Cols> &rhs) {
+        return lhs.equal_to(rhs);
+    }
+
+    template <fundamental T, std::size_t Rows, std::size_t Cols>
+    constexpr bool operator!=(const StaticMatrix<T, Rows, Cols> &lhs, const StaticMatrix<T, Rows, Cols> &rhs) {
+        return !(lhs == rhs);
+    }
 }
 
 #endif //MATRIX_LIBRARY_CPP_STATIC_MATRIX_TPP

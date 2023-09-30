@@ -89,5 +89,6 @@ int main() {
 
     // Check equal in compile time
     constexpr StaticMatrix<int, 3, 3> three(3);
-    constexpr bool is_equal = three.equal_to(StaticMatrix<int, 3, 3>(3));
+    constexpr bool is_equal1 = three.equal_to(StaticMatrix<int, 3, 3>(3));
+    constexpr bool is_equal2 = three == StaticMatrix<int, 3, 3>(3);
 }
