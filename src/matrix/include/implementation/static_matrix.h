@@ -1,7 +1,7 @@
 #ifndef MATRIX_LIBRARY_CPP_STATIC_MATRIX_H
 #define MATRIX_LIBRARY_CPP_STATIC_MATRIX_H
 
-#include <vector>
+#include <array>
 #include <concepts>
 #include <iostream>
 #include <type_traits>

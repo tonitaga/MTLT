@@ -13,5 +13,8 @@ int main() {
         7, 8, 9
     });
 
+    std::vector<int> b;
+    auto r = b.rbegin();
+
     return EXIT_SUCCESS;
 }

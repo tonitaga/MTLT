@@ -24,6 +24,10 @@ namespace ng::__internal {
     public:
         constexpr reference operator*() const noexcept { return *current_; }
         constexpr pointer   operator->() const noexcept { return current_; }
+
+        constexpr reference operator[](difference_type n) noexcept {
+            return current_[n];
+        }
         
         constexpr MatrixNormalIterator &operator++() noexcept {
             ++current_;
