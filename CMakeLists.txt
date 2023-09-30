@@ -11,7 +11,7 @@ include_directories(
 )
 
 add_executable(Matrix_Library_CPP
-        code_samples/compile_time.cc
+        src/main.cc
         src/matrix/include/matrix
         src/matrix/include/implementation/matrix.h
         src/matrix/include/implementation/matrix.tpp
