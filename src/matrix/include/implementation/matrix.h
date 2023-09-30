@@ -32,6 +32,8 @@ namespace ng {
 
         constexpr Matrix(const std::vector<std::vector<value_type>> &);
 
+        constexpr Matrix(size_type rows, size_type cols, const std::initializer_list<T> &initializer);
+
         template<typename Container>
         requires(std::convertible_to<typename Container::value_type, T>)
         constexpr Matrix(size_type rows, size_type cols, const Container &container);
@@ -129,6 +131,13 @@ namespace ng {
     public:
         Matrix transpose() const;
         Matrix minor(size_type row, size_type col) const;
+
+        value_type minor_item(size_type row, size_type col) const;
+        value_type determinant() const;
+
+        Matrix calc_complements() const;
+        Matrix inverse() const;
+
 
     public:
         bool equal_to(const Matrix &rhs) const;

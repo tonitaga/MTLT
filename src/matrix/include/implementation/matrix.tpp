@@ -33,6 +33,12 @@ namespace ng {
     }
 
     template <fundamental T>
+    constexpr Matrix<T>::Matrix(size_type rows, size_type cols, const std::initializer_list<T> &initializer)
+        : Matrix(rows, cols) {
+        std::copy(initializer.begin(), initializer.end(), begin());
+    }
+
+    template <fundamental T>
     template <typename Container>
     requires (std::convertible_to<typename Container::value_type, T>)
     constexpr Matrix<T>::Matrix(size_type rows, size_type cols, const Container &container)
@@ -360,6 +366,63 @@ namespace ng {
         }
 
         return minor;
+    }
+
+    template <fundamental T>
+    typename Matrix<T>::value_type Matrix<T>::minor_item(size_type row, size_type col) const {
+        return minor(row, col).determinant();
+    }
+
+    template <fundamental T>
+    typename Matrix<T>::value_type Matrix<T>::determinant() const {
+        if (rows_ != cols_)
+            throw std::logic_error("Determinant can be found only for square matrices");
+
+        value_type determinant_value {};
+        int sign = 1;
+
+        if (rows_ == 1 and cols_ == 1)
+            determinant_value = (*this)(0, 0);
+        else if (rows_ == 2 and cols_ == 2)
+            determinant_value = ((*this)(0, 0) * (*this)(1, 1)) - ((*this)(1, 0) * (*this)(0, 1));
+        else {
+            for (size_type col = 0; col != cols_; ++col) {
+                Matrix minored = minor(0, col);
+                determinant_value += sign * (*this)(0, col) * minored.determinant();
+                sign = -sign;
+            }
+        }
+
+        return determinant_value;
+    }
+
+    template <fundamental T>
+    Matrix<T> Matrix<T>::calc_complements() const {
+        if (rows_ != cols_)
+            throw std::logic_error("Complements matrix can be found only for square matrices");
+
+        Matrix<T> complements(rows_, cols_);
+
+        for (size_type row = 0; row != rows_; ++row) {
+            for (size_type col = 0; col != cols_; ++col) {
+                complements(row, col) = minor_item(row, col);
+
+                if ((row + col) % 2 != 0)
+                    complements(row, col) = -complements(row, col);
+            }
+        }
+
+        return complements;
+    }
+
+    template <fundamental T>
+    Matrix<T> Matrix<T>::inverse() const {
+        value_type det = determinant();
+
+        if (det == value_type{})
+            throw std::logic_error("Can't found inverse matrix because determinant is zero");
+
+        return calc_complements().transpose().mul(1 / det);
     }
 
     template <fundamental T>
