@@ -397,6 +397,17 @@ namespace ng {
     }
 
     template <fundamental T>
+    typename Matrix<T>::value_type Matrix<T>::trace() const {
+        if (rows_ != cols_)
+            throw std::logic_error("Can't find trace for non square matrices");
+
+        value_type tr {};
+        for (size_type i = 0; i != rows_; ++i)
+            tr += (*this)(i, i);
+        return tr;
+    }
+
+    template <fundamental T>
     Matrix<T> Matrix<T>::calc_complements() const {
         if (rows_ != cols_)
             throw std::logic_error("Complements matrix can be found only for square matrices");

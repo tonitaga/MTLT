@@ -2,6 +2,7 @@
 #define MATRIX_LIBRARY_CPP_MATRIX_H_
 
 #include <vector>
+#include <concepts>
 #include <iostream>
 #include <type_traits>
 
@@ -134,6 +135,7 @@ namespace ng {
 
         value_type minor_item(size_type row, size_type col) const;
         value_type determinant() const;
+        value_type trace() const;
 
         Matrix calc_complements() const;
         Matrix inverse() const;
