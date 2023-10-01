@@ -1,7 +1,7 @@
-#ifndef MATRIX_LIBRARY_CPP_MATRIX_TPP_
-#define MATRIX_LIBRARY_CPP_MATRIX_TPP_
+#ifndef matrix_LIBRARY_CPP_matrix_TPP_
+#define matrix_LIBRARY_CPP_matrix_TPP_
 
-#include "matrix.h"
+#include "../matrix.h"
 
 #include <cmath>
 #include <random>
@@ -12,67 +12,67 @@
 
 namespace ng {
     template <fundamental T>
-    constexpr Matrix<T>::Matrix(size_type rows, size_type cols, value_type f)
+    constexpr matrix<T>::matrix(size_type rows, size_type cols, value_type f)
         : rows_(rows), cols_(cols), data_(new value_type[rows * cols]{}) {
         if (f != value_type{})
             fill(f);
     }
 
     template <fundamental T>
-    constexpr Matrix<T>::Matrix(const Matrix &other)
-        : Matrix(other.rows_, other.cols_) {
+    constexpr matrix<T>::matrix(const matrix &other)
+        : matrix(other.rows_, other.cols_) {
         std::copy(other.begin(), other.end(), begin());
     }
 
     template <fundamental T>
-    constexpr Matrix<T>::Matrix(const std::vector<std::vector<value_type>> &matrix_vector)
-        : Matrix(matrix_vector.size(), matrix_vector[0].size()) {
+    constexpr matrix<T>::matrix(const std::vector<std::vector<value_type>> &matrix_vector)
+        : matrix(matrix_vector.size(), matrix_vector[0].size()) {
         for (size_type row = 0; row != rows_; ++row)
             for (size_type col = 0; col != cols_; ++col)
                 (*this)(row, col) = matrix_vector[row][col];
     }
 
     template <fundamental T>
-    constexpr Matrix<T>::Matrix(size_type rows, size_type cols, const std::initializer_list<T> &initializer)
-        : Matrix(rows, cols) {
+    constexpr matrix<T>::matrix(size_type rows, size_type cols, const std::initializer_list<T> &initializer)
+        : matrix(rows, cols) {
         std::copy(initializer.begin(), initializer.end(), begin());
     }
 
     template <fundamental T>
     template <typename Container>
     requires (std::convertible_to<typename Container::value_type, T>)
-    constexpr Matrix<T>::Matrix(size_type rows, size_type cols, const Container &container)
-        : Matrix(rows, cols) {
+    constexpr matrix<T>::matrix(size_type rows, size_type cols, const Container &container)
+        : matrix(rows, cols) {
         std::copy(container.begin(), container.end(), begin());
     }
 
     template <fundamental T>
-    Matrix<T> Matrix<T>::identity(size_type rows, size_type cols) {
-        Matrix identity(rows, cols);
+    matrix<T> matrix<T>::identity(size_type rows, size_type cols) {
+        matrix identity(rows, cols);
         identity.to_identity();
         return identity;
     }
 
     template <fundamental T>
-    constexpr Matrix<T>::Matrix(Matrix &&other) noexcept
+    constexpr matrix<T>::matrix(matrix &&other) noexcept
         : rows_(other.rows_), cols_(other.cols_), data_(other.data_) {
         other.rows_ = other.cols_ = size_type{};
         other.data_ = nullptr;
     }
 
     template <fundamental T>
-    constexpr Matrix<T> &Matrix<T>::operator=(const Matrix &other) {
+    constexpr matrix<T> &matrix<T>::operator=(const matrix &other) {
         if (&other == this)
             return *this;
 
-        Matrix tmp(other);
+        matrix tmp(other);
         *this = std::move(tmp);
 
         return *this;
     }
 
     template <fundamental T>
-    constexpr Matrix<T> &Matrix<T>::operator=(Matrix &&other) noexcept {
+    constexpr matrix<T> &matrix<T>::operator=(matrix &&other) noexcept {
         if (&other == this)
             return *this;
 
@@ -84,22 +84,22 @@ namespace ng {
     }
 
     template <fundamental T>
-    Matrix<T>::~Matrix() noexcept {
+    matrix<T>::~matrix() noexcept {
         delete [] data_;
     }
 
     template <fundamental T>
-    typename Matrix<T>::reference Matrix<T>::operator()(size_type row, size_type col) {
+    typename matrix<T>::reference matrix<T>::operator()(size_type row, size_type col) {
         return data_[row * cols_ + col];
     }
 
     template <fundamental T>
-    typename Matrix<T>::const_reference Matrix<T>::operator()(size_type row, size_type col) const {
+    typename matrix<T>::const_reference matrix<T>::operator()(size_type row, size_type col) const {
         return data_[row * cols_ + col];
     }
 
     template <fundamental T>
-    typename Matrix<T>::reference Matrix<T>::at(size_type row, size_type col) {
+    typename matrix<T>::reference matrix<T>::at(size_type row, size_type col) {
         if (row >= rows_ or col >= cols_)
             throw std::out_of_range("row or col is out of range of matrix");
 
@@ -107,7 +107,7 @@ namespace ng {
     }
 
     template <fundamental T>
-    typename Matrix<T>::const_reference Matrix<T>::at(size_type row, size_type col) const {
+    typename matrix<T>::const_reference matrix<T>::at(size_type row, size_type col) const {
         if (row >= rows_ or col >= cols_)
             throw std::out_of_range("row or col is out of range of matrix");
 
@@ -115,11 +115,11 @@ namespace ng {
     }
 
     template <fundamental T>
-    void Matrix<T>::rows(size_type rows) {
+    void matrix<T>::rows(size_type rows) {
         if (rows_ == rows)
             return;
 
-        Matrix tmp(rows, cols_);
+        matrix tmp(rows, cols_);
         const size_type min_rows = std::min(rows, rows_);
 
         for (size_type row = 0; row != min_rows; ++row)
@@ -130,11 +130,11 @@ namespace ng {
     }
 
     template <fundamental T>
-    void Matrix<T>::cols(size_type cols) {
+    void matrix<T>::cols(size_type cols) {
         if (cols_ == cols)
             return;
 
-        Matrix tmp(rows_, cols);
+        matrix tmp(rows_, cols);
         const size_type min_cols = std::min(cols, cols_);
 
         for (size_type row = 0; row != rows_; ++row)
@@ -145,11 +145,11 @@ namespace ng {
     }
 
     template <fundamental T>
-    void Matrix<T>::resize(size_type rows, size_type cols) {
+    void matrix<T>::resize(size_type rows, size_type cols) {
         if (cols_ == cols and rows_ == rows)
             return;
 
-        Matrix tmp(rows, cols);
+        matrix tmp(rows, cols);
         const size_type min_cols = std::min(cols, cols_);
         const size_type min_rows = std::min(rows, rows_);
 
@@ -161,14 +161,14 @@ namespace ng {
     }
 
     template <fundamental T>
-    void Matrix<T>::clear() noexcept {
+    void matrix<T>::clear() noexcept {
         rows_ = cols_ = value_type {};
         delete [] data_;
         data_ = nullptr;
     }
 
     template <fundamental T>
-    void Matrix<T>::print(std::ostream &os, MatrixDebugSettings settings) const {
+    void matrix<T>::print(std::ostream &os, MatrixDebugSettings settings) const {
         auto [width, precision, separator, end, is_double_end] = settings;
 
         for (size_type row = 0; row != rows_; ++row) {
@@ -187,24 +187,24 @@ namespace ng {
 
     template <fundamental T>
     template <typename UnaryOperation>
-    void Matrix<T>::transform(UnaryOperation &&op) {
+    void matrix<T>::transform(UnaryOperation &&op) {
         std::transform(begin(), end(), begin(), std::forward<UnaryOperation>(op));
     }
 
     template <fundamental T>
     template <typename BinaryOperation>
-    void Matrix<T>::transform(const Matrix &other, BinaryOperation &&op) {
+    void matrix<T>::transform(const matrix &other, BinaryOperation &&op) {
         std::transform(begin(), end(), other.begin(), begin(), std::forward<BinaryOperation>(op));
     }
 
     template <fundamental T>
     template <typename Operation>
-    void Matrix<T>::generate(Operation &&op) {
+    void matrix<T>::generate(Operation &&op) {
         std::generate(begin(), end(), std::forward<Operation>(op));
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::mul(const value_type &number) {
+    matrix<T> &matrix<T>::mul(const value_type &number) {
         transform([&number](const value_type &item) { return item * number; });
         return *this;
     }
@@ -212,14 +212,14 @@ namespace ng {
     template <fundamental T>
     template <typename U>
     requires(std::convertible_to<U, T>)
-    Matrix<T> &Matrix<T>::mul(const Matrix<U> &rhs) {
+    matrix<T> &matrix<T>::mul(const matrix<U> &rhs) {
         if (cols_ != rhs.rows())
             throw std::logic_error("Can't multiply two matrices because lhs.cols() != rhs.rows()");
 
         const size_type cols = rhs.cols();
         const size_type rows = rows_;
 
-        Matrix multiplied(rows, cols);
+        matrix multiplied(rows, cols);
         for (size_type row = 0; row != rows; ++row)
             for (size_type col = 0; col != cols; ++col)
                 for (size_type k = 0; k != cols_; ++k)
@@ -230,7 +230,7 @@ namespace ng {
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::add(const value_type &number) {
+    matrix<T> &matrix<T>::add(const value_type &number) {
         transform([&number](const value_type &item) { return item + number; });
         return *this;
     }
@@ -239,7 +239,7 @@ namespace ng {
     template <fundamental T>
     template <typename U>
     requires(std::convertible_to<U, T>)
-    Matrix<T> &Matrix<T>::add(const Matrix<U> &rhs) {
+    matrix<T> &matrix<T>::add(const matrix<U> &rhs) {
         if (rhs.rows() != rows_ or rhs.cols() != cols_)
             throw std::logic_error("Can't add different sized matrices");
 
@@ -248,7 +248,7 @@ namespace ng {
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::sub(const value_type &number) {
+    matrix<T> &matrix<T>::sub(const value_type &number) {
         transform([&number](const value_type &item) { return item - number; });
         return *this;
     }
@@ -256,7 +256,7 @@ namespace ng {
     template <fundamental T>
     template <typename U>
     requires(std::convertible_to<U, T>)
-    Matrix<T> &Matrix<T>::sub(const Matrix<U> &rhs) {
+    matrix<T> &matrix<T>::sub(const matrix<U> &rhs) {
         if (rhs.rows() != rows_ or rhs.cols() != cols_)
             throw std::logic_error("Can't add different sized matrices");
 
@@ -265,7 +265,7 @@ namespace ng {
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::div(const value_type &number) {
+    matrix<T> &matrix<T>::div(const value_type &number) {
         if (std::is_integral_v<T> and number == 0)
             throw std::logic_error("Dividing by zero");
 
@@ -274,37 +274,37 @@ namespace ng {
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::round() {
+    matrix<T> &matrix<T>::round() {
         transform([](const value_type &item) { return std::round(item); });
         return *this;
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::floor() {
+    matrix<T> &matrix<T>::floor() {
         transform([](const value_type &item) { return std::floor(item); });
         return *this;
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::ceil() {
+    matrix<T> &matrix<T>::ceil() {
         transform([](const value_type &item) { return std::ceil(item); });
         return *this;
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::zero() {
+    matrix<T> &matrix<T>::zero() {
         generate([]() { return value_type{}; });
         return *this;
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::fill(const value_type &number) {
+    matrix<T> &matrix<T>::fill(const value_type &number) {
         generate([&number]() { return number; });
         return *this;
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::fill_random(const value_type &left, const value_type &right) {
+    matrix<T> &matrix<T>::fill_random(const value_type &left, const value_type &right) {
         using namespace std::chrono;
 
         std::default_random_engine re(system_clock::now().time_since_epoch().count());
@@ -320,7 +320,7 @@ namespace ng {
     }
 
     template <fundamental T>
-    Matrix<T> &Matrix<T>::to_identity() {
+    matrix<T> &matrix<T>::to_identity() {
         if (rows_ != cols_)
             throw std::logic_error("Only square matrices can be identity");
 
@@ -332,13 +332,13 @@ namespace ng {
     }
 
     template <fundamental T>
-    typename Matrix<T>::value_type Matrix<T>::sum() const {
+    typename matrix<T>::value_type matrix<T>::sum() const {
         return std::accumulate(begin(), end(), value_type{});
     }
 
     template <fundamental T>
-    Matrix<T> Matrix<T>::transpose() const {
-        Matrix transposed(cols_, rows_);
+    matrix<T> matrix<T>::transpose() const {
+        matrix transposed(cols_, rows_);
 
         for (size_type row = 0; row != rows_; ++row)
             for (size_type col = 0; col != cols_; ++col)
@@ -348,8 +348,8 @@ namespace ng {
     }
 
     template <fundamental T>
-    Matrix<T> Matrix<T>::minor(size_type row, size_type col) const {
-        Matrix minor(rows() - 1, cols() - 1);
+    matrix<T> matrix<T>::minor(size_type row, size_type col) const {
+        matrix minor(rows() - 1, cols() - 1);
 
         size_type skip_row = 0, skip_col = 0;
         for (size_type r = 0; r != minor.rows_; ++r) {
@@ -369,12 +369,12 @@ namespace ng {
     }
 
     template <fundamental T>
-    typename Matrix<T>::value_type Matrix<T>::minor_item(size_type row, size_type col) const {
+    typename matrix<T>::value_type matrix<T>::minor_item(size_type row, size_type col) const {
         return minor(row, col).determinant();
     }
 
     template <fundamental T>
-    typename Matrix<T>::value_type Matrix<T>::determinant() const {
+    typename matrix<T>::value_type matrix<T>::determinant() const {
         if (rows_ != cols_)
             throw std::logic_error("Determinant can be found only for square matrices");
 
@@ -387,7 +387,7 @@ namespace ng {
             determinant_value = ((*this)(0, 0) * (*this)(1, 1)) - ((*this)(1, 0) * (*this)(0, 1));
         else {
             for (size_type col = 0; col != cols_; ++col) {
-                Matrix minored = minor(0, col);
+                matrix minored = minor(0, col);
                 determinant_value += sign * (*this)(0, col) * minored.determinant();
                 sign = -sign;
             }
@@ -397,11 +397,22 @@ namespace ng {
     }
 
     template <fundamental T>
-    Matrix<T> Matrix<T>::calc_complements() const {
+    typename matrix<T>::value_type matrix<T>::trace() const {
+        if (rows_ != cols_)
+            throw std::logic_error("Can't find trace for non square matrices");
+
+        value_type tr {};
+        for (size_type i = 0; i != rows_; ++i)
+            tr += (*this)(i, i);
+        return tr;
+    }
+
+    template <fundamental T>
+    matrix<T> matrix<T>::calc_complements() const {
         if (rows_ != cols_)
             throw std::logic_error("Complements matrix can be found only for square matrices");
 
-        Matrix<T> complements(rows_, cols_);
+        matrix<T> complements(rows_, cols_);
 
         for (size_type row = 0; row != rows_; ++row) {
             for (size_type col = 0; col != cols_; ++col) {
@@ -416,7 +427,7 @@ namespace ng {
     }
 
     template <fundamental T>
-    Matrix<T> Matrix<T>::inverse() const {
+    matrix<T> matrix<T>::inverse() const {
         value_type det = determinant();
 
         if (det == value_type{})
@@ -426,7 +437,7 @@ namespace ng {
     }
 
     template <fundamental T>
-    bool Matrix<T>::equal_to(const Matrix &rhs) const {
+    bool matrix<T>::equal_to(const matrix &rhs) const {
         if (rhs.rows() != rows_ or rhs.cols() != cols_)
             throw std::logic_error("Can't add different sized matrices");
 
@@ -456,21 +467,21 @@ namespace ng {
 
     template <fundamental T>
     template <typename ConvertType>
-    Matrix<ConvertType> Matrix<T>::convert_to() const {
-        Matrix<ConvertType> convert(rows_, cols_);
+    matrix<ConvertType> matrix<T>::convert_to() const {
+        matrix<ConvertType> convert(rows_, cols_);
         std::copy(begin(), end(), convert.begin());
         return convert;
     }
 
     template <fundamental T>
-    std::vector<typename Matrix<T>::value_type> Matrix<T>::convert_to_vector() const {
+    std::vector<typename matrix<T>::value_type> matrix<T>::convert_to_vector() const {
         std::vector<value_type> v(rows_ * cols_);
         std::copy(begin(), end(), v.begin());
         return v;
     }
 
     template <fundamental T>
-    std::vector<std::vector<typename Matrix<T>::value_type>> Matrix<T>::convert_to_matrix_vector() const {
+    std::vector<std::vector<typename matrix<T>::value_type>> matrix<T>::convert_to_matrix_vector() const {
         std::vector<std::vector<value_type>> v(rows_, std::vector<value_type>(cols_));
 
         for (size_type row = 0; row != rows_; ++row)
@@ -481,111 +492,111 @@ namespace ng {
     }
 
     template <fundamental T>
-    std::ostream &operator<<(std::ostream &out, const Matrix<T> &rhs) {
+    std::ostream &operator<<(std::ostream &out, const matrix<T> &rhs) {
         rhs.print(out);
         return out;
     }
 
     template <typename T, typename U>
-    Matrix<T> &operator +=(Matrix<T> &lhs, const Matrix<U> &rhs) {
+    matrix<T> &operator +=(matrix<T> &lhs, const matrix<U> &rhs) {
         lhs.add(rhs);
         return lhs;
     }
 
     template <typename T, typename U>
-    Matrix<T> &operator -=(Matrix<T> &lhs, const Matrix<U> &rhs) {
+    matrix<T> &operator -=(matrix<T> &lhs, const matrix<U> &rhs) {
         lhs.sub(rhs);
         return lhs;
     }
 
     template <typename T, typename U>
-    Matrix<T> &operator *=(Matrix<T> &lhs, const Matrix<U> &rhs) {
+    matrix<T> &operator *=(matrix<T> &lhs, const matrix<U> &rhs) {
         lhs.mul(rhs);
         return lhs;
     }
 
     template <fundamental T>
-    Matrix<T> &operator +=(Matrix<T> &lhs, const T &value) {
+    matrix<T> &operator +=(matrix<T> &lhs, const T &value) {
         lhs.add(value);
         return lhs;
     }
 
     template <fundamental T>
-    Matrix<T> &operator -=(Matrix<T> &lhs, const T &value) {
+    matrix<T> &operator -=(matrix<T> &lhs, const T &value) {
         lhs.sub(value);
         return lhs;
     }
 
     template <fundamental T>
-    Matrix<T> &operator *=(Matrix<T> &lhs, const T &value) {
+    matrix<T> &operator *=(matrix<T> &lhs, const T &value) {
         lhs.mul(value);
         return lhs;
     }
 
     template <fundamental T>
-    Matrix<T> &operator /=(Matrix<T> &lhs, const T &value) {
+    matrix<T> &operator /=(matrix<T> &lhs, const T &value) {
         lhs.div(value);
         return lhs;
     }
 
     template <typename T, typename U>
-    Matrix<T> operator +(const Matrix<T> &lhs, const Matrix<U> &rhs) {
-        Matrix<T> result(lhs);
+    matrix<T> operator +(const matrix<T> &lhs, const matrix<U> &rhs) {
+        matrix<T> result(lhs);
         result += rhs;
         return result;
     }
 
     template <typename T, typename U>
-    Matrix<T> operator -(const Matrix<T> &lhs, const Matrix<U> &rhs) {
-        Matrix<T> result(lhs);
+    matrix<T> operator -(const matrix<T> &lhs, const matrix<U> &rhs) {
+        matrix<T> result(lhs);
         result -= rhs;
         return result;
     }
 
     template <typename T, typename U>
-    Matrix<T> operator *(const Matrix<T> &lhs, const Matrix<U> &rhs) {
-        Matrix<T> result(lhs);
+    matrix<T> operator *(const matrix<T> &lhs, const matrix<U> &rhs) {
+        matrix<T> result(lhs);
         result *= rhs;
         return result;
     }
 
     template <fundamental T>
-    Matrix<T> operator +(const Matrix<T> &lhs, const T &value) {
-        Matrix<T> result(lhs);
+    matrix<T> operator +(const matrix<T> &lhs, const T &value) {
+        matrix<T> result(lhs);
         result += value;
         return result;
     }
 
     template <fundamental T>
-    Matrix<T> operator -(const Matrix<T> &lhs, const T &value) {
-        Matrix<T> result(lhs);
+    matrix<T> operator -(const matrix<T> &lhs, const T &value) {
+        matrix<T> result(lhs);
         result -= value;
         return result;
     }
 
     template <fundamental T>
-    Matrix<T> operator *(const Matrix<T> &lhs, const T &value) {
-        Matrix<T> result(lhs);
+    matrix<T> operator *(const matrix<T> &lhs, const T &value) {
+        matrix<T> result(lhs);
         result *= value;
         return result;
     }
 
     template <fundamental T>
-    Matrix<T> operator *(const T &value, const Matrix<T> &lhs) {
+    matrix<T> operator *(const T &value, const matrix<T> &lhs) {
         return lhs * value;
     }
 
     template <fundamental T>
-    Matrix<T> operator /(const Matrix<T> &lhs, const T &value) {
-        Matrix<T> result(lhs);
+    matrix<T> operator /(const matrix<T> &lhs, const T &value) {
+        matrix<T> result(lhs);
         result /= value;
         return result;
     }
 
     template <fundamental T>
-    bool inline operator ==(const Matrix<T> &lhs, const Matrix<T> &rhs) {
+    bool inline operator ==(const matrix<T> &lhs, const matrix<T> &rhs) {
         return lhs.equal_to(rhs);
     }
 }
 
-#endif //MATRIX_LIBRARY_CPP_MATRIX_TPP_
+#endif //matrix_LIBRARY_CPP_matrix_TPP_

@@ -3,27 +3,31 @@ COMPILER_CXX_GCC_LOCATION_BACKSLASH := $(shell g++ -v 2>&1 | grep COLLECT_GCC | 
 COMPILER_CXX_GCC_LOCATION_SLASH := $(subst \,/,$(COMPILER_CXX_GCC_LOCATION_BACKSLASH))
 COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_BACKSLASH := $(subst bin/$(CXX_GCC),include,$(COMPILER_CXX_GCC_LOCATION_SLASH))
 COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH := $(subst \,/,$(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_BACKSLASH))
-INSTALLED_FILES_LOCATION=$(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)/matrix $(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)/static_matrix $(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)/implementation/
+INSTALLED_FILES_LOCATION=$(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)/matrix
 
 ifeq ($(shell uname -s),Darwin)
     CXX_GCC=g++
 	COMPILER_CXX_GCC_LOCATION_SLASH="usr/bin/g++"
 	COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH="/usr/include/"
-	INSTALLED_FILES_LOCATION=$(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)/matrix $(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)/static_matrix $(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)/implementation/
+	INSTALLED_FILES_LOCATION=$(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)/matrix
 endif
 
 ifeq ($(shell uname -s),Linux)
     CXX_GCC=g++
 	COMPILER_CXX_GCC_LOCATION_SLASH="usr/bin/g++"
 	COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH="/usr/include/"
-	INSTALLED_FILES_LOCATION=$(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)matrix $(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)static_matrix $(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)implementation/
+	INSTALLED_FILES_LOCATION=$(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)matrix
 endif
 
-SOURCE_FILES_LOCATION := $(wildcard src/matrix/include/*)
+HEADERS_LOCATION := $(wildcard matrix)
+
+.PHONY: tests clean
+
 
 install:
 	@g++ materials/info/info.cc -o info
 	@./info
+	@rm ./info
 	@sleep 2
 	@echo G++ COMPILER LOCATION:                $(COMPILER_CXX_GCC_LOCATION_SLASH)
 	@echo G++ COMPILER INCLUDE FOLDER LOCATION: $(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)
@@ -33,7 +37,7 @@ install:
 
 	@read -r response; \
     if [ "$$response" = "y" ]; then \
-        cp -r $(SOURCE_FILES_LOCATION) $(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH);  \
+        cp -r $(HEADERS_LOCATION) $(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH);  \
         echo "Installation finished successfully! Thanks"; \
     else \
         echo "Installation aborted."; \
@@ -51,3 +55,9 @@ uninstall:
     else \
         echo "Uninstallation aborted."; \
     fi
+
+test:
+	@cmake -S . -B ./test_build
+	@cmake --build ./test_build
+	@./test_build/Matrix_Library_CPP_TEST
+	@rm -rf ./test_build

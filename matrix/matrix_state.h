@@ -1,6 +1,8 @@
 #ifndef MATRIX_LIBRARY_CPP_MATRIX_DEBUG_H
 #define MATRIX_LIBRARY_CPP_MATRIX_DEBUG_H
 
+#include <iostream>
+
 namespace ng {
     template <typename T>
     concept fundamental = std::is_fundamental_v<T>;
