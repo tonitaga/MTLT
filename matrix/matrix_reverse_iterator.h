@@ -8,8 +8,8 @@ namespace ng{
         NormalIterator current_;
 
     public:
-        constexpr matrix_reverse_iterator() noexcept : current_(NormalIterator()) {};
-        explicit constexpr matrix_reverse_iterator(const typename NormalIterator::iterator_type &it) noexcept : current_(it) {};
+        _GLIBCXX17_CONSTEXPR matrix_reverse_iterator() noexcept : current_(NormalIterator()) {};
+        explicit _GLIBCXX17_CONSTEXPR matrix_reverse_iterator(const typename NormalIterator::iterator_type &it) noexcept : current_(it) {};
 
     public:
         using iterator_type = typename NormalIterator::iterator_type;
@@ -20,42 +20,42 @@ namespace ng{
         using iterator_category = typename NormalIterator::iterator_category;
 
     public:
-        constexpr reference operator*() const noexcept { return *current_; }
-        constexpr pointer   operator->() const noexcept { return current_.Base(); }
+        _GLIBCXX17_CONSTEXPR reference operator*() const noexcept { return *current_; }
+        _GLIBCXX17_CONSTEXPR pointer   operator->() const noexcept { return current_.Base(); }
 
-        constexpr matrix_reverse_iterator &operator++() noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_reverse_iterator &operator++() noexcept {
             --current_;
             return *this;
         }
 
-        constexpr matrix_reverse_iterator operator++(int) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_reverse_iterator operator++(int) noexcept {
             return matrix_reverse_iterator(current_--);
         }
 
-        constexpr matrix_reverse_iterator &operator--() noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_reverse_iterator &operator--() noexcept {
             ++current_;
             return *this;
         }
 
-        constexpr matrix_reverse_iterator operator--(int) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_reverse_iterator operator--(int) noexcept {
             return matrix_reverse_iterator(current_++);
         }
 
-        constexpr matrix_reverse_iterator &operator+=(difference_type n) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_reverse_iterator &operator+=(difference_type n) noexcept {
             current_ -= n;
             return *this;
         }
 
-        constexpr matrix_reverse_iterator operator+(difference_type n) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_reverse_iterator operator+(difference_type n) noexcept {
             return matrix_reverse_iterator((current_ - n).Base());
         }
 
-        constexpr matrix_reverse_iterator &operator-=(difference_type n) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_reverse_iterator &operator-=(difference_type n) noexcept {
             current_ += n;
             return *this;
         }
 
-        constexpr matrix_reverse_iterator operator-(difference_type n) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_reverse_iterator operator-(difference_type n) noexcept {
             return matrix_reverse_iterator((current_ - n).Base());
         }
 
@@ -65,13 +65,13 @@ namespace ng{
     };
 
     template <typename NormalIterator>
-    [[__nodiscard__]] constexpr bool operator==(const matrix_reverse_iterator<NormalIterator> &lhs,
+    [[__nodiscard__]] _GLIBCXX17_CONSTEXPR bool operator==(const matrix_reverse_iterator<NormalIterator> &lhs,
                                                 const matrix_reverse_iterator<NormalIterator> &rhs) {
         return lhs.Base() == rhs.Base();
     }
 
     template <typename NormalIterator>
-    [[__nodiscard__]] constexpr bool operator!=(const matrix_reverse_iterator<NormalIterator> &lhs,
+    [[__nodiscard__]] _GLIBCXX17_CONSTEXPR bool operator!=(const matrix_reverse_iterator<NormalIterator> &lhs,
                                                 const matrix_reverse_iterator<NormalIterator> &rhs) {
         return lhs.Base() != rhs.Base();
     }
@@ -101,13 +101,13 @@ namespace ng{
     }
 
     template <typename NormalIterator>
-    [[__nodiscard__]]  inline auto operator-(const matrix_reverse_iterator<NormalIterator> &lhs,
+    [[__nodiscard__]]  inline std::ptrdiff_t operator-(const matrix_reverse_iterator<NormalIterator> &lhs,
                                              const matrix_reverse_iterator<NormalIterator> &rhs) {
         return rhs.Base() - lhs.Base();
     }
 
     template <typename NormalIterator>
-    [[__nodiscard__]]  inline auto operator+(const matrix_reverse_iterator<NormalIterator> &lhs,
+    [[__nodiscard__]]  inline std::ptrdiff_t operator+(const matrix_reverse_iterator<NormalIterator> &lhs,
                                              const matrix_reverse_iterator<NormalIterator> &rhs) {
         return rhs.Base() + lhs.Base();
     }

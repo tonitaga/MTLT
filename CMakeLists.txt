@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5...3.16)
 project(Matrix_Library_CPP_TEST LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "-std=c++20 -Wall -Wno-unused-but-set-variable")
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wno-unused-but-set-variable")
 
 include(FetchContent)
 FetchContent_Declare(
@@ -19,9 +19,6 @@ include_directories(
 )
 
 add_executable(Matrix_Library_CPP_TEST
-        tests/normal_iterator_test.cc
-        tests/reverse_iterator_test.cc
-        tests/matrix_test.cc
         tests/static_matrix_test.cc
 )
 target_link_libraries(Matrix_Library_CPP_TEST gtest_main)

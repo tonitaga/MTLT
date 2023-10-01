@@ -18,66 +18,66 @@ namespace ng {
         using iterator_category = std::random_access_iterator_tag;
         
     public:
-        constexpr matrix_normal_iterator() noexcept : current_(Iterator()) {};
-        explicit constexpr matrix_normal_iterator(const Iterator &it) noexcept : current_(it) {};
+        _GLIBCXX17_CONSTEXPR matrix_normal_iterator() noexcept : current_(Iterator()) {};
+        explicit _GLIBCXX17_CONSTEXPR matrix_normal_iterator(const Iterator &it) noexcept : current_(it) {};
         
     public:
-        constexpr reference operator*() const noexcept { return *current_; }
-        constexpr pointer   operator->() const noexcept { return current_; }
+        _GLIBCXX17_CONSTEXPR reference operator*() const noexcept { return *current_; }
+        _GLIBCXX17_CONSTEXPR pointer   operator->() const noexcept { return current_; }
 
-        constexpr reference operator[](difference_type n) noexcept {
+        _GLIBCXX17_CONSTEXPR reference operator[](difference_type n) noexcept {
             return current_[n];
         }
         
-        constexpr matrix_normal_iterator &operator++() noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_normal_iterator &operator++() noexcept {
             ++current_;
             return *this;
         }
         
-        constexpr matrix_normal_iterator operator++(int) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_normal_iterator operator++(int) noexcept {
             return matrix_normal_iterator(current_++);
         }
 
-        constexpr matrix_normal_iterator &operator--() noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_normal_iterator &operator--() noexcept {
             --current_;
             return *this;
         }
 
-        constexpr matrix_normal_iterator operator--(int) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_normal_iterator operator--(int) noexcept {
             return matrix_normal_iterator(current_--);
         }
         
-        constexpr matrix_normal_iterator &operator+=(difference_type n) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_normal_iterator &operator+=(difference_type n) noexcept {
             current_ += n;
             return *this;
         }
 
-        constexpr matrix_normal_iterator operator+(difference_type n) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_normal_iterator operator+(difference_type n) noexcept {
             return matrix_normal_iterator(current_ + n);
         }
 
-        constexpr matrix_normal_iterator &operator-=(difference_type n) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_normal_iterator &operator-=(difference_type n) noexcept {
             current_ -= n;
             return *this;
         }
 
-        constexpr matrix_normal_iterator operator-(difference_type n) noexcept {
+        _GLIBCXX17_CONSTEXPR matrix_normal_iterator operator-(difference_type n) noexcept {
             return matrix_normal_iterator(current_ - n);
         }
         
-        constexpr const Iterator &Base() const noexcept {
+        _GLIBCXX17_CONSTEXPR const Iterator &Base() const noexcept {
             return current_;
         }
     };
     
     template <typename Iterator>
-    [[__nodiscard__]] constexpr bool operator==(const matrix_normal_iterator<Iterator> &lhs,
+    [[__nodiscard__]] _GLIBCXX17_CONSTEXPR bool operator==(const matrix_normal_iterator<Iterator> &lhs,
                                                 const matrix_normal_iterator<Iterator> &rhs) {
         return lhs.Base() == rhs.Base();
     }
 
     template <typename Iterator>
-    [[__nodiscard__]] constexpr bool operator!=(const matrix_normal_iterator<Iterator> &lhs,
+    [[__nodiscard__]] _GLIBCXX17_CONSTEXPR bool operator!=(const matrix_normal_iterator<Iterator> &lhs,
                                                 const matrix_normal_iterator<Iterator> &rhs) {
         return lhs.Base() != rhs.Base();
     }
@@ -107,13 +107,13 @@ namespace ng {
     }
 
     template <typename Iterator>
-    [[__nodiscard__]]  inline auto operator-(const matrix_normal_iterator<Iterator> &lhs,
+    [[__nodiscard__]]  inline std::ptrdiff_t operator-(const matrix_normal_iterator<Iterator> &lhs,
                                              const matrix_normal_iterator<Iterator> &rhs) {
         return lhs.Base() - rhs.Base();
     }
 
     template <typename Iterator>
-    [[__nodiscard__]]  inline auto operator+(const matrix_normal_iterator<Iterator> &lhs,
+    [[__nodiscard__]]  inline std::ptrdiff_t operator+(const matrix_normal_iterator<Iterator> &lhs,
                                              const matrix_normal_iterator<Iterator> &rhs) {
         return lhs.Base() + rhs.Base();
     }

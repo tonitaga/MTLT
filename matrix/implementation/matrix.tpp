@@ -445,7 +445,7 @@ namespace ng {
         constexpr bool is_bool = std::is_same_v<bool, T>;
 
         if constexpr (!is_bool) {
-            epsilon = MatrixEpsilon<T>::epsilon;
+            epsilon = matrix_epsilon<T>::epsilon;
         }
 
         bool equal = true;
