@@ -25,11 +25,11 @@ To install the matrix template library, follow these steps:
    make install
 ```
 
-5. Create empty file and use Matrix-Library-CPP
+5. Create empty file 'main.cc' and copy there this code
 
 ```cpp
-#include <matrix>
-#include <static_matrix>
+#include <matrix/matrix.h>
+#include <matrix/static_matrix.h>
 
 using namespace ng;
 

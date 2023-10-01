@@ -6,9 +6,9 @@
 #include <iostream>
 #include <type_traits>
 
-#include <matrix/matrix_state.h>
-#include <matrix/matrix_normal_iterator.h>
-#include <matrix/matrix_reverse_iterator.h>
+#include "matrix_state.h"
+#include "matrix_normal_iterator.h"
+#include "matrix_reverse_iterator.h"
 
 namespace ng {
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
@@ -233,6 +233,6 @@ namespace ng {
     [[__nodiscard__]] constexpr bool operator!=(const StaticMatrix<T, Rows, Cols> &lhs, const StaticMatrix<T, Rows, Cols> &rhs);
 }
 
-#include "static_matrix.tpp"
+#include "implementation/static_matrix.tpp"
 
 #endif //MATRIX_LIBRARY_CPP_STATIC_MATRIX_H

@@ -1,7 +1,7 @@
 #ifndef MATRIX_LIBRARY_CPP_STATIC_MATRIX_TPP
 #define MATRIX_LIBRARY_CPP_STATIC_MATRIX_TPP
 
-#include "static_matrix.h"
+#include "../static_matrix.h"
 
 #include <cmath>
 #include <random>
