@@ -29,15 +29,15 @@ namespace ng {
         static_assert(std::is_fundamental<T>::value, "Template paramener T must be fundamental");
 #endif // C++ <= 201703L
     public:
-        using value_type = typename std::allocator_traits<std::allocator<T>>::value_type;
-        using pointer = typename std::allocator_traits<std::allocator<T>>::pointer;
-        using const_pointer = typename std::allocator_traits<std::allocator<T>>::const_pointer;
-        using size_type = typename std::allocator_traits<std::allocator<T>>::size_type;
-        using reference = value_type &;
-        using const_reference = const value_type &;
-        using iterator = matrix_normal_iterator<pointer>;
-        using const_iterator = matrix_normal_iterator<const_pointer>;
-        using reverse_iterator = matrix_reverse_iterator<iterator>;
+        using value_type =             T;
+        using pointer =                value_type *;
+        using const_pointer =          const value_type *;
+        using size_type =              std::size_t;
+        using reference =              value_type &;
+        using const_reference =        const value_type &;
+        using iterator =               matrix_normal_iterator<pointer>;
+        using const_iterator =         matrix_normal_iterator<const_pointer>;
+        using reverse_iterator =       matrix_reverse_iterator<iterator>;
         using const_reverse_iterator = matrix_reverse_iterator<const_iterator>;
 
     public:
@@ -95,10 +95,10 @@ namespace ng {
 #endif // C++ <= 201703L
 
     public:
-        _GLIBCXX17_CONSTEXPR iterator begin() noexcept { return iterator(data_); }
-        _GLIBCXX17_CONSTEXPR const_iterator begin() const noexcept { return const_iterator(data_); }
-        _GLIBCXX17_CONSTEXPR const_iterator cbegin() const noexcept { return const_iterator(data_); }
-        _GLIBCXX17_CONSTEXPR reverse_iterator rbegin() noexcept { return reverse_iterator(data_ + rows_ * cols_ - 1); }
+        _GLIBCXX17_CONSTEXPR iterator               begin() noexcept { return iterator(data_); }
+        _GLIBCXX17_CONSTEXPR const_iterator         begin() const noexcept { return const_iterator(data_); }
+        _GLIBCXX17_CONSTEXPR const_iterator         cbegin() const noexcept { return const_iterator(data_); }
+        _GLIBCXX17_CONSTEXPR reverse_iterator       rbegin() noexcept { return reverse_iterator(data_ + rows_ * cols_ - 1); }
         _GLIBCXX17_CONSTEXPR const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
         _GLIBCXX17_CONSTEXPR const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
 
@@ -135,10 +135,10 @@ namespace ng {
         _GLIBCXX17_CONSTEXPR size_type size() const noexcept { return rows_ * cols_; }
 
     public:
-        void print(std::ostream &os = std::cout, MatrixDebugSettings settings = default_debug) const {
-            int width = settings.width, precision = settings.precision;
-            char separator = settings.separator, end = settings.end;
-            bool is_double_end = settings.is_double_end;
+        void print(std::ostream &os = std::cout) const {
+            int width = matrix_debug_settings::width, precision = matrix_debug_settings::precision;
+            char separator = matrix_debug_settings::separator, end = matrix_debug_settings::end;
+            bool is_double_end = matrix_debug_settings::is_double_end;
 
             for (size_type row = 0; row != rows_; ++row) {
                 for (size_type col = 0; col != cols_; ++col) {
@@ -191,7 +191,7 @@ namespace ng {
             return *this;
         }
 
-        static_matrix round() const {
+         static_matrix round() const {
             static_matrix m(*this);
             std::transform(m.begin(), m.end(), m.begin(), [](const value_type &item) { return std::round(item); });
             return m;

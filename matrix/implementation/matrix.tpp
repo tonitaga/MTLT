@@ -168,8 +168,10 @@ namespace ng {
     }
 
     template <fundamental T>
-    void matrix<T>::print(std::ostream &os, MatrixDebugSettings settings) const {
-        auto [width, precision, separator, end, is_double_end] = settings;
+    void matrix<T>::print(std::ostream &os) const {
+        int width = matrix_debug_settings::width, precision = matrix_debug_settings::precision;
+        char separator = matrix_debug_settings::separator, end = matrix_debug_settings::end;
+        bool is_double_end = matrix_debug_settings::is_double_end;
 
         for (size_type row = 0; row != rows_; ++row) {
             for (size_type col = 0; col != cols_; ++col) {

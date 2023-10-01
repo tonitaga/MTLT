@@ -85,7 +85,7 @@ namespace ng {
         void clear() noexcept;
 
     public:
-        void print(std::ostream &os = std::cout, MatrixDebugSettings settings = default_debug) const;
+        void print(std::ostream &os = std::cout) const;
 
     public:
         template<typename UnaryOperation>
