@@ -41,8 +41,7 @@ namespace ng {
         using const_reverse_iterator = matrix_reverse_iterator<const_iterator>;
 
     public:
-        _GLIBCXX17_CONSTEXPR static_matrix() noexcept = default;
-
+        _GLIBCXX17_CONSTEXPR          static_matrix() noexcept = default;
         _GLIBCXX17_CONSTEXPR explicit static_matrix(value_type fill) noexcept {
             if (fill != value_type{})
                 for (size_type i = 0; i != Rows * Cols; ++i)
@@ -56,7 +55,6 @@ namespace ng {
         }
 
 #if __cplusplus > 201703L
-
         template<typename Container>
         requires(std::convertible_to<typename Container::value_type, T>)
         _GLIBCXX17_CONSTEXPR explicit static_matrix(const Container &container) {
@@ -74,7 +72,6 @@ namespace ng {
 
             std::copy(container.begin(), container.end(), begin());
         }
-
 #else
         template <typename Container>
         _GLIBCXX17_CONSTEXPR explicit static_matrix(const Container &container) {
@@ -99,31 +96,17 @@ namespace ng {
 
     public:
         _GLIBCXX17_CONSTEXPR iterator begin() noexcept { return iterator(data_); }
-
         _GLIBCXX17_CONSTEXPR const_iterator begin() const noexcept { return const_iterator(data_); }
-
         _GLIBCXX17_CONSTEXPR const_iterator cbegin() const noexcept { return const_iterator(data_); }
-
         _GLIBCXX17_CONSTEXPR reverse_iterator rbegin() noexcept { return reverse_iterator(data_ + rows_ * cols_ - 1); }
+        _GLIBCXX17_CONSTEXPR const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
+        _GLIBCXX17_CONSTEXPR const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
 
-        _GLIBCXX17_CONSTEXPR const_reverse_iterator rbegin() const noexcept {
-            return const_reverse_iterator(data_ + rows_ * cols_ - 1);
-        }
-
-        _GLIBCXX17_CONSTEXPR const_reverse_iterator crbegin() const noexcept {
-            return const_reverse_iterator(data_ + rows_ * cols_ - 1);
-        }
-
-        _GLIBCXX17_CONSTEXPR iterator end() noexcept { return iterator(data_ + rows_ * cols_); }
-
-        _GLIBCXX17_CONSTEXPR const_iterator end() const noexcept { return const_iterator(data_ + rows_ * cols_); }
-
-        _GLIBCXX17_CONSTEXPR const_iterator cend() const noexcept { return const_iterator(data_ + rows_ * cols_); }
-
-        _GLIBCXX17_CONSTEXPR reverse_iterator rend() noexcept { return reverse_iterator(data_ - 1); }
-
-        _GLIBCXX17_CONSTEXPR const_reverse_iterator rend() const noexcept { return const_reverse_iterator(data_ - 1); }
-
+        _GLIBCXX17_CONSTEXPR iterator               end()   noexcept       { return iterator(data_ + rows_ * cols_); }
+        _GLIBCXX17_CONSTEXPR const_iterator         end()   const noexcept { return const_iterator(data_ + rows_ * cols_); }
+        _GLIBCXX17_CONSTEXPR const_iterator         cend()  const noexcept { return const_iterator(data_ + rows_ * cols_); }
+        _GLIBCXX17_CONSTEXPR reverse_iterator       rend()  noexcept       { return reverse_iterator(data_ - 1); }
+        _GLIBCXX17_CONSTEXPR const_reverse_iterator rend()  const noexcept { return const_reverse_iterator(data_ - 1); }
         _GLIBCXX17_CONSTEXPR const_reverse_iterator crend() const noexcept { return const_reverse_iterator(data_ - 1); }
 
     public:
@@ -148,9 +131,7 @@ namespace ng {
         }
 
         _GLIBCXX17_CONSTEXPR size_type rows() const noexcept { return rows_; }
-
         _GLIBCXX17_CONSTEXPR size_type cols() const noexcept { return cols_; }
-
         _GLIBCXX17_CONSTEXPR size_type size() const noexcept { return rows_ * cols_; }
 
     public:
@@ -248,12 +229,11 @@ namespace ng {
         }
 
 #if __cplusplus > 201703L
-
         static_matrix &to_identity() requires(Rows == Cols) {
 #else
-            static_matrix &to_identity() {
-                static_assert(Rows == Cols, "Matrix must be square");
-#endif
+        static_matrix &to_identity() {
+            static_assert(Rows == Cols, "Matrix must be square");
+#endif // C++ <= 201703L
             for (size_type row = 0; row != rows_; ++row)
                 for (size_type col = 0; col != cols_; ++col)
                     (*this)(row, col) = row == col ? value_type{1} : value_type{};
@@ -262,12 +242,11 @@ namespace ng {
         }
 
 #if __cplusplus > 201703L
-
         _GLIBCXX17_CONSTEXPR static_matrix identity() const requires(Rows == Cols) {
 #else
-            _GLIBCXX17_CONSTEXPR static_matrix identity() const {
-                static_assert(Rows == Cols, "Matrix must be square");
-#endif
+        _GLIBCXX17_CONSTEXPR static_matrix identity() const {
+            static_assert(Rows == Cols, "Matrix must be square");
+#endif // C++ <= 201703L
             static_matrix<T, Rows, Cols> identity;
             _GLIBCXX17_CONSTEXPR value_type one = value_type{1};
             for (size_type row = 0; row != Rows; ++row)
@@ -303,9 +282,9 @@ namespace ng {
         requires(non_zero_dimension<Rows2, Cols2> and std::convertible_to<U, T> and Cols == Rows2)
         _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols2> mul(const static_matrix<U, Rows2, Cols2> &rhs) const {
 #else
-            template<typename U, size_type Rows2, size_type Cols2>
-            _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols2> mul(const static_matrix<U, Rows2, Cols2> &rhs) const {
-                static_assert(Rows2 != 0 and Cols2 != 0 and std::is_convertible<U, T>::value and Cols == Rows2);
+        template<typename U, size_type Rows2, size_type Cols2>
+        _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols2> mul(const static_matrix<U, Rows2, Cols2> &rhs) const {
+            static_assert(Rows2 != 0 and Cols2 != 0 and std::is_convertible<U, T>::value and Cols == Rows2);
 #endif // C++ <= 201703L
             static_matrix<T, Rows, Cols2> multiplied;
 
@@ -322,9 +301,9 @@ namespace ng {
         requires(std::convertible_to<U, T>)
         _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> add(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
-            template<typename U>
-            _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> add(const static_matrix<U, Rows, Cols> &rhs) const {
-                static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
+        template<typename U>
+        _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> add(const static_matrix<U, Rows, Cols> &rhs) const {
+            static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
 #endif // C++ <= 201703L
             static_matrix<T, Rows, Cols> addition;
 
@@ -340,9 +319,9 @@ namespace ng {
         requires(std::convertible_to<U, T>)
         _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> sub(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
-            template<typename U>
-            _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> sub(const static_matrix<U, Rows, Cols> &rhs) const {
-                static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
+        template<typename U>
+        _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> sub(const static_matrix<U, Rows, Cols> &rhs) const {
+            static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
 #endif // C++ <= 201703L
             static_matrix<T, Rows, Cols> substraction;
 
@@ -358,9 +337,9 @@ namespace ng {
         requires(std::convertible_to<U, T>)
         _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> div_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
-            template<typename U>
-            _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> div_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
-                static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
+        template<typename U>
+        _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> div_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
+            static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
 #endif // C++ <= 201703L
             static_matrix<T, Rows, Cols> division;
 
@@ -376,9 +355,9 @@ namespace ng {
         requires(std::convertible_to<U, T>)
         _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> mul_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
-            template<typename U>
-            _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> mul_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
-                static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
+        template<typename U>
+        _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> mul_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
+            static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
 #endif // C++ <= 201703L
             static_matrix<T, Rows, Cols> multpipled;
 
@@ -407,8 +386,8 @@ namespace ng {
 #if __cplusplus > 201703L
         _GLIBCXX17_CONSTEXPR static_matrix<T, Rows - 1, Cols - 1> minor(size_type row, size_type col) const requires (non_zero_dimension<Rows - 1, Cols - 1>) {
 #else
-            _GLIBCXX17_CONSTEXPR static_matrix<T, Rows - 1, Cols - 1> minor(size_type row, size_type col) const {
-#endif
+        _GLIBCXX17_CONSTEXPR static_matrix<T, Rows - 1, Cols - 1> minor(size_type row, size_type col) const {
+#endif // C++ <= 201703L
             static_matrix<T, Rows - 1, Cols - 1> minored;
 
             size_type skip_row = 0, skip_col = 0;
@@ -432,9 +411,9 @@ namespace ng {
 #if __cplusplus > 201703L
         _GLIBCXX17_CONSTEXPR value_type determinant() const requires(Rows == Cols) {
 #else
-            _GLIBCXX17_CONSTEXPR value_type determinant() const {
-                static_assert(Rows == Cols, "Matrix must be square");
-#endif
+        _GLIBCXX17_CONSTEXPR value_type determinant() const {
+            static_assert(Rows == Cols, "Matrix must be square");
+#endif // C++ <= 201703L
             value_type determinant_value{};
             int sign = 1;
 
@@ -448,7 +427,7 @@ namespace ng {
                 determinant_value = (*this)(0, 0);
             else if (Rows == 2 and Cols == 2)
                 determinant_value = ((*this)(0, 0) * (*this)(1, 1)) - ((*this)(1, 0) * (*this)(0, 1));
-#endif
+#endif // C++ <= 201703L
             else {
                 for (size_type col = 0; col != Cols; ++col) {
                     static_matrix<value_type, Rows - 1, Cols - 1> minored = this->minor(0, col);
@@ -463,9 +442,9 @@ namespace ng {
 #if __cplusplus > 201703L
         _GLIBCXX17_CONSTEXPR static_matrix calc_complements() const requires(Rows == Cols) {
 #else
-            _GLIBCXX17_CONSTEXPR static_matrix calc_complements() const {
-                static_assert(Rows == Cols, "Matrix must be square");
-#endif
+        _GLIBCXX17_CONSTEXPR static_matrix calc_complements() const {
+            static_assert(Rows == Cols, "Matrix must be square");
+#endif // C++ <= 201703L
             static_matrix<value_type, Rows, Cols> complements;
             for (size_type row = 0; row != Rows; ++row) {
                 for (size_type col = 0; col != Cols; ++col) {
@@ -480,9 +459,9 @@ namespace ng {
 #if __cplusplus > 201703L
         _GLIBCXX17_CONSTEXPR static_matrix inverse() const requires(Rows == Cols) {
 #else
-            _GLIBCXX17_CONSTEXPR static_matrix inverse() const {
-                static_assert(Rows == Cols, "Matrix must be square");
-#endif
+        _GLIBCXX17_CONSTEXPR static_matrix inverse() const {
+            static_assert(Rows == Cols, "Matrix must be square");
+#endif // C++ <= 201703L
             value_type det = determinant();
 
             if (det != value_type{})
@@ -496,7 +475,7 @@ namespace ng {
 #else
         _GLIBCXX17_CONSTEXPR value_type trace() const {
             static_assert(Rows == Cols, "Matrix must be square");
-#endif
+#endif // C++ <= 201703L
             value_type tr{};
             for (size_type i = 0; i != Rows; ++i)
                 tr += (*this)(i, i);
@@ -510,11 +489,11 @@ namespace ng {
         requires(std::convertible_to<U, T>)
         _GLIBCXX17_CONSTEXPR std::array<U, Rows * Cols> to_array() const {
 #else
-            template <typename U = T>
-            _GLIBCXX17_CONSTEXPR std::array<U, Rows * Cols> to_array() const {
-                static_assert(std::is_fundamental<U>::value, "Template parameter U must be fundamental");
-                static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
+        template <typename U = T>
+        _GLIBCXX17_CONSTEXPR std::array<U, Rows * Cols> to_array() const {
+            static_assert(std::is_fundamental<U>::value, "Template parameter U must be fundamental");
+            static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#endif // C++ <= 201703L
             std::array<U, Rows * Cols> arr;
 
             size_type current = 0;
@@ -534,7 +513,7 @@ namespace ng {
             _GLIBCXX17_CONSTEXPR static_matrix<U, Rows, Cols> convert_to() const {
                 static_assert(std::is_fundamental<U>::value, "Template parameter U must be fundamental");
                 static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
+#endif // C++ <= 201703L
             static_matrix<U, Rows, Cols> converted;
 
             for (size_type row = 0; row != rows_; ++row)
@@ -553,7 +532,7 @@ namespace ng {
             if _GLIBCXX17_CONSTEXPR (!is_bool)
 #else
             if (!is_bool)
-#endif
+#endif // C++ <= 201703L
                 epsilon = matrix_epsilon<T>::epsilon;
 
             for (size_type row = 0; row != Rows; ++row) {
@@ -564,7 +543,7 @@ namespace ng {
                     if _GLIBCXX17_CONSTEXPR (is_bool) {
 #else
                     if (is_bool) {
-#endif
+#endif // C++ <= 201703L
                         if (left != right)
                             return false;
                     } else {
@@ -589,8 +568,8 @@ namespace ng {
     template<fundamental T, std::size_t Rows, std::size_t Cols>
     std::ostream &operator<<(std::ostream &out, const static_matrix<T, Rows, Cols> &rhs) {
 #else
-        template <typename T, std::size_t Rows, std::size_t Cols>
-        std::ostream &operator<<(std::ostream &out, const static_matrix<T, Rows, Cols> &rhs) {
+    template <typename T, std::size_t Rows, std::size_t Cols>
+    std::ostream &operator<<(std::ostream &out, const static_matrix<T, Rows, Cols> &rhs) {
 #endif // C++ <= 201703L
         rhs.print(out);
         return out;
@@ -604,7 +583,7 @@ namespace ng {
     template<typename T, typename U, std::size_t Rows, std::size_t Cols>
     [[__nodiscard__]] _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator+(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
         static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
+#endif // C++ <= 201703L
         static_matrix<T, Rows, Cols> addition = lhs.add(static_matrix<T, Rows, Cols>(value));
         return addition;
     }
@@ -614,11 +593,11 @@ namespace ng {
     requires (std::convertible_to<U, T> and Rows1 == Rows2 and Cols1 == Cols2)
     [[__nodiscard__]] _GLIBCXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
 #else
-        template <typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
-        [[__nodiscard__]] _GLIBCXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
-            static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-            static_assert(Rows1 == Rows2 and Cols1 == Cols2, "Matrix sizes must be same");
-#endif
+    template <typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
+    [[__nodiscard__]] _GLIBCXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
+        static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+        static_assert(Rows1 == Rows2 and Cols1 == Cols2, "Matrix sizes must be same");
+#endif // C++ <= 201703L
         static_matrix<T, Rows1, Cols1> addition = lhs.add(rhs);
         return addition;
     }
@@ -631,7 +610,7 @@ namespace ng {
     template<typename T, typename U, std::size_t Rows, std::size_t Cols>
     static_matrix<T, Rows, Cols> &operator+=(static_matrix<T, Rows, Cols> &lhs, const U &value) {
         static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
+#endif // C++ <= 201703L
         lhs.add(value);
         return lhs;
     }
@@ -641,10 +620,10 @@ namespace ng {
     requires (std::convertible_to<U, T>)
     [[__nodiscard__]] _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator-(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
 #else
-        template<typename T, typename U, std::size_t Rows, std::size_t Cols>
+    template<typename T, typename U, std::size_t Rows, std::size_t Cols>
     [[__nodiscard__]] _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator-(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
         static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
+#endif // C++ <= 201703L
         static_matrix<T, Rows, Cols> substract = lhs.sub(static_matrix<T, Rows, Cols>(value));
         return substract;
     }
@@ -654,11 +633,11 @@ namespace ng {
     requires (std::convertible_to<U, T> and Rows1 == Rows2 and Cols1 == Cols2)
     [[__nodiscard__]] _GLIBCXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator-(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
 #else
-        template <typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
+    template <typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
     [[__nodiscard__]] _GLIBCXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator-(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
         static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
         static_assert(Rows1 == Rows2 and Cols1 == Cols2, "Matrix sizes must be same");
-#endif
+#endif // C++ <= 201703L
         static_matrix<T, Rows1, Cols1> substract = lhs.sub(rhs);
         return substract;
     }
@@ -668,10 +647,10 @@ namespace ng {
     requires (std::convertible_to<U, T>)
     static_matrix<T, Rows, Cols> &operator-=(static_matrix<T, Rows, Cols> &lhs, const U &value) {
 #else
-        template<typename T, typename U, std::size_t Rows, std::size_t Cols>
+    template<typename T, typename U, std::size_t Rows, std::size_t Cols>
     static_matrix<T, Rows, Cols> &operator-=(static_matrix<T, Rows, Cols> &lhs, const U &value) {
         static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
+#endif // C++ <= 201703L
         lhs.sub(value);
         return lhs;
     }
@@ -684,7 +663,7 @@ namespace ng {
     template<typename T, typename U, std::size_t Rows, std::size_t Cols>
     [[__nodiscard__]] _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator*(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
         static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
+#endif // C++ <= 201703L
         static_matrix<T, Rows, Cols> multiplication = lhs.mul_by_element(static_matrix<T, Rows, Cols>(value));
         return multiplication;
     }
@@ -698,7 +677,7 @@ namespace ng {
     [[__nodiscard__]] _GLIBCXX17_CONSTEXPR static_matrix<T, Rows1, Cols2> operator*(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
         static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
         static_assert(Cols1 == Rows2, "Cols1 must be equal Rows2");
-#endif
+#endif // C++ <= 201703L
         static_matrix<T, Rows1, Cols2> multiplication = lhs.mul(rhs);
         return multiplication;
     }
@@ -711,7 +690,7 @@ namespace ng {
     template<typename T, typename U, std::size_t Rows, std::size_t Cols>
     static_matrix<T, Rows, Cols> &operator*=(static_matrix<T, Rows, Cols> &lhs, const U &value) {
         static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
+#endif // C++ <= 201703L
         lhs.mul(value);
         return lhs;
     }
@@ -724,7 +703,7 @@ namespace ng {
     template<typename T, typename U, std::size_t Rows, std::size_t Cols>
     [[__nodiscard__]] _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator/(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
         static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
+#endif // C++ <= 201703L
         static_matrix<T, Rows, Cols> division = lhs.div_by_element(static_matrix<T, Rows, Cols>(value));
         return division;
     }
@@ -737,7 +716,7 @@ namespace ng {
     template <typename T, typename U, std::size_t Rows, std::size_t Cols>
     static_matrix<T, Rows, Cols> &operator/=(static_matrix<T, Rows, Cols>&lhs, const U &value) {
         static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
+#endif // C++ <= 201703L
         lhs.div(value);
         return lhs;
     }
@@ -748,7 +727,7 @@ namespace ng {
 #else
     template <typename T, std::size_t Rows, std::size_t Cols>
     [[__nodiscard__]] _GLIBCXX17_CONSTEXPR bool operator==(const static_matrix<T, Rows, Cols> &lhs, const static_matrix<T, Rows, Cols> &rhs) {
-#endif
+#endif // C++ <= 201703L
         return lhs.equal_to(rhs);
     }
 
@@ -758,7 +737,7 @@ namespace ng {
 #else
     template <typename T, std::size_t Rows, std::size_t Cols>
     [[__nodiscard__]] _GLIBCXX17_CONSTEXPR bool operator!=(const static_matrix<T, Rows, Cols> &lhs, const static_matrix<T, Rows, Cols> &rhs) {
-#endif
+#endif // C++ <= 201703L
         return !(lhs == rhs);
     }
 
@@ -777,7 +756,7 @@ namespace ng {
     public:
         T value_;
     };
-#endif
+#endif // C++ <= 201703L
 }
 
 #endif //MATRIX_LIBRARY_CPP_STATIC_MATRIX_H
