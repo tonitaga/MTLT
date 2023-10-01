@@ -82,25 +82,12 @@ To uninstall the matrix template library, follow these steps:
 You can see the Matrix-Library-CPP code samples in Matrix-Library-CPP/code_samples folder
 
 ```shell
-<<<<<<< HEAD
-   cd Matrix-Library-CPP/code_samples
-=======
    cd Matrix-Library-CPP
    git checkout main
    cd code_samples
->>>>>>> v1.0
 ```
 
 ## Rode map
 
-<<<<<<< HEAD
-In v1.0 version of the Matrix-Library-CPP will be fixed most bugs of Library.
-
-Estimated completion time to October 3, 2023
-
-In v1.1 version of the Matrix-Library-CPP it will be possible to use not only C++20 standard but also older standards.
-
-=======
-In v1.1 version of the Matrix-Library-CPP it will be possible to use not only C++20 standard but also older standards.
->>>>>>> v1.0
-Estimated completion time to October 10, 2023
+* In v1.0 version of the Matrix-Library-CPP will be fixed most bugs of Library. (Estimated completion time to October 3, 2023)
+* In v1.1 version of the Matrix-Library-CPP it will be possible to use not only C++20 standard but also older standards. (Estimated completion time to October 10, 2023)
