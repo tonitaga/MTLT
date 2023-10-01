@@ -9,11 +9,11 @@ TEST(ReverseIterator, begin_matrix) {
     matrix<int> m1(3, 3, {9, 8, 7, 6, 5, 4, 3, 2, 1});
     const matrix<int> m2(3, 3, {9, 8, 7, 6, 5, 4, 3, 2, 1});
 
-    matrix_reverse_iterator begin1 = m1.rbegin();
-    matrix_reverse_iterator const_begin1 = m1.crbegin();
+    auto begin1 = m1.rbegin();
+    auto const_begin1 = m1.crbegin();
 
-    matrix_reverse_iterator begin2 = m2.rbegin();
-    matrix_reverse_iterator const_begin2 = m2.crbegin();
+    auto begin2 = m2.rbegin();
+    auto const_begin2 = m2.crbegin();
 
     ASSERT_EQ(*begin1, 1);
     ASSERT_EQ(*begin2, 1);
@@ -29,11 +29,11 @@ TEST(ReverseIterator, begin_static_matrix) {
     static_matrix<int, 3, 3> m1({9, 8, 7, 6, 5, 4, 3, 2, 1});
     const static_matrix<int, 3, 3> m2({9, 8, 7, 6, 5, 4, 3, 2, 1});
 
-    matrix_reverse_iterator begin1 = m1.rbegin();
-    matrix_reverse_iterator const_begin1 = m1.crbegin();
+    auto begin1 = m1.rbegin();
+    auto const_begin1 = m1.crbegin();
 
-    matrix_reverse_iterator begin2 = m2.rbegin();
-    matrix_reverse_iterator const_begin2 = m2.crbegin();
+    auto begin2 = m2.rbegin();
+    auto const_begin2 = m2.crbegin();
 
     ASSERT_EQ(*begin1, 1);
     ASSERT_EQ(*begin2, 1);
@@ -46,8 +46,8 @@ TEST(ReverseIterator, begin_static_matrix) {
 }
 
 TEST(ReverseIterator, iter_tag) {
-    bool is_same1 = std::is_same_v<static_matrix<int, 1, 1>::reverse_iterator::iterator_category, std::random_access_iterator_tag>;
-    bool is_same2 = std::is_same_v<matrix<int>::reverse_iterator::iterator_category, std::random_access_iterator_tag>;
+    bool is_same1 = std::is_same<static_matrix<int, 1, 1>::reverse_iterator::iterator_category, std::random_access_iterator_tag>::value;
+    bool is_same2 = std::is_same<matrix<int>::reverse_iterator::iterator_category, std::random_access_iterator_tag>::value;
 
     ASSERT_TRUE(is_same1);
     ASSERT_TRUE(is_same2);

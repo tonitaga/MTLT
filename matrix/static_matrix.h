@@ -303,7 +303,7 @@ namespace ng {
 #else
         template<typename U>
         _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols> add(const static_matrix<U, Rows, Cols> &rhs) const {
-            static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
+            static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
             static_matrix<T, Rows, Cols> addition;
 

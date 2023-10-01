@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include "matrix.h"
-#include "static_matrix.h"
 
 using namespace ng;
 
@@ -52,7 +51,7 @@ TEST(Dynamicmatrix, ContainerConstructor) {
 }
 
 TEST(Dynamicmatrix, IdentityStaticMethod) {
-    matrix m = matrix<int>::identity(3, 3);
+    matrix<int> m = matrix<int>::identity(3, 3);
     ASSERT_EQ(m.size(), 9);
     ASSERT_EQ(m.rows(), 3);
     ASSERT_EQ(m.cols(), 3);
@@ -60,8 +59,8 @@ TEST(Dynamicmatrix, IdentityStaticMethod) {
 }
 
 TEST(Dynamicmatrix, CopyConstructor) {
-    matrix m = matrix<int>::identity(3, 3);
-    matrix m2 = m;
+    matrix<int> m = matrix<int>::identity(3, 3);
+    matrix<int> m2 = m;
     ASSERT_EQ(m2.size(), 9);
     ASSERT_EQ(m2.rows(), 3);
     ASSERT_EQ(m2.cols(), 3);
@@ -69,7 +68,7 @@ TEST(Dynamicmatrix, CopyConstructor) {
 }
 
 TEST(Dynamicmatrix, CopyAssignment) {
-    matrix m = matrix<int>::identity(3, 3);
+    matrix<int> m = matrix<int>::identity(3, 3);
     matrix<int> m2;
     m2 = m;
     ASSERT_EQ(m2.size(), 9);
@@ -79,7 +78,7 @@ TEST(Dynamicmatrix, CopyAssignment) {
 }
 
 TEST(Dynamicmatrix, MoveConstructor) {
-    matrix m = matrix<int>::identity(3, 3);
+    matrix<int> m = matrix<int>::identity(3, 3);
     matrix<int> m2 = std::move(m);
     ASSERT_EQ(m2.size(), 9);
     ASSERT_EQ(m2.rows(), 3);
@@ -111,14 +110,14 @@ TEST(Dynamicmatrix, ChangeSizes) {
 
 TEST(Dynamicmatrix, transformUnary) {
     matrix<int> m(3, 3, 1);
-    m.transform([](const auto &item) { return item * 2; });
+    m.transform([](const int &item) { return item * 2; });
     ASSERT_EQ(m(0, 0), 2);
 }
 
 TEST(Dynamicmatrix, transformBinary) {
     matrix<int> m1(3, 3, 1);
     matrix<int> m2(3, 3, 2);
-    m1.transform(m2, [](const auto &lhs, const auto &rhs) { return lhs + rhs; });
+    m1.transform(m2, [](const int &lhs, const int &rhs) { return lhs + rhs; });
     ASSERT_EQ(m1(0, 0), 3);
 }
 
@@ -174,28 +173,52 @@ TEST(Dynamicmatrix, fillRandom) {
 
 TEST(Dynamicmatrix, roundItems) {
     matrix<double> m(3, 3, 1.9);
-    m.round();
-    auto res = std::all_of(m.begin(), m.end(), [&](const auto &item) {
+    m.to_round();
+    auto res = std::all_of(m.begin(), m.end(), [&](const double &item) {
         return item == 2.0;
     });
+
+    ASSERT_EQ(res, true);
+    m = matrix<double>(3, 3, 1.9);
+    matrix<double> round = m.round();
+    res = std::all_of(round.begin(), round.end(), [&](const double &item) {
+        return item == 2.0;
+    });
+
     ASSERT_EQ(res, true);
 }
 
 TEST(Dynamicmatrix, floorItems) {
     matrix<double> m(3, 3, 1.9);
-    m.floor();
-    auto res = std::all_of(m.begin(), m.end(), [&](const auto &item) {
+    m.to_floor();
+    auto res = std::all_of(m.begin(), m.end(), [&](const double &item) {
         return item == 1.0;
     });
+
+    ASSERT_EQ(res, true);
+    m = matrix<double>(3, 3, 1.9);
+    matrix<double> floor = m.floor();
+    res = std::all_of(floor.begin(), floor.end(), [&](const double &item) {
+        return item == 1.0;
+    });
+
     ASSERT_EQ(res, true);
 }
 
 TEST(Dynamicmatrix, ceilItems) {
     matrix<double> m(3, 3, 1.001);
-    m.ceil();
-    auto res = std::all_of(m.begin(), m.end(), [&](const auto &item) {
+    m.to_ceil();
+    auto res = std::all_of(m.begin(), m.end(), [&](const double &item) {
         return item == 2.0;
     });
+
+    ASSERT_EQ(res, true);
+    m = matrix<double>(3, 3, 1.001);
+    matrix<double> ceil = m.ceil();
+    res = std::all_of(ceil.begin(), ceil.end(), [&](const double &item) {
+        return item == 2.0;
+    });
+
     ASSERT_EQ(res, true);
 }
 
@@ -303,7 +326,7 @@ TEST(Dynamicmatrix, convestOtherType) {
 
 TEST(Dynamicmatrix, convestToVector) {
     matrix<int> m(3, 3, {2, 5, 0, 0, 9, 7, 8, 1, 3});
-    std::vector vec = m.convert_to_vector();
+    std::vector<int> vec = m.to_vector();
 
     auto begin1 = m.begin();
     auto end1 = m.end();
@@ -317,7 +340,7 @@ TEST(Dynamicmatrix, convestToVector) {
 
 TEST(Dynamicmatrix, convestTomatrixVector) {
     matrix<int> m(3, 3, {2, 5, 0, 0, 9, 7, 8, 1, 3});
-    std::vector<std::vector<int>> vec = m.convert_to_matrix_vector();
+    std::vector<std::vector<int>> vec = m.to_matrix_vector();
 
     for (size_t row = 0; row != m.rows(); ++row)
         for (size_t col = 0; col != m.cols(); ++col)

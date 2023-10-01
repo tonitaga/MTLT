@@ -25,12 +25,6 @@ namespace ng {
         static bool is_double_end;
     };
 
-    int  matrix_debug_settings::width         = 3;
-    int  matrix_debug_settings::precision     = 3;
-    char matrix_debug_settings::separator     = ' ';
-    char matrix_debug_settings::end           = '\n';
-    bool matrix_debug_settings::is_double_end = false;
-
     template <typename T> struct matrix_epsilon {
         static constexpr T epsilon = T{};
     };
