@@ -16,37 +16,48 @@ To install the matrix template library, follow these steps:
 
 ```shell
    cd Matrix-Library-CPP
+   git checkout v1.0
 ```
 
 4. To install library use makefile
+
+4.1 Test Library before install
+
+```shell
+   make test
+```
+
+4.2 Install library
 
 ```shell
    make install
 ```
 
-5. Create empty file and use Matrix-Library-CPP
+5. Create empty file main.cc and paste the code
 
 ```cpp
-#include <matrix>
-#include <static_matrix>
+#include <matrix/matrix.h>
+#include <matrix/static_matrix.h>
 
 using namespace ng;
 
 int main() {
-    Matrix<int> matrix1(3, 3);
-    std::cout << matrix1 << std::endl;
-    
-    StaticMatrix<int, 3, 3> matrix2;
-    std::cout << matrix2 << std::endl;
-    
+    Matrix<int> matrix1(3, 3, 2);
+    StaticMatrix<int, 3, 3> matrix2(3);
+    print(matrix1, matrix2);
     return EXIT_SUCCESS;
 }
 ```
 
-6. Compile file and run
+6. Compile file
 
 ```shell
    g++ -std=c++20 -Wall -Werror -Wextra main.cc -o use_matrix
+```
+
+7. Run compiled file
+
+```shell
    ./use_matrix
 ```
 
@@ -71,7 +82,9 @@ To uninstall the matrix template library, follow these steps:
 You can see the Matrix-Library-CPP code samples in Matrix-Library-CPP/code_samples folder
 
 ```shell
-   cd Matrix-Library-CPP/code_samples
+   cd Matrix-Library-CPP
+   git checkout main
+   cd code_samples
 ```
 
 ## Rode map
