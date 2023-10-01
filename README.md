@@ -74,3 +74,11 @@ You can see the Matrix-Library-CPP code samples in Matrix-Library-CPP/code_sampl
 ```shell
    cd Matrix-Library-CPP/code_samples
 ```
+
+## Rode map
+
+In v1.0 version of the Matrix-Library-CPP will be fixed most bugs of Library
+Estimated completion time to October 3, 2023
+
+In v1.1 version of the Matrix-Library-CPP it will be possible to use not only C++20 standard but also older standards.
+Estimated completion time to October 10, 2023
