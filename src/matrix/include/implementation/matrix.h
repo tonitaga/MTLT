@@ -31,7 +31,7 @@ namespace ng {
         constexpr Matrix(size_type rows, size_type cols, value_type fill = {});
         constexpr explicit Matrix(size_type square) : Matrix(square, square) {};
 
-        constexpr Matrix(const std::vector<std::vector<value_type>> &);
+        constexpr explicit Matrix(const std::vector<std::vector<value_type>> &);
 
         constexpr Matrix(size_type rows, size_type cols, const std::initializer_list<T> &initializer);
 
