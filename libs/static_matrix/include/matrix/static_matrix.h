@@ -6,9 +6,9 @@
 #include <iostream>
 #include <type_traits>
 
-#include "matrix_state.h"
-#include "matrix_normal_iterator.h"
-#include "matrix_reverse_iterator.h"
+#include <matrix/matrix_state.h>
+#include <matrix/matrix_normal_iterator.h>
+#include <matrix/matrix_reverse_iterator.h>
 
 namespace ng {
     template <fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
