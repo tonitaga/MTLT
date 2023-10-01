@@ -47,7 +47,7 @@ TEST(ReverseIterator, begin_static_matrix) {
 
 TEST(ReverseIterator, iter_tag) {
     bool is_same1 = std::is_same_v<static_matrix<int, 1, 1>::reverse_iterator::iterator_category, std::random_access_iterator_tag>;
-    bool is_same2 = std::is_same_v<matrix<int>::reverse_iterator::iterator_category, std::random_access_iterator_tag>;
+    bool is_same2 = std::is_same_v<matrix<int>::reverse_iterator::iterator_category, std::random_access_iterator_tag>;it
 
     ASSERT_TRUE(is_same1);
     ASSERT_TRUE(is_same2);
