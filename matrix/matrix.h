@@ -211,10 +211,10 @@ namespace ng {
         }
 
     public:
-        void print(std::ostream &os = std::cout) const {
-            int width = matrix_debug_settings::width, precision = matrix_debug_settings::precision;
-            char separator = matrix_debug_settings::separator, end = matrix_debug_settings::end;
-            bool is_double_end = matrix_debug_settings::is_double_end;
+        void print(std::ostream &os = std::cout, matrix_debug_settings s = matrix_debug_settings{}) const {
+            int width = s.width, precision = s.precision;
+            char separator = s.separator, end = s.end;
+            bool is_double_end = s.is_double_end;
 
             for (size_type row = 0; row != rows_; ++row) {
                 for (size_type col = 0; col != cols_; ++col) {

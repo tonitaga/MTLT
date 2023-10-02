@@ -18,11 +18,11 @@ namespace ng {
 #endif
 
     struct matrix_debug_settings {
-        static int width;
-        static int precision;
-        static char separator;
-        static char end;
-        static bool is_double_end;
+        int width = 3;
+        int precision = 3;
+        char separator = ' ';
+        char end = '\n';
+        bool is_double_end = false;
     };
 
     template <typename T> struct matrix_epsilon {
