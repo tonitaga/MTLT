@@ -2,6 +2,10 @@
 
 This is a C++ template matrix library that provides operations on matrices.
 
+## MTL project template
+
+To configure mtl project template follow the instructions in **mtl-template** folder in README.md
+
 ## Installation
 
 To install the matrix template library, follow these steps:
