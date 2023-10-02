@@ -1,6 +1,8 @@
 #ifndef MATRIX_LIBRARY_CPP_MATRIX_REVERSE_ITERATOR_H
 #define MATRIX_LIBRARY_CPP_MATRIX_REVERSE_ITERATOR_H
 
+#include <iterator>
+
 namespace mtl {
     template <typename NormalIterator>
     class matrix_reverse_iterator {
