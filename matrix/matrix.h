@@ -1,7 +1,6 @@
 #ifndef matrix_LIBRARY_CPP_matrix_H_
 #define matrix_LIBRARY_CPP_matrix_H_
 
-
 #include <cmath>
 #include <random>
 #include <chrono>
