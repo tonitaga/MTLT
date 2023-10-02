@@ -25,9 +25,7 @@ HEADERS_LOCATION := $(wildcard matrix)
 
 
 install:
-	@g++ materials/info/info.cc -o info
-	@./info
-	@rm ./info
+	@cat materials/.info.txt
 	@sleep 2
 	@echo G++ COMPILER LOCATION:                $(COMPILER_CXX_GCC_LOCATION_SLASH)
 	@echo G++ COMPILER INCLUDE FOLDER LOCATION: $(COMPILER_CXX_GCC_INCLUDE_FOLDER_LOCATION_SLASH)
