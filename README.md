@@ -40,8 +40,8 @@ To install the matrix template library, follow these steps:
 #include <matrix/static_matrix.h>
 
 int main() {
-    ng::matrix<int> matrix1(3, 3, 1);
-    ng::static_matrix<int, 3, 3> matrix2(1);
+    mtl::matrix<int> matrix1(3, 3, 1);
+    mtl::static_matrix<int, 3, 3> matrix2(1);
 
     int trace1 = matrix1.trace();
     int trace2 = matrix2.trace();
@@ -58,7 +58,7 @@ int main() {
     auto complements1 = matrix1.calc_complements();
     auto complements2 = matrix2.calc_complements();
 
-    ng::print(trace1, trace2,
+    mtl::print(trace1, trace2,
               determinant1, determinant2,
               matrix1, matrix2,
               inverse1, inverse2,
