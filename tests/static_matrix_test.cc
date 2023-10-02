@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include "matrix.h"
 #include "static_matrix.h"
 
 using namespace ng;
@@ -30,7 +29,7 @@ TEST(StaticMatrix, containerConstructor) {
 }
 
 TEST(StaticMatrix, IdentityMethod) {
-    static_matrix m = static_matrix<int, 3, 3>().identity();
+    static_matrix<int, 3, 3> m = static_matrix<int, 3, 3>().identity();
     ASSERT_EQ(m.size(), 9);
     ASSERT_EQ(m.rows(), 3);
     ASSERT_EQ(m.cols(), 3);
@@ -39,7 +38,7 @@ TEST(StaticMatrix, IdentityMethod) {
 
 TEST(StaticMatrix, CopyConstructor) {
     static_matrix<int, 3, 3> m1({1, 2, 3, 4, 5, 6, 7, 8, 9});
-    static_matrix m2 = m1;
+    static_matrix<int, 3, 3> m2 = m1;
     ASSERT_EQ(m2.size(), 9);
     ASSERT_EQ(m2.rows(), 3);
     ASSERT_EQ(m2.cols(), 3);
@@ -58,14 +57,14 @@ TEST(StaticMatrix, CopyAssignment) {
 
 TEST(StaticMatrix, transformUnary) {
     static_matrix<int, 3, 3> m({1, 2, 3, 4, 5, 6, 7, 8, 9});
-    m.transform([](const auto &item) { return item * 2; });
+    m.transform([](const int &item) { return item * 2; });
     ASSERT_EQ(m(0, 0), 2);
 }
 
 TEST(StaticMatrix, transformBinary) {
     static_matrix<int, 3, 3> m1({1, 2, 3, 4, 5, 6, 7, 8, 9});
     static_matrix<int, 3, 3> m2({1, 2, 3, 4, 5, 6, 7, 8, 9});
-    m1.transform(m2, [](const auto &lhs, const auto &rhs) { return lhs + rhs; });
+    m1.transform(m2, [](const int &lhs, const int &rhs) { return lhs + rhs; });
     ASSERT_EQ(m1(2, 2), 18);
 }
 
@@ -101,7 +100,7 @@ TEST(StaticMatrix, mathOperationsNumber) {
 TEST(StaticMatrix, mulmatrix) {
     static_matrix<int, 3, 3> m1({1, 2, 3, 4, 5, 6, 7, 8, 9});
     static_matrix<int, 3, 3> m2({9, 8, 7, 6, 5, 4, 3, 2, 1});
-    static_matrix m3 = m1.mul(m2);
+    static_matrix<int, 3, 3> m3 = m1.mul(m2);
     static_matrix<int, 3, 3> m4({30, 24, 18, 84, 69, 54, 138, 114, 90});
 
     auto begin1 = m3.begin();
@@ -123,14 +122,14 @@ TEST(StaticMatrix, fillRandom) {
 TEST(StaticMatrix, roundItems) {
     static_matrix<double, 3, 3> m(1.9);
     m.to_round();
-    auto res = std::all_of(m.begin(), m.end(), [&](const auto &item) {
+    auto res = std::all_of(m.begin(), m.end(), [&](const int &item) {
         return item == 2.0;
     });
 
     ASSERT_EQ(res, true);
 
-    static_matrix round = m.round();
-    res = std::all_of(round.begin(), round.end(), [&](const auto &item) {
+    static_matrix<double, 3, 3> round = m.round();
+    res = std::all_of(round.begin(), round.end(), [&](const int &item) {
         return item == 2.0;
     });
 
@@ -140,14 +139,14 @@ TEST(StaticMatrix, roundItems) {
 TEST(StaticMatrix, floorItems) {
     static_matrix<double, 3, 3> m(1.9);
     m.to_floor();
-    auto res = std::all_of(m.begin(), m.end(), [&](const auto &item) {
+    auto res = std::all_of(m.begin(), m.end(), [&](const int &item) {
         return item == 1.0;
     });
 
     ASSERT_EQ(res, true);
 
-    static_matrix floor = m.floor();
-    res = std::all_of(floor.begin(), floor.end(), [&](const auto &item) {
+    static_matrix<double, 3, 3> floor = m.floor();
+    res = std::all_of(floor.begin(), floor.end(), [&](const int &item) {
         return item == 1.0;
     });
 
@@ -157,14 +156,14 @@ TEST(StaticMatrix, floorItems) {
 TEST(StaticMatrix, ceilItems) {
     static_matrix<double, 3, 3> m(1.001);
     m.to_ceil();
-    auto res = std::all_of(m.begin(), m.end(), [&](const auto &item) {
+    auto res = std::all_of(m.begin(), m.end(), [&](const int &item) {
         return item == 2.0;
     });
 
     ASSERT_EQ(res, true);
 
-    static_matrix ceil = m.ceil();
-    res = std::all_of(ceil.begin(), ceil.end(), [&](const auto &item) {
+    static_matrix<double, 3, 3> ceil = m.ceil();
+    res = std::all_of(ceil.begin(), ceil.end(), [&](const int &item) {
         return item == 2.0;
     });
 
@@ -179,7 +178,7 @@ TEST(StaticMatrix, sumItems) {
 
 TEST(StaticMatrix, transposematrix) {
     static_matrix<double, 4, 3> m({1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3});
-    static_matrix transposed = m.transpose();
+    static_matrix<double, 3, 4> transposed = m.transpose();
 
     static_matrix<int, 3, 4> correct({1, 4, 7, 1, 2, 5, 8, 2, 3, 6, 9, 3});
 
@@ -195,7 +194,7 @@ TEST(StaticMatrix, transposematrix) {
 
 TEST(StaticMatrix, minormatrix) {
     static_matrix<int, 3, 3> m({1, 2, 3, 4, 5, 6, 7, 8, 9});
-    static_matrix minor = m.minor(0, 0);
+    static_matrix<int, 2, 2> minor = m.minor(0, 0);
     ASSERT_EQ(minor.size(), 4);
     ASSERT_EQ(minor.rows(), 2);
     ASSERT_EQ(minor.cols(), 2);
@@ -234,7 +233,7 @@ TEST(StaticMatrix, inverse) {
     int determinant = m.determinant();
     ASSERT_EQ(determinant, 320);
 
-    static_matrix inverse = m.convert_to<double>().inverse();
+    static_matrix<double, 3, 3> inverse = m.convert_to<double>().inverse();
     static_matrix<double, 3, 3> correct({
             0.0625, -0.046875, 0.109375,
             0.175, 0.01875, -0.04375,
@@ -253,7 +252,7 @@ TEST(StaticMatrix, inverse) {
 
 TEST(StaticMatrix, convestOtherType) {
     static_matrix<int, 3, 3> m({2, 5, 0, 0, 9, 7, 8, 1, 3});
-    static_matrix m_double = m.convert_to<double>();
+    static_matrix<double, 3, 3> m_double = m.convert_to<double>();
 
     auto begin1 = m_double.begin();
     auto end1 = m_double.end();
@@ -267,8 +266,8 @@ TEST(StaticMatrix, convestOtherType) {
 
 TEST(StaticMatrix, convestToArray) {
     static_matrix<int, 3, 3> m({2, 5, 0, 0, 9, 7, 8, 1, 3});
-    std::array arr1 = m.to_array();
-    std::array arr2 = m.to_array<double>();
+    std::array<int, 9> arr1 = m.to_array();
+    std::array<double, 9> arr2 = m.to_array<double>();
 
     auto begin1 = m.begin();
     auto end1 = m.end();
@@ -284,7 +283,7 @@ TEST(StaticMatrix, convestToArray) {
 
 TEST(StaticMatrix, equality) {
     static_matrix<int, 3, 3> m({1, 2, 3, 4, 5, 6, 7, 8, 9});
-    static_matrix m2 = m;
+    static_matrix<int, 3, 3> m2 = m;
 
     auto equal = m2.equal_to(m);
     ASSERT_EQ(equal, true);
