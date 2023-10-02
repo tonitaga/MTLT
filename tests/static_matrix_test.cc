@@ -291,3 +291,95 @@ TEST(StaticMatrix, equality) {
     equal = m2 == m;
     ASSERT_EQ(equal, true);
 }
+
+TEST(StaticMatrix, join_right) {
+    static_matrix<int, 2, 2> matrix1({
+        1, 2,
+        5, 6
+    });
+
+    static_matrix<int, 2, 2> matrix2({
+        3, 4,
+        7, 8
+    });
+
+    static_matrix<int, 2, 4> matrix_correct({
+        1, 2, 3, 4,
+        5, 6, 7, 8
+    });
+
+    static_matrix<int, 2, 4> join_matrix = matrix1.join_right(matrix2);
+
+    auto equal = join_matrix.equal_to(matrix_correct);
+    ASSERT_EQ(equal, true);
+}
+
+TEST(StaticMatrix, join_left) {
+    static_matrix<int, 2, 2> matrix1({
+        1, 2,
+        5, 6
+    });
+
+    static_matrix<int, 2, 2> matrix2({
+        3, 4,
+        7, 8
+    });
+
+    static_matrix<int, 2, 4> matrix_correct({
+        3, 4, 1, 2,
+        7, 8, 5, 6
+    });
+
+    static_matrix<int, 2, 4> join_matrix = matrix1.join_left(matrix2);
+
+    auto equal = join_matrix.equal_to(matrix_correct);
+    ASSERT_EQ(equal, true);
+}
+
+TEST(StaticMatrix, join_top) {
+    static_matrix<int, 2, 2> matrix1({
+        5, 6,
+        7, 8
+    });
+
+    static_matrix<int, 2, 2> matrix2({
+        1, 2,
+        3, 4
+    });
+
+    static_matrix<int, 4, 2> matrix_correct({
+        1, 2,
+        3, 4,
+        5, 6,
+        7, 8
+    });
+
+    static_matrix<int, 4, 2> join_matrix = matrix1.join_top(matrix2);
+
+    auto equal = join_matrix.equal_to(matrix_correct);
+    ASSERT_EQ(equal, true);
+}
+
+TEST(StaticMatrix, join_bottom) {
+    static_matrix<int, 2, 2> matrix1({
+        5, 6,
+        7, 8
+    });
+
+    static_matrix<int, 2, 2> matrix2({
+        1, 2,
+        3, 4
+    });
+
+    static_matrix<int, 4, 2> matrix_correct({
+        5, 6,
+        7, 8,
+        1, 2,
+        3, 4
+    });
+
+    static_matrix<int, 4, 2> join_matrix = matrix1.join_bottom(matrix2);
+
+    auto equal = join_matrix.equal_to(matrix_correct);
+    ASSERT_EQ(equal, true);
+}

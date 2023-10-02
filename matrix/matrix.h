@@ -26,7 +26,7 @@ namespace ng {
 #else
     template <typename T>
     class matrix {
-        static_assert(std::is_fundamental<T>::value, "Template paramener T must be fundamental");
+        static_assert(std::is_fundamental<T>::value, "Template parameter T must be fundamental");
 #endif // C++ <= 201703L
     public:
         using value_type =             typename std::allocator_traits<std::allocator<T>>::value_type;
@@ -558,7 +558,7 @@ namespace ng {
         std::vector<value_type> to_vector() const {
             static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-            std::vector<value_type> v(rows_ * cols_);
+            std::vector<U> v(rows_ * cols_);
             std::copy(begin(), end(), v.begin());
             return v;
         }
@@ -572,7 +572,7 @@ namespace ng {
         std::vector<std::vector<value_type>> to_matrix_vector() const {
             static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-            std::vector<std::vector<value_type>> v(rows_, std::vector<value_type>(cols_));
+            std::vector<std::vector<U>> v(rows_, std::vector<U>(cols_));
 
             for (size_type row = 0; row != rows_; ++row)
                 for (size_type col = 0; col != cols_; ++col)

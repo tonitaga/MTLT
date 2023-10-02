@@ -26,7 +26,7 @@ namespace ng {
 #else
     template <typename T, std::size_t Rows, std::size_t Cols>
     class static_matrix {
-        static_assert(std::is_fundamental<T>::value, "Template paramener T must be fundamental");
+        static_assert(std::is_fundamental<T>::value, "Template parameter T must be fundamental");
 #endif // C++ <= 201703L
     public:
         using value_type =             T;
@@ -371,6 +371,60 @@ namespace ng {
         _GLIBCXX17_CONSTEXPR value_type sum() const {
             return std::accumulate(begin(), end(), value_type{});
         }
+
+    public:
+        template <std::size_t Cols2>
+        _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols + Cols2> join_right(const static_matrix<T, Rows, Cols2> &rhs) {
+            static_matrix<T, Rows, Cols + Cols2> join_matrix;
+
+            for (size_type row = 0; row != join_matrix.rows(); ++row)
+                for (size_type col = 0; col != join_matrix.cols(); ++col) {
+                    if (col < Cols) join_matrix(row, col) = (*this)(row, col);
+                    else join_matrix(row, col) = rhs(row, col - Cols2);
+                }
+
+            return join_matrix;
+        }
+
+        template <std::size_t Cols2>
+        _GLIBCXX17_CONSTEXPR static_matrix<T, Rows, Cols + Cols2> join_left(const static_matrix<T, Rows, Cols2> &rhs) {
+            static_matrix<T, Rows, Cols + Cols2> join_matrix;
+
+            for (size_type row = 0; row != join_matrix.rows(); ++row)
+                for (size_type col = 0; col != join_matrix.cols(); ++col) {
+                    if (col < Cols2) join_matrix(row, col) = rhs(row, col - Cols2);
+                    else join_matrix(row, col) = (*this)(row, col - Cols);
+                }
+
+            return join_matrix;
+        }
+
+        template <std::size_t Rows2>
+        _GLIBCXX17_CONSTEXPR static_matrix<T, Rows + Rows2, Cols> join_top(const static_matrix<T, Rows2, Cols> &rhs) {
+            static_matrix<T, Rows + Rows2, Cols> join_matrix;
+
+            for (size_type row = 0; row != join_matrix.rows(); ++row)
+                for (size_type col = 0; col != join_matrix.cols(); ++col) {
+                    if (row < Rows2) join_matrix(row, col) = rhs(row, col);
+                    else join_matrix(row, col) = (*this)(row - Rows, col);
+                }
+
+            return join_matrix;
+        }
+
+        template <std::size_t Rows2>
+        _GLIBCXX17_CONSTEXPR static_matrix<T, Rows + Rows2, Cols> join_bottom(const static_matrix<T, Rows2, Cols> &rhs) {
+            static_matrix<T, Rows + Rows2, Cols> join_matrix;
+
+            for (size_type row = 0; row != join_matrix.rows(); ++row)
+                for (size_type col = 0; col != join_matrix.cols(); ++col) {
+                    if (row < Rows) join_matrix(row, col) = (*this)(row, col);
+                    else join_matrix(row, col) = rhs(row - Rows2, col);
+                }
+
+            return join_matrix;
+        }
+
 
     public:
         _GLIBCXX17_CONSTEXPR static_matrix<T, Cols, Rows> transpose() const {
