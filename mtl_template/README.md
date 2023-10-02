@@ -78,6 +78,8 @@ run:
 
 clean:
 	@rm -rf ${BUILD_FOLDER_NAME}
+
+uninstall_mtl:
 	@rm -rf ${MTL_INSTALL_PATH}
 ```
 
