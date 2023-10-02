@@ -2,7 +2,7 @@
 
 #include "static_matrix.h"
 
-using namespace ng;
+using namespace mtl;
 
 TEST(StaticMatrix, Sizedmatrix) {
     static_matrix<int, 3, 3> m(5);

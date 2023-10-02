@@ -19,7 +19,7 @@
 #include "matrix_normal_iterator.h"
 #include "matrix_reverse_iterator.h"
 
-namespace ng {
+namespace mtl {
 #if __cplusplus > 201703L
     template<fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
     class static_matrix {

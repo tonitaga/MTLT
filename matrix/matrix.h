@@ -18,7 +18,7 @@
 #include "matrix_normal_iterator.h"
 #include "matrix_reverse_iterator.h"
 
-namespace ng {
+namespace mtl {
 #if __cplusplus > 201703L
     template <fundamental T>
     class matrix {

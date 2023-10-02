@@ -1,22 +1,22 @@
 #ifndef MATRIX_LIBRARY_CPP_MATRIX_REVERSE_ITERATOR_H
 #define MATRIX_LIBRARY_CPP_MATRIX_REVERSE_ITERATOR_H
 
-namespace ng{
+namespace mtl {
     template <typename NormalIterator>
     class matrix_reverse_iterator {
     protected:
         NormalIterator current_;
 
     public:
-        _GLIBCXX17_CONSTEXPR matrix_reverse_iterator() noexcept : current_(NormalIterator()) {};
+        _GLIBCXX17_CONSTEXPR          matrix_reverse_iterator() noexcept : current_(NormalIterator()) {};
         explicit _GLIBCXX17_CONSTEXPR matrix_reverse_iterator(const typename NormalIterator::iterator_type &it) noexcept : current_(it) {};
 
     public:
-        using iterator_type = typename NormalIterator::iterator_type;
-        using pointer = typename NormalIterator::pointer;
-        using reference = typename NormalIterator::reference;
-        using value_type = typename NormalIterator::value_type;
-        using difference_type = typename NormalIterator::difference_type;
+        using iterator_type =     typename NormalIterator::iterator_type;
+        using pointer =           typename NormalIterator::pointer;
+        using reference =         typename NormalIterator::reference;
+        using value_type =        typename NormalIterator::value_type;
+        using difference_type =   typename NormalIterator::difference_type;
         using iterator_category = typename NormalIterator::iterator_category;
 
     public:

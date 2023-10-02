@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace ng;
+using namespace mtl;
 
 TEST(ReverseIterator, begin_matrix) {
     matrix<int> m1(3, 3, {9, 8, 7, 6, 5, 4, 3, 2, 1});

@@ -3,22 +3,22 @@
 
 #include <iterator>
 
-namespace ng {
+namespace mtl {
     template <typename Iterator>
     class matrix_normal_iterator {
     protected:
         Iterator current_;
 
     public:
-        using iterator_type = Iterator;
-        using pointer = Iterator;
-        using reference = decltype(*current_) &;
-        using value_type = decltype(*current_);
-        using difference_type = std::ptrdiff_t;
+        using iterator_type =     Iterator;
+        using pointer =           Iterator;
+        using reference =         decltype(*current_) &;
+        using value_type =        decltype(*current_);
+        using difference_type =   std::ptrdiff_t;
         using iterator_category = std::random_access_iterator_tag;
         
     public:
-        _GLIBCXX17_CONSTEXPR matrix_normal_iterator() noexcept : current_(Iterator()) {};
+        _GLIBCXX17_CONSTEXPR          matrix_normal_iterator() noexcept : current_(Iterator()) {};
         explicit _GLIBCXX17_CONSTEXPR matrix_normal_iterator(const Iterator &it) noexcept : current_(it) {};
         
     public:

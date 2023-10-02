@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-namespace ng {
+namespace mtl {
 #if __cplusplus > 201703L
     template <typename T>
     concept fundamental = std::is_fundamental_v<T>;

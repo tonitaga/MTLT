@@ -2,7 +2,7 @@
 
 #include "matrix.h"
 
-using namespace ng;
+using namespace mtl;
 
 TEST(Dynamicmatrix, Emptymatrix) {
     matrix<int> m;
