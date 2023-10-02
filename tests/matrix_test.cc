@@ -357,3 +357,171 @@ TEST(Dynamicmatrix, equality) {
     equal = m2 == m;
     ASSERT_EQ(equal, true);
 }
+
+TEST(Dynamicmatrix, to_join_right) {
+    matrix<int> m(2, 2, {
+        1, 2,
+        5, 6
+    });
+
+    matrix<int> m2(2, 2, {
+        3, 4,
+        7, 8
+    });
+
+    m.to_join_right(m2);
+    matrix<int> m_correct(2, 4, {
+        1, 2, 3, 4,
+        5, 6, 7, 8
+    });
+
+    ASSERT_TRUE(m_correct.equal_to(m));
+}
+
+TEST(Dynamicmatrix, join_right) {
+    matrix<int> m(2, 2, {
+            1, 2,
+            5, 6
+    });
+
+    matrix<int> m2(2, 2, {
+            3, 4,
+            7, 8
+    });
+
+    auto join = m.join_right(m2);
+    matrix<int> m_correct(2, 4, {
+            1, 2, 3, 4,
+            5, 6, 7, 8
+    });
+
+    ASSERT_TRUE(m_correct.equal_to(join));
+}
+
+TEST(Dynamicmatrix, to_join_left) {
+    matrix<int> m(2, 2, {
+            1, 2,
+            5, 6
+    });
+
+    matrix<int> m2(2, 2, {
+            3, 4,
+            7, 8
+    });
+
+    m.to_join_left(m2);
+    matrix<int> m_correct(2, 4, {
+            3, 4, 1, 2,
+            7, 8, 5, 6
+    });
+
+    ASSERT_TRUE(m_correct.equal_to(m));
+}
+
+TEST(Dynamicmatrix, join_left) {
+    matrix<int> m(2, 2, {
+            1, 2,
+            5, 6
+    });
+
+    matrix<int> m2(2, 2, {
+            3, 4,
+            7, 8
+    });
+
+    auto join = m.join_left(m2);
+    matrix<int> m_correct(2, 4, {
+            3, 4, 1, 2,
+            7, 8, 5, 6
+    });
+
+    ASSERT_TRUE(m_correct.equal_to(join));
+}
+
+TEST(Dynamicmatrix, to_join_top) {
+    matrix<int> m(2, 2, {
+            1, 2,
+            5, 6
+    });
+
+    matrix<int> m2(2, 2, {
+            3, 4,
+            7, 8
+    });
+
+    m.to_join_top(m2);
+    matrix<int> m_correct(4, 2, {
+            3, 4,
+            7, 8,
+            1, 2,
+            5, 6
+    });
+
+    ASSERT_TRUE(m_correct.equal_to(m));
+}
+
+TEST(Dynamicmatrix, join_top) {
+    matrix<int> m(2, 2, {
+            1, 2,
+            5, 6
+    });
+
+    matrix<int> m2(2, 2, {
+            3, 4,
+            7, 8
+    });
+
+    auto join = m.join_top(m2);
+    matrix<int> m_correct(4, 2, {
+            3, 4,
+            7, 8,
+            1, 2,
+            5, 6
+    });
+
+    ASSERT_TRUE(m_correct.equal_to(join));
+}
+
+TEST(Dynamicmatrix, to_join_bottom) {
+    matrix<int> m(2, 2, {
+            1, 2,
+            5, 6
+    });
+
+    matrix<int> m2(2, 2, {
+            3, 4,
+            7, 8
+    });
+
+    m.to_join_bottom(m2);
+    matrix<int> m_correct(4, 2, {
+            1, 2,
+            5, 6,
+            3, 4,
+            7, 8
+    });
+
+    ASSERT_TRUE(m_correct.equal_to(m));
+}
+
+TEST(Dynamicmatrix, join_bottom) {
+    matrix<int> m(2, 2, {
+            1, 2,
+            5, 6
+    });
+
+    matrix<int> m2(2, 2, {
+            3, 4,
+            7, 8
+    });
+
+    auto join = m.join_bottom(m2);
+    matrix<int> m_correct(4, 2, {
+            1, 2,
+            5, 6,
+            3, 4,
+            7, 8
+    });
+
+    ASSERT_TRUE(m_correct.equal_to(join));
+}

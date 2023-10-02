@@ -402,6 +402,116 @@ namespace ng {
         value_type sum() const {
             return std::accumulate(begin(), end(), value_type{});
         }
+    public:
+        void to_join_left(const matrix &rhs) {
+            if (rhs.rows() != rows_)
+                throw std::logic_error("Can't join left rhs matrix to lhs, because lhs.rows() != rhs.rows()");
+
+            *this = join_left(rhs);
+        }
+
+        matrix join_left(const matrix &rhs) const {
+            if (rhs.rows() != rows_)
+                throw std::logic_error("Can't join left rhs matrix to lhs, because lhs.rows() != rhs.rows()");
+
+            matrix<T> join_matrix(rows_, cols_ + rhs.cols());
+
+            size_type cols2 = rhs.cols();
+
+            for (size_type row = 0; row != join_matrix.rows(); ++row)
+                for (size_type col = 0; col != join_matrix.cols(); ++col) {
+                    if (col < cols2) join_matrix(row, col) = rhs(row, col);
+                    else join_matrix(row, col) = (*this)(row, col - cols_);
+                }
+
+            return join_matrix;
+        }
+
+        void to_join_right(const matrix &rhs) {
+            if (rhs.rows() != rows_)
+                throw std::logic_error("Can't join left rhs matrix to lhs, because lhs.rows() != rhs.rows()");
+
+            size_type old_cols = cols_;
+            size_type cols2 = rhs.cols();
+
+            this->cols(cols_ + rhs.cols());
+
+            for (size_type row = 0; row != rows_; ++row)
+                for (size_type col = 0; col != cols_; ++col)
+                    if (col >= old_cols) (*this)(row, col) = rhs(row, col - cols2);
+        }
+
+        matrix join_right(const matrix &rhs) const {
+            if (rhs.rows() != rows_)
+                throw std::logic_error("Can't join right rhs matrix to lhs, because lhs.rows() != rhs.rows()");
+
+            matrix<T> join_matrix(rows_, cols_ + rhs.cols());
+            size_type cols2 = rhs.cols();
+
+            for (size_type row = 0; row != join_matrix.rows(); ++row)
+                for (size_type col = 0; col != join_matrix.cols(); ++col) {
+                    if (col < cols_) join_matrix(row, col) = (*this)(row, col);
+                    else join_matrix(row, col) = rhs(row, col - cols2);
+                }
+
+            return join_matrix;
+        }
+
+        void to_join_top(const matrix &rhs) {
+            if (rhs.rows() != rows_)
+                throw std::logic_error("Can't join top rhs matrix to lhs, because lhs.cols() != rhs.cols()");
+
+            *this = join_top(rhs);
+        }
+
+        matrix join_top(const matrix &rhs) const {
+            if (rhs.rows() != rows_)
+                throw std::logic_error("Can't join top rhs matrix to lhs, because lhs.cols() != rhs.cols()");
+
+            size_type old_rows = rows_;
+            size_type rows2 = rhs.rows();
+            matrix<T> join_matrix(rows_ + rhs.rows(), cols_);
+
+            for (size_type row = 0; row != join_matrix.rows(); ++row)
+                for (size_type col = 0; col != join_matrix.cols(); ++col) {
+                    if (row < rows2)
+                        join_matrix(row, col) = rhs(row, col);
+                    else
+                        join_matrix(row, col) = (*this)(row - old_rows, col);
+                }
+
+            return join_matrix;
+        }
+
+        void to_join_bottom(const matrix &rhs) {
+            if (rhs.rows() != rows_)
+                throw std::logic_error("Can't join bottom rhs matrix to lhs, because lhs.cols() != rhs.cols()");
+
+            size_type old_rows = rows_;
+            size_type rows2 = rhs.rows();
+            this->rows(rows_ + rhs.rows());
+
+            for (size_type row = 0; row != rows_; ++row)
+                for (size_type col = 0; col != cols_; ++col) {
+                    if (row >= old_rows) (*this)(row, col) = rhs(row - rows2, col);
+                }
+        }
+
+        matrix join_bottom(const matrix &rhs) const {
+            if (rhs.rows() != rows_)
+                throw std::logic_error("Can't join bottom rhs matrix to lhs, because lhs.cols() != rhs.cols()");
+
+            matrix<T> join_matrix(rows_ + rhs.rows(), cols_);
+            size_type rows2 = rhs.rows();
+
+            for (size_type row = 0; row != join_matrix.rows(); ++row)
+                for (size_type col = 0; col != join_matrix.cols(); ++col) {
+                    if (row < rows_) join_matrix(row, col) = (*this)(row, col);
+                    else join_matrix(row, col) = rhs(row - rows2, col);
+                }
+
+            return join_matrix;
+        }
 
     public:
         matrix transpose() const {

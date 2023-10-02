@@ -392,7 +392,7 @@ namespace ng {
 
             for (size_type row = 0; row != join_matrix.rows(); ++row)
                 for (size_type col = 0; col != join_matrix.cols(); ++col) {
-                    if (col < Cols2) join_matrix(row, col) = rhs(row, col - Cols2);
+                    if (col < Cols2) join_matrix(row, col) = rhs(row, col);
                     else join_matrix(row, col) = (*this)(row, col - Cols);
                 }
 
