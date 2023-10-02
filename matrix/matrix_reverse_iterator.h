@@ -56,7 +56,7 @@ namespace ng{
         }
 
         _GLIBCXX17_CONSTEXPR matrix_reverse_iterator operator-(difference_type n) noexcept {
-            return matrix_reverse_iterator((current_ - n).Base());
+            return matrix_reverse_iterator((current_ + n).Base());
         }
 
         const iterator_type &Base() const noexcept {
@@ -104,12 +104,6 @@ namespace ng{
     [[__nodiscard__]]  inline std::ptrdiff_t operator-(const matrix_reverse_iterator<NormalIterator> &lhs,
                                              const matrix_reverse_iterator<NormalIterator> &rhs) {
         return rhs.Base() - lhs.Base();
-    }
-
-    template <typename NormalIterator>
-    [[__nodiscard__]]  inline std::ptrdiff_t operator+(const matrix_reverse_iterator<NormalIterator> &lhs,
-                                             const matrix_reverse_iterator<NormalIterator> &rhs) {
-        return rhs.Base() + lhs.Base();
     }
 }
 

@@ -111,12 +111,6 @@ namespace ng {
                                              const matrix_normal_iterator<Iterator> &rhs) {
         return lhs.Base() - rhs.Base();
     }
-
-    template <typename Iterator>
-    [[__nodiscard__]]  inline std::ptrdiff_t operator+(const matrix_normal_iterator<Iterator> &lhs,
-                                             const matrix_normal_iterator<Iterator> &rhs) {
-        return lhs.Base() + rhs.Base();
-    }
 }
 
 #endif //MATRIX_LIBRARY_CPP_MATRIX_NORMAL_ITERATOR_H
