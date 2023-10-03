@@ -1,5 +1,5 @@
-#ifndef matrix_LIBRARY_CPP_matrix_H_
-#define matrix_LIBRARY_CPP_matrix_H_
+#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
+#define MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
 
 #include <cmath>
 #include <random>
@@ -915,4 +915,4 @@ namespace mtl {
     }
 }
 
-#endif //matrix_LIBRARY_CPP_matrix_H_
+#endif //MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
