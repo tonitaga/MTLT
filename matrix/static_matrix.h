@@ -130,9 +130,9 @@ namespace mtl {
             return (*this)(row, col);
         }
 
-        MATRIX_CXX17_CONSTEXPR size_type rows() const noexcept { return rows_; }
-        MATRIX_CXX17_CONSTEXPR size_type cols() const noexcept { return cols_; }
-        MATRIX_CXX17_CONSTEXPR size_type size() const noexcept { return rows_ * cols_; }
+        MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR size_type rows() const noexcept { return rows_; }
+        MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR size_type cols() const noexcept { return cols_; }
+        MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR size_type size() const noexcept { return rows_ * cols_; }
 
     public:
         void print(std::ostream &os = std::cout, matrix_debug_settings s = matrix_debug_settings{}) const {

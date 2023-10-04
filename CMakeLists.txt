@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5...3.16)
 project(Matrix_Library_CPP_TEST LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wno-unused-but-set-variable")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Wno-unused-but-set-variable")
 
 include(FetchContent)
 FetchContent_Declare(

@@ -157,9 +157,9 @@ namespace mtl {
             return (*this)(row, col);
         }
 
-        size_type rows() const noexcept { return rows_; }
-        size_type cols() const noexcept { return cols_; }
-        size_type size() const noexcept { return rows_ * cols_; }
+        MATRIX_CXX17_NODISCARD size_type rows() const noexcept { return rows_; }
+        MATRIX_CXX17_NODISCARD size_type cols() const noexcept { return cols_; }
+        MATRIX_CXX17_NODISCARD size_type size() const noexcept { return rows_ * cols_; }
 
         void rows(size_type rows) {
             if (rows_ == rows)
