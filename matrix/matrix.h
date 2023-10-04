@@ -1,5 +1,5 @@
-#ifndef matrix_LIBRARY_CPP_matrix_H_
-#define matrix_LIBRARY_CPP_matrix_H_
+#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
+#define MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
 
 #include <cmath>
 #include <random>
@@ -40,24 +40,24 @@ namespace mtl {
         using const_reverse_iterator = matrix_reverse_iterator<const_iterator>;
 
     public:
-        _GLIBCXX17_CONSTEXPR matrix() noexcept = default;
+        MATRIX_CXX17_CONSTEXPR matrix() noexcept = default;
 
-        _GLIBCXX17_CONSTEXPR matrix(size_type rows, size_type cols, value_type f = {})
+        MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, value_type f = {})
             : rows_(rows), cols_(cols), data_(new value_type[rows * cols]{}) {
             if (f != value_type{})
                 fill(f);
         }
 
-        _GLIBCXX17_CONSTEXPR explicit matrix(size_type square) : matrix(square, square) {};
+        MATRIX_CXX17_CONSTEXPR explicit matrix(size_type square) : matrix(square, square) {};
 
-        _GLIBCXX17_CONSTEXPR explicit matrix(const std::vector<std::vector<value_type>> &matrix_vector)
+        MATRIX_CXX17_CONSTEXPR explicit matrix(const std::vector<std::vector<value_type>> &matrix_vector)
             : matrix(matrix_vector.size(), matrix_vector[0].size()) {
             for (size_type row = 0; row != rows_; ++row)
                 for (size_type col = 0; col != cols_; ++col)
                     (*this)(row, col) = matrix_vector[row][col];
         }
 
-        _GLIBCXX17_CONSTEXPR matrix(size_type rows, size_type cols, const std::initializer_list<T> &initializer)
+        MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, const std::initializer_list<T> &initializer)
                 : matrix(rows, cols) {
             std::copy(initializer.begin(), initializer.end(), begin());
         }
@@ -66,11 +66,11 @@ namespace mtl {
 #if __cplusplus > 201703L
         template<typename Container>
         requires(std::convertible_to<typename Container::value_type, T>)
-        _GLIBCXX17_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
+        MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
             : matrix(rows, cols) {
 #else
         template<typename Container>
-        _GLIBCXX17_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
+        MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
             : matrix(rows, cols) {
             static_assert(std::is_convertible<typename Container::value_type, T>::value, "Container::value_type must be convertible to T");
 #endif // C++ <= 201703L
@@ -83,18 +83,18 @@ namespace mtl {
             return identity;
         }
 
-        _GLIBCXX17_CONSTEXPR matrix(const matrix &other)
+        MATRIX_CXX17_CONSTEXPR matrix(const matrix &other)
             : matrix(other.rows_, other.cols_) {
             std::copy(other.begin(), other.end(), begin());
         }
 
-        _GLIBCXX17_CONSTEXPR matrix(matrix &&other) noexcept
+        MATRIX_CXX17_CONSTEXPR matrix(matrix &&other) noexcept
             : rows_(other.rows_), cols_(other.cols_), data_(other.data_) {
             other.rows_ = other.cols_ = size_type{};
             other.data_ = nullptr;
         }
 
-        _GLIBCXX17_CONSTEXPR matrix &operator=(const matrix &other) {
+        MATRIX_CXX17_CONSTEXPR matrix &operator=(const matrix &other) {
             if (&other == this)
                 return *this;
 
@@ -104,7 +104,7 @@ namespace mtl {
             return *this;
         }
 
-        _GLIBCXX17_CONSTEXPR matrix &operator=(matrix &&other) noexcept {
+        MATRIX_CXX17_CONSTEXPR matrix &operator=(matrix &&other) noexcept {
             if (&other == this)
                 return *this;
 
@@ -120,19 +120,19 @@ namespace mtl {
         }
 
     public:
-        _GLIBCXX17_CONSTEXPR iterator               begin()   noexcept       { return iterator(data_); }
-        _GLIBCXX17_CONSTEXPR const_iterator         begin()   const noexcept { return const_iterator(data_); }
-        _GLIBCXX17_CONSTEXPR reverse_iterator       rbegin()  noexcept       { return reverse_iterator(data_ + rows_ * cols_ - 1); }
-        _GLIBCXX17_CONSTEXPR const_reverse_iterator rbegin()  const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
-        _GLIBCXX17_CONSTEXPR const_iterator         cbegin()  const noexcept { return begin(); }
-        _GLIBCXX17_CONSTEXPR const_reverse_iterator crbegin() const noexcept { return rbegin(); }
+        MATRIX_CXX17_CONSTEXPR iterator               begin()   noexcept       { return iterator(data_); }
+        MATRIX_CXX17_CONSTEXPR const_iterator         begin()   const noexcept { return const_iterator(data_); }
+        MATRIX_CXX17_CONSTEXPR reverse_iterator       rbegin()  noexcept       { return reverse_iterator(data_ + rows_ * cols_ - 1); }
+        MATRIX_CXX17_CONSTEXPR const_reverse_iterator rbegin()  const noexcept { return const_reverse_iterator(data_ + rows_ * cols_ - 1); }
+        MATRIX_CXX17_CONSTEXPR const_iterator         cbegin()  const noexcept { return begin(); }
+        MATRIX_CXX17_CONSTEXPR const_reverse_iterator crbegin() const noexcept { return rbegin(); }
 
-        _GLIBCXX17_CONSTEXPR iterator end()                 noexcept       { return iterator(data_ + rows_ * cols_); }
-        _GLIBCXX17_CONSTEXPR const_iterator end()           const noexcept { return const_iterator(data_ + rows_ * cols_); }
-        _GLIBCXX17_CONSTEXPR reverse_iterator rend()        noexcept       { return reverse_iterator(data_ - 1); }
-        _GLIBCXX17_CONSTEXPR const_reverse_iterator rend()  const noexcept { return const_reverse_iterator(data_ - 1); }
-        _GLIBCXX17_CONSTEXPR const_iterator cend()          const noexcept { return end(); }
-        _GLIBCXX17_CONSTEXPR const_reverse_iterator crend() const noexcept { return rend(); }
+        MATRIX_CXX17_CONSTEXPR iterator end()                 noexcept       { return iterator(data_ + rows_ * cols_); }
+        MATRIX_CXX17_CONSTEXPR const_iterator end()           const noexcept { return const_iterator(data_ + rows_ * cols_); }
+        MATRIX_CXX17_CONSTEXPR reverse_iterator rend()        noexcept       { return reverse_iterator(data_ - 1); }
+        MATRIX_CXX17_CONSTEXPR const_reverse_iterator rend()  const noexcept { return const_reverse_iterator(data_ - 1); }
+        MATRIX_CXX17_CONSTEXPR const_iterator cend()          const noexcept { return end(); }
+        MATRIX_CXX17_CONSTEXPR const_reverse_iterator crend() const noexcept { return rend(); }
 
     public:
         reference operator()(size_type row, size_type col) {
@@ -609,10 +609,10 @@ namespace mtl {
     public:
         bool equal_to(const matrix &rhs) const {
             T epsilon;
-            _GLIBCXX17_CONSTEXPR bool is_bool = std::is_same<bool, T>::value;
+            MATRIX_CXX17_CONSTEXPR bool is_bool = std::is_same<bool, T>::value;
 
 #if __cplusplus >= 201703L
-            if _GLIBCXX17_CONSTEXPR (!is_bool)
+            if MATRIX_CXX17_CONSTEXPR (!is_bool)
 #else
                 if (!is_bool)
 #endif // C++ <= 201703L
@@ -623,7 +623,7 @@ namespace mtl {
                     value_type left = (*this)(row, col), right = rhs(row, col);
 
 #if __cplusplus >= 201703L
-                    if _GLIBCXX17_CONSTEXPR (is_bool) {
+                    if MATRIX_CXX17_CONSTEXPR (is_bool) {
 #else
                         if (is_bool) {
 #endif // C++ <= 201703L
@@ -915,4 +915,4 @@ namespace mtl {
     }
 }
 
-#endif //matrix_LIBRARY_CPP_matrix_H_
+#endif //MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
