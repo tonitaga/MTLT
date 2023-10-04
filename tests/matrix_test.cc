@@ -527,3 +527,43 @@ TEST(Dynamicmatrix, join_bottom) {
 
     ASSERT_TRUE(m_correct.equal_to(join));
 }
+
+TEST(Dynamicmatrix, swap_rows) {
+    matrix<int> m(3, 3, {
+        1, 2, 3,
+        4, 5, 6,
+        7, 8, 9
+    });
+
+    m.swap_rows(0, 1);
+    m.swap_rows(1, 2);
+
+    matrix<int> correct(3, 3, {
+            4, 5, 6,
+            7, 8, 9,
+            1, 2, 3
+    });
+
+    bool equal = m == correct;
+    ASSERT_TRUE(equal);
+}
+
+TEST(Dynamicmatrix, swap_cols) {
+    matrix<int> m(3, 3, {
+            1, 4, 7,
+            2, 5, 8,
+            3, 6, 9
+    });
+
+    m.swap_cols(0, 1);
+    m.swap_cols(1, 2);
+
+    matrix<int> correct(3, 3, {
+            4, 7, 1,
+            5, 8, 2,
+            6, 9, 3
+    });
+
+    bool equal = m == correct;
+    ASSERT_TRUE(equal);
+}

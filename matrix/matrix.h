@@ -658,6 +658,14 @@ namespace mtl {
             std::swap_ranges(begin() + row1 * cols_, begin() + row1 * cols_ + cols_, begin() + row2 * cols_);
         }
 
+        void swap_cols(size_type col1, size_type col2) {
+            if (col1 >= cols_ or col2 >= cols_)
+                throw std::logic_error("col1 or col2 is bigger that this->cols()");
+
+            for (size_type row = 0; row != rows_; ++row)
+                std::swap((*this)(row, col1), (*this)(row, col2));
+        }
+
     public:
         bool equal_to(const matrix &rhs) const {
             T epsilon;

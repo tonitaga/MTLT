@@ -389,3 +389,43 @@ TEST(StaticMatrix, join_bottom) {
     auto equal = join_matrix.equal_to(matrix_correct);
     ASSERT_EQ(equal, true);
 }
+
+TEST(StaticMatrix, swap_rows) {
+    static_matrix<int, 3, 3> m({
+            1, 2, 3,
+            4, 5, 6,
+            7, 8, 9
+    });
+
+    m.swap_rows(0, 1);
+    m.swap_rows(1, 2);
+
+    static_matrix<int, 3, 3> correct({
+            4, 5, 6,
+            7, 8, 9,
+            1, 2, 3
+    });
+
+    bool equal = m == correct;
+    ASSERT_TRUE(equal);
+}
+
+TEST(StaticMatrix, swap_cols) {
+    static_matrix<int, 3, 3> m({
+            1, 4, 7,
+            2, 5, 8,
+            3, 6, 9
+    });
+
+    m.swap_cols(0, 1);
+    m.swap_cols(1, 2);
+
+    static_matrix<int, 3, 3> correct({
+            4, 7, 1,
+            5, 8, 2,
+            6, 9, 3
+    });
+
+    bool equal = m == correct;
+    ASSERT_TRUE(equal);
+}

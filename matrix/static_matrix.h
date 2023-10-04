@@ -460,7 +460,6 @@ namespace mtl {
         MATRIX_CXX17_CONSTEXPR void swap_rows(size_type row1, size_type row2) {
 #if __cplusplus > 201703L
             std::swap_ranges(begin() + row1 * cols_, begin() + row1 * cols_ + cols_, begin() + row2 * cols_);
-
 #else
             size_type items = Cols, begin1_index = row1 * Cols, begin2_index = row2 * Cols;
             for (size_type i = 0; i != items; ++i) {
@@ -470,6 +469,18 @@ namespace mtl {
                 begin1_index++, begin2_index++;
             }
 #endif
+        }
+
+        MATRIX_CXX17_CONSTEXPR void swap_cols(size_type col1, size_type col2) {
+            for (size_type row = 0; row != Rows; ++row) {
+#if __cplusplus > 201703L
+                std::swap((*this)(row, col1), (*this)(row, col2));
+#else
+                value_type tmp = (*this)(row, col1);
+                (*this)(row, col1) = (*this)(row, col2);
+                (*this)(row, col2) = tmp;
+#endif
+            }
         }
 
         MATRIX_CXX17_CONSTEXPR double minor_item(size_type row, size_type col) const {
