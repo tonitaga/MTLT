@@ -1,0 +1,18 @@
+
+
+        Copyright 2023, School21 Student Library
+        All rights reserved
+
+        Author:   Gubaydullin Nurislam aka tonitaga
+        Email:    gubaydullin.nurislam@gmail.com
+        Telegram: @tonitaga
+
+        The Template Matrix Library for fundamental types
+        contains most of the operations on matrices.
+
+        The Template Matrix library is written in the C++20 standard
+        So for use you need at least GCC 10 or Clang 10
+
+        This file contains a Matrix classes that allows you
+        to work with a matrix on the heap and on the stack.
+
