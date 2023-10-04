@@ -457,18 +457,78 @@ namespace mtl {
             return minored;
         }
 
+        MATRIX_CXX17_CONSTEXPR void swap_rows(size_type row1, size_type row2) {
+#if __cplusplus > 201703L
+            std::swap_ranges(begin() + row1 * cols_, begin() + row1 * cols_ + cols_, begin() + row2 * cols_);
 
-        MATRIX_CXX17_CONSTEXPR value_type minor_item(size_type row, size_type col) const {
-            return minor(row, col).determinant();
+#else
+            size_type items = Cols, begin1_index = row1 * Cols, begin2_index = row2 * Cols;
+            for (size_type i = 0; i != items; ++i) {
+                value_type tmp = data_[begin1_index];
+                data_[begin1_index] = data_[begin2_index];
+                data_[begin2_index] = tmp;
+                begin1_index++, begin2_index++;
+            }
+#endif
+        }
+
+        MATRIX_CXX17_CONSTEXPR double minor_item(size_type row, size_type col) const {
+            return minor(row, col).determinant_gaussian();
         }
 
 #if __cplusplus > 201703L
-        MATRIX_CXX17_CONSTEXPR value_type determinant() const requires(Rows == Cols) {
+        MATRIX_CXX17_CONSTEXPR double determinant_gaussian() const requires(Rows == Cols) {
 #else
-        MATRIX_CXX17_CONSTEXPR value_type determinant() const {
+        MATRIX_CXX17_CONSTEXPR double determinant_gaussian() const {
             static_assert(Rows == Cols, "Matrix must be square");
 #endif // C++ <= 201703L
-            value_type determinant_value{};
+            double determinant_value = 1;
+
+            static_matrix<double, Rows, Cols> matrix = convert_to<double>();
+            const size_type kN = matrix.rows();
+
+            for (size_type i = 0; i != kN; ++i) {
+                double pivot = matrix(i, i);
+                size_type pivot_row = i;
+                for (size_type row = i + 1; row != kN; ++row) {
+                    double row_i_item = matrix(row, i);
+                    row_i_item = row_i_item < 0 ? -row_i_item : row_i_item;
+                    double temp_pivot = pivot < 0 ? -pivot : pivot;
+
+                    if (row_i_item > temp_pivot) {
+                        pivot = matrix(row, i);
+                        pivot_row = row;
+                    }
+                }
+
+                if (pivot == value_type{}) {
+                    return value_type{};
+                }
+
+                if (pivot_row != i) {
+                    matrix.swap_rows(i, pivot_row);
+                    determinant_value = -determinant_value;
+                }
+
+                determinant_value *= pivot;
+
+                for (size_type row = i + 1; row != kN; ++row) {
+                    for (size_type col = i + 1; col != kN; ++col) {
+                        matrix(row, col) -= matrix(row, i) * matrix(i, col) / pivot;
+                    }
+                }
+            }
+
+            return determinant_value;
+        }
+
+#if __cplusplus > 201703L
+        MATRIX_CXX17_CONSTEXPR double determinant_laplacian() const requires(Rows == Cols) {
+#else
+        MATRIX_CXX17_CONSTEXPR double determinant_laplacian() const {
+            static_assert(Rows == Cols, "Matrix must be square");
+#endif // C++ <= 201703L
+            double determinant_value{};
             int sign = 1;
 
 #if __cplusplus > 201703L
@@ -485,7 +545,7 @@ namespace mtl {
             else {
                 for (size_type col = 0; col != Cols; ++col) {
                     static_matrix<value_type, Rows - 1, Cols - 1> minored = this->minor(0, col);
-                    determinant_value += sign * (*this)(0, col) * minored.determinant();
+                    determinant_value += sign * (*this)(0, col) * minored.determinant_laplacian();
                     sign = -sign;
                 }
             }
@@ -516,10 +576,10 @@ namespace mtl {
         MATRIX_CXX17_CONSTEXPR static_matrix inverse() const {
             static_assert(Rows == Cols, "Matrix must be square");
 #endif // C++ <= 201703L
-            value_type det = determinant();
+            double det = determinant_gaussian();
 
-            if (det != value_type{})
-                return calc_complements().transpose().mul_by_element(static_matrix<T, Rows, Cols>(1 / determinant()));
+            if (det > matrix_epsilon<double>::epsilon)
+                return calc_complements().transpose().mul_by_element(static_matrix<T, Rows, Cols>(1 / det));
 
             return zero();
         }
@@ -799,7 +859,7 @@ namespace mtl {
     template <typename T>
     class static_matrix<T, 0, 0> {
     public:
-        T determinant() { return T{}; }
+        T determinant_laplacian() { return T{}; }
         static_matrix<T, 0, 0> minor(std::size_t, std::size_t) { return static_matrix<T, 0, 0>{}; };
 
         std::size_t rows() const noexcept { return 0; }
