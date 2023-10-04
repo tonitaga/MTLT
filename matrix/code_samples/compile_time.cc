@@ -47,11 +47,14 @@ int main() {
     CXX17_TAGS auto det1 = matrix.determinant_laplacian();
     CXX17_TAGS auto det2 = matrix.determinant_gaussian();
 
+    CXX17_TAGS auto less1 = det1 <= mtl::matrix_epsilon<double>::epsilon;
+    CXX17_TAGS auto less2 = det2 <= mtl::matrix_epsilon<double>::epsilon;
+
     // Other matrix transformation from linear algebra
     CXX17_TAGS auto minor_item = matrix.minor_item(0, 0);
     CXX17_TAGS auto complements = matrix.calc_complements();
     CXX17_TAGS auto inverse = matrix.convert_to<double>().inverse();
 
     // Equality
-    CXX17_TAGS auto equal = matrix == matrix;
+    CXX17_TAGS auto is_equal = matrix == mtl::static_matrix<int, 3, 3>(2);
 }
