@@ -69,44 +69,51 @@ namespace mtl {
     };
 
     template <typename NormalIterator>
-    [[__nodiscard__]] MATRIX_CXX17_CONSTEXPR bool operator==(const matrix_reverse_iterator<NormalIterator> &lhs,
-                                                const matrix_reverse_iterator<NormalIterator> &rhs) {
+    MATRIX_CXX17_NODISCARD
+    MATRIX_CXX17_CONSTEXPR bool operator==(const matrix_reverse_iterator<NormalIterator> &lhs,
+                                           const matrix_reverse_iterator<NormalIterator> &rhs) {
         return lhs.Base() == rhs.Base();
     }
 
     template <typename NormalIterator>
-    [[__nodiscard__]] MATRIX_CXX17_CONSTEXPR bool operator!=(const matrix_reverse_iterator<NormalIterator> &lhs,
-                                                const matrix_reverse_iterator<NormalIterator> &rhs) {
+    MATRIX_CXX17_NODISCARD
+    MATRIX_CXX17_CONSTEXPR bool operator!=(const matrix_reverse_iterator<NormalIterator> &lhs,
+                                           const matrix_reverse_iterator<NormalIterator> &rhs) {
         return lhs.Base() != rhs.Base();
     }
 
     template <typename NormalIterator>
-    [[__nodiscard__]]  inline bool operator<(const matrix_reverse_iterator<NormalIterator> &lhs,
-                                             const matrix_reverse_iterator<NormalIterator> &rhs) {
+    MATRIX_CXX17_NODISCARD
+    inline bool operator<(const matrix_reverse_iterator<NormalIterator> &lhs,
+                          const matrix_reverse_iterator<NormalIterator> &rhs) {
         return lhs.Base() < rhs.Base();
     }
 
     template <typename NormalIterator>
-    [[__nodiscard__]]  inline bool operator>(const matrix_reverse_iterator<NormalIterator> &lhs,
-                                             const matrix_reverse_iterator<NormalIterator> &rhs) {
+    MATRIX_CXX17_NODISCARD
+    inline bool operator>(const matrix_reverse_iterator<NormalIterator> &lhs,
+                          const matrix_reverse_iterator<NormalIterator> &rhs) {
         return lhs.Base() > rhs.Base();
     }
 
     template <typename NormalIterator>
-    [[__nodiscard__]]  inline bool operator<=(const matrix_reverse_iterator<NormalIterator> &lhs,
-                                              const matrix_reverse_iterator<NormalIterator> &rhs) {
+    MATRIX_CXX17_NODISCARD
+    inline bool operator<=(const matrix_reverse_iterator<NormalIterator> &lhs,
+                           const matrix_reverse_iterator<NormalIterator> &rhs) {
         return lhs.Base() < rhs.Base();
     }
 
     template <typename NormalIterator>
-    [[__nodiscard__]]  inline bool operator>=(const matrix_reverse_iterator<NormalIterator> &lhs,
-                                              const matrix_reverse_iterator<NormalIterator> &rhs) {
+    MATRIX_CXX17_NODISCARD
+    inline bool operator>=(const matrix_reverse_iterator<NormalIterator> &lhs,
+                           const matrix_reverse_iterator<NormalIterator> &rhs) {
         return lhs.Base() > rhs.Base();
     }
 
     template <typename NormalIterator>
-    [[__nodiscard__]]  inline std::ptrdiff_t operator-(const matrix_reverse_iterator<NormalIterator> &lhs,
-                                             const matrix_reverse_iterator<NormalIterator> &rhs) {
+    MATRIX_CXX17_NODISCARD
+    inline std::ptrdiff_t operator-(const matrix_reverse_iterator<NormalIterator> &lhs,
+                                    const matrix_reverse_iterator<NormalIterator> &rhs) {
         return rhs.Base() - lhs.Base();
     }
 }
