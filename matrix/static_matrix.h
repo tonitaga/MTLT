@@ -191,7 +191,7 @@ namespace mtl {
             return *this;
         }
 
-         static_matrix round() const {
+        MATRIX_CXX23_CONSTEXPR static_matrix round() const {
             static_matrix m(*this);
             std::transform(m.begin(), m.end(), m.begin(), [](const value_type &item) { return std::round(item); });
             return m;
@@ -202,7 +202,7 @@ namespace mtl {
             return *this;
         }
 
-        static_matrix floor() const {
+        MATRIX_CXX23_CONSTEXPR static_matrix floor() const {
             static_matrix m(*this);
             std::transform(m.begin(), m.end(), m.begin(), [](const value_type &item) { return std::floor(item); });
             return m;
@@ -213,7 +213,7 @@ namespace mtl {
             return *this;
         }
 
-        static_matrix ceil() const {
+        MATRIX_CXX23_CONSTEXPR static_matrix ceil() const {
             static_matrix m(*this);
             std::transform(m.begin(), m.end(), m.begin(), [](const value_type &item) { return std::ceil(item); });
             return m;
