@@ -869,6 +869,7 @@ namespace mtl {
 #if __cplusplus <= 201703L
     template <typename T>
     class static_matrix<T, 0, 0> {
+        static_assert(std::is_fundamental<T>::value, "Template parameter T must be fundamental");
     public:
         T determinant_laplacian() { return T{}; }
         static_matrix<T, 0, 0> minor(std::size_t, std::size_t) { return static_matrix<T, 0, 0>{}; };
