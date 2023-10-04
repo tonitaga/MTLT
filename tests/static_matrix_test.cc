@@ -212,8 +212,11 @@ TEST(StaticMatrix, minormatrix) {
 
 TEST(StaticMatrix, determinant) {
     static_matrix<int, 3, 3> m({3, 6, 2, 8, 6, 1, 9, 4, 7});
-    int determinant = m.determinant();
-    ASSERT_EQ(determinant, -212);
+    double determinant1 = m.determinant_gaussian();
+    double determinant2 = m.determinant_gaussian();
+    ASSERT_DOUBLE_EQ(determinant1, determinant2);
+    ASSERT_DOUBLE_EQ(determinant1, -212.0);
+    ASSERT_DOUBLE_EQ(determinant2, -212.0);
 }
 
 TEST(StaticMatrix, trace) {
@@ -230,8 +233,11 @@ TEST(StaticMatrix, trace) {
 
 TEST(StaticMatrix, inverse) {
     static_matrix<int, 3, 3> m({2, 5, 0, 0, 9, 7, 8, 1, 3});
-    int determinant = m.determinant();
-    ASSERT_EQ(determinant, 320);
+    double determinant1 = m.determinant_gaussian();
+    double determinant2 = m.determinant_laplacian();
+    ASSERT_DOUBLE_EQ(determinant2, determinant1);
+    ASSERT_DOUBLE_EQ(determinant2, 320.0);
+    ASSERT_DOUBLE_EQ(determinant1, 320.0);
 
     static_matrix<double, 3, 3> inverse = m.convert_to<double>().inverse();
     static_matrix<double, 3, 3> correct({
@@ -382,4 +388,44 @@ TEST(StaticMatrix, join_bottom) {
 
     auto equal = join_matrix.equal_to(matrix_correct);
     ASSERT_EQ(equal, true);
+}
+
+TEST(StaticMatrix, swap_rows) {
+    static_matrix<int, 3, 3> m({
+            1, 2, 3,
+            4, 5, 6,
+            7, 8, 9
+    });
+
+    m.swap_rows(0, 1);
+    m.swap_rows(1, 2);
+
+    static_matrix<int, 3, 3> correct({
+            4, 5, 6,
+            7, 8, 9,
+            1, 2, 3
+    });
+
+    bool equal = m == correct;
+    ASSERT_TRUE(equal);
+}
+
+TEST(StaticMatrix, swap_cols) {
+    static_matrix<int, 3, 3> m({
+            1, 4, 7,
+            2, 5, 8,
+            3, 6, 9
+    });
+
+    m.swap_cols(0, 1);
+    m.swap_cols(1, 2);
+
+    static_matrix<int, 3, 3> correct({
+            4, 7, 1,
+            5, 8, 2,
+            6, 9, 3
+    });
+
+    bool equal = m == correct;
+    ASSERT_TRUE(equal);
 }

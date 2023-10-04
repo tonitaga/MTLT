@@ -157,9 +157,9 @@ namespace mtl {
             return (*this)(row, col);
         }
 
-        size_type rows() const noexcept { return rows_; }
-        size_type cols() const noexcept { return cols_; }
-        size_type size() const noexcept { return rows_ * cols_; }
+        MATRIX_CXX17_NODISCARD size_type rows() const noexcept { return rows_; }
+        MATRIX_CXX17_NODISCARD size_type cols() const noexcept { return cols_; }
+        MATRIX_CXX17_NODISCARD size_type size() const noexcept { return rows_ * cols_; }
 
         void rows(size_type rows) {
             if (rows_ == rows)
@@ -401,6 +401,7 @@ namespace mtl {
         value_type sum() const {
             return std::accumulate(begin(), end(), value_type{});
         }
+
     public:
         void to_join_left(const matrix &rhs) {
             if (rhs.rows() != rows_)
@@ -543,16 +544,60 @@ namespace mtl {
             return minor;
         }
 
-        value_type minor_item(size_type row, size_type col) const {
-            return minor(row, col).determinant();
+        double minor_item(size_type row, size_type col) const {
+            return minor(row, col).determinant_gaussian();
         }
 
-        value_type determinant() const {
+        double determinant_gaussian() const {
             if (rows_ != cols_)
-                throw std::logic_error("Determinant can be found only for square matrices");
+                throw std::logic_error("determinant_gaussian can be found only for square matrices");
 
-            value_type determinant_value {};
+            double determinant_value = 1;
+
+            matrix<double> matrix(rows_, cols_, *this);
+            const size_type kN = matrix.rows();
+
+            for (size_type i = 0; i != kN; ++i) {
+                double pivot = matrix(i, i);
+                size_type pivot_row = i;
+                for (size_type row = i + 1; row != kN; ++row) {
+                    double row_i_item = matrix(row, i);
+                    row_i_item = row_i_item < 0 ? -row_i_item : row_i_item;
+                    double temp_pivot = pivot < 0 ? -pivot : pivot;
+
+                    if (row_i_item > temp_pivot) {
+                        pivot = matrix(row, i);
+                        pivot_row = row;
+                    }
+                }
+
+                if (pivot == value_type{}) {
+                    return value_type{};
+                }
+
+                if (pivot_row != i) {
+                    matrix.swap_rows(i, pivot_row);
+                    determinant_value = -determinant_value;
+                }
+
+                determinant_value *= pivot;
+
+                for (size_type row = i + 1; row != kN; ++row) {
+                    for (size_type col = i + 1; col != kN; ++col) {
+                        matrix(row, col) -= matrix(row, i) * matrix(i, col) / pivot;
+                    }
+                }
+            }
+
+            return determinant_value;
+        }
+
+        double determinant_laplacian() const {
+            if (rows_ != cols_)
+                throw std::logic_error("determinant_gaussian can be found only for square matrices");
+
             int sign = 1;
+            double determinant_value {};
 
             if (rows_ == 1 and cols_ == 1)
                 determinant_value = (*this)(0, 0);
@@ -561,7 +606,7 @@ namespace mtl {
             else {
                 for (size_type col = 0; col != cols_; ++col) {
                     matrix minored = minor(0, col);
-                    determinant_value += sign * (*this)(0, col) * minored.determinant();
+                    determinant_value += sign * (*this)(0, col) * minored.determinant_laplacian();
                     sign = -sign;
                 }
             }
@@ -598,12 +643,27 @@ namespace mtl {
         }
 
         matrix inverse() const {
-            value_type det = determinant();
+            double det = determinant_gaussian();
 
-            if (det == value_type{})
+            if (det <= matrix_epsilon<double>::epsilon)
                 throw std::logic_error("Can't found inverse matrix because determinant is zero");
 
             return calc_complements().transpose().mul(1 / det);
+        }
+
+        void swap_rows(size_type row1, size_type row2) {
+            if (row1 >= rows_ or row2 >= rows_)
+                throw std::logic_error("row1 or row2 is bigger that this->rows()");
+
+            std::swap_ranges(begin() + row1 * cols_, begin() + row1 * cols_ + cols_, begin() + row2 * cols_);
+        }
+
+        void swap_cols(size_type col1, size_type col2) {
+            if (col1 >= cols_ or col2 >= cols_)
+                throw std::logic_error("col1 or col2 is bigger that this->cols()");
+
+            for (size_type row = 0; row != rows_; ++row)
+                std::swap((*this)(row, col1), (*this)(row, col2));
         }
 
     public:
@@ -661,10 +721,10 @@ namespace mtl {
 #if __cplusplus > 201703L
         template<fundamental U = T>
         requires (std::convertible_to<U, T>)
-        std::vector<value_type> to_vector() const {
+        std::vector<U> to_vector() const {
 #else
         template<typename U = T>
-        std::vector<value_type> to_vector() const {
+        std::vector<U> to_vector() const {
             static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
             std::vector<U> v(rows_ * cols_);
@@ -675,10 +735,10 @@ namespace mtl {
 #if __cplusplus > 201703L
         template<fundamental U = T>
         requires (std::convertible_to<U, T>)
-        std::vector<std::vector<value_type>> to_matrix_vector() const {
+        std::vector<std::vector<U>> to_matrix_vector() const {
 #else
         template<typename U = T>
-        std::vector<std::vector<value_type>> to_matrix_vector() const {
+        std::vector<std::vector<U>> to_matrix_vector() const {
             static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
             std::vector<std::vector<U>> v(rows_, std::vector<U>(cols_));

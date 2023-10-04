@@ -263,11 +263,13 @@ TEST(Dynamicmatrix, minormatrix) {
 
 TEST(Dynamicmatrix, determinant) {
     matrix<int> m(3, 3, {3, 6, 2, 8, 6, 1, 9, 4, 7});
-    int determinant = m.determinant();
-    ASSERT_EQ(determinant, -212);
-
+    double determinant1 = m.determinant_gaussian();
+    double determinant2 = m.determinant_laplacian();
+    ASSERT_DOUBLE_EQ(determinant1, determinant2);
+    ASSERT_DOUBLE_EQ(determinant1, -212.0);
+    ASSERT_DOUBLE_EQ(determinant2, -212.0);
     m.resize(3, 4);
-    EXPECT_THROW(m.determinant(), std::logic_error);
+    EXPECT_THROW(m.determinant_gaussian(), std::logic_error);
 }
 
 TEST(Dynamicmatrix, trace) {
@@ -287,8 +289,8 @@ TEST(Dynamicmatrix, trace) {
 
 TEST(Dynamicmatrix, inverse) {
     matrix<int> m(3, 3, {2, 5, 0, 0, 9, 7, 8, 1, 3});
-    int determinant = m.determinant();
-    ASSERT_EQ(determinant, 320);
+    double determinant = m.determinant_gaussian();
+    ASSERT_DOUBLE_EQ(determinant, 320.0);
 
     matrix<double> inverse = m.convert_to<double>().inverse();
     matrix<double> correct(3, 3, {
@@ -524,4 +526,44 @@ TEST(Dynamicmatrix, join_bottom) {
     });
 
     ASSERT_TRUE(m_correct.equal_to(join));
+}
+
+TEST(Dynamicmatrix, swap_rows) {
+    matrix<int> m(3, 3, {
+        1, 2, 3,
+        4, 5, 6,
+        7, 8, 9
+    });
+
+    m.swap_rows(0, 1);
+    m.swap_rows(1, 2);
+
+    matrix<int> correct(3, 3, {
+            4, 5, 6,
+            7, 8, 9,
+            1, 2, 3
+    });
+
+    bool equal = m == correct;
+    ASSERT_TRUE(equal);
+}
+
+TEST(Dynamicmatrix, swap_cols) {
+    matrix<int> m(3, 3, {
+            1, 4, 7,
+            2, 5, 8,
+            3, 6, 9
+    });
+
+    m.swap_cols(0, 1);
+    m.swap_cols(1, 2);
+
+    matrix<int> correct(3, 3, {
+            4, 7, 1,
+            5, 8, 2,
+            6, 9, 3
+    });
+
+    bool equal = m == correct;
+    ASSERT_TRUE(equal);
 }
