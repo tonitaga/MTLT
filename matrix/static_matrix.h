@@ -1,3 +1,19 @@
+/*
+ *        Copyright 2023, School21 Student Library
+ *        All rights reserved
+ *
+ *        Author:   Gubaydullin Nurislam aka tonitaga
+ *        Email:    gubaydullin.nurislam@gmail.com
+ *        Telegram: @tonitaga
+ *
+ *        The Template Matrix Library for fundamental types
+ *        contains most of the operations on matrices.
+ *
+ *        The Template Matrix library is written in the C++20 standard
+ *        Supports C++11 C++14 C++17 C++20 C++23 versions
+ *
+*/
+
 #ifndef MATRIX_TEMPLATE_LIBRARY_CPP_STATIC_MATRIX_H_
 #define MATRIX_TEMPLATE_LIBRARY_CPP_STATIC_MATRIX_H_
 
