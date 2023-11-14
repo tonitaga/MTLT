@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.5...3.16)
 project(Matrix_Library_CPP_TEST LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wno-unused-but-set-variable")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Wno-unused-but-set-variable")
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -14,15 +15,13 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-include_directories(
-        matrix
-)
-
 add_executable(Matrix_Library_CPP_TEST
         tests/reverse_iterator_test.cc
         tests/normal_iterator_test.cc
         tests/matrix_test.cc
         tests/static_matrix_test.cc
+        tests/row_matrix_test.cc
+        tests/col_matrix_test.cc
 )
 target_link_libraries(Matrix_Library_CPP_TEST gtest_main)
 add_test(NAME Matrix_Library_CPP_TEST_ COMMAND Matrix_Library_CPP_TEST)

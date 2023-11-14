@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "matrix.h"
+#include <matrix/matrix.h>
+#include <matrix/row_matrix.h>
 
 using namespace mtl;
 
@@ -566,4 +567,11 @@ TEST(Dynamicmatrix, swap_cols) {
 
     bool equal = m == correct;
     ASSERT_TRUE(equal);
+}
+
+TEST(Dynamicmatrix, operating_with_row_matrix) {
+  row_matrix<int> row_matrix(5, 2);
+  matrix<int> matrix(5, 1, row_matrix);
+
+  ASSERT_EQ(matrix(0, 0), 2);
 }
