@@ -28,8 +28,11 @@ protected:
   NormalIterator current_;
 
 public:
-  MATRIX_CXX17_CONSTEXPR matrix_reverse_iterator() noexcept: current_(NormalIterator()) {};
-  explicit MATRIX_CXX17_CONSTEXPR matrix_reverse_iterator(const typename NormalIterator::iterator_type &it) noexcept
+  MATRIX_CXX17_CONSTEXPR
+  matrix_reverse_iterator() noexcept: current_(NormalIterator()) {};
+
+  explicit MATRIX_CXX17_CONSTEXPR
+  matrix_reverse_iterator(const typename NormalIterator::iterator_type &it) noexcept
 	  : current_(it) {};
 
 public:
@@ -41,42 +44,53 @@ public:
   using iterator_category = typename NormalIterator::iterator_category;
 
 public:
-  MATRIX_CXX17_CONSTEXPR reference operator*() const noexcept { return *current_; }
-  MATRIX_CXX17_CONSTEXPR pointer operator->() const noexcept { return current_.Base(); }
+  MATRIX_CXX17_CONSTEXPR
+  reference operator*() const noexcept { return *current_; }
 
-  MATRIX_CXX17_CONSTEXPR matrix_reverse_iterator &operator++() noexcept {
+  MATRIX_CXX17_CONSTEXPR
+  pointer operator->() const noexcept { return current_.Base(); }
+
+  MATRIX_CXX17_CONSTEXPR
+  matrix_reverse_iterator &operator++() noexcept {
 	--current_;
 	return *this;
   }
 
-  MATRIX_CXX17_CONSTEXPR matrix_reverse_iterator operator++(int) noexcept {
+  MATRIX_CXX17_CONSTEXPR
+  matrix_reverse_iterator operator++(int) noexcept {
 	return matrix_reverse_iterator(current_--);
   }
 
-  MATRIX_CXX17_CONSTEXPR matrix_reverse_iterator &operator--() noexcept {
+  MATRIX_CXX17_CONSTEXPR
+  matrix_reverse_iterator &operator--() noexcept {
 	++current_;
 	return *this;
   }
 
-  MATRIX_CXX17_CONSTEXPR matrix_reverse_iterator operator--(int) noexcept {
+  MATRIX_CXX17_CONSTEXPR
+  matrix_reverse_iterator operator--(int) noexcept {
 	return matrix_reverse_iterator(current_++);
   }
 
-  MATRIX_CXX17_CONSTEXPR matrix_reverse_iterator &operator+=(difference_type n) noexcept {
+  MATRIX_CXX17_CONSTEXPR
+  matrix_reverse_iterator &operator+=(difference_type n) noexcept {
 	current_ -= n;
 	return *this;
   }
 
-  MATRIX_CXX17_CONSTEXPR matrix_reverse_iterator operator+(difference_type n) noexcept {
+  MATRIX_CXX17_CONSTEXPR
+  matrix_reverse_iterator operator+(difference_type n) noexcept {
 	return matrix_reverse_iterator((current_ - n).Base());
   }
 
-  MATRIX_CXX17_CONSTEXPR matrix_reverse_iterator &operator-=(difference_type n) noexcept {
+  MATRIX_CXX17_CONSTEXPR
+  matrix_reverse_iterator &operator-=(difference_type n) noexcept {
 	current_ += n;
 	return *this;
   }
 
-  MATRIX_CXX17_CONSTEXPR matrix_reverse_iterator operator-(difference_type n) noexcept {
+  MATRIX_CXX17_CONSTEXPR
+  matrix_reverse_iterator operator-(difference_type n) noexcept {
 	return matrix_reverse_iterator((current_ + n).Base());
   }
 
@@ -86,16 +100,16 @@ public:
 };
 
 template<typename NormalIterator>
-MATRIX_CXX17_NODISCARD
-MATRIX_CXX17_CONSTEXPR bool operator==(const matrix_reverse_iterator<NormalIterator> &lhs,
-									   const matrix_reverse_iterator<NormalIterator> &rhs) {
+MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+bool operator==(const matrix_reverse_iterator<NormalIterator> &lhs,
+				const matrix_reverse_iterator<NormalIterator> &rhs) {
   return lhs.Base() == rhs.Base();
 }
 
 template<typename NormalIterator>
-MATRIX_CXX17_NODISCARD
-MATRIX_CXX17_CONSTEXPR bool operator!=(const matrix_reverse_iterator<NormalIterator> &lhs,
-									   const matrix_reverse_iterator<NormalIterator> &rhs) {
+MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+bool operator!=(const matrix_reverse_iterator<NormalIterator> &lhs,
+				const matrix_reverse_iterator<NormalIterator> &rhs) {
   return lhs.Base() != rhs.Base();
 }
 

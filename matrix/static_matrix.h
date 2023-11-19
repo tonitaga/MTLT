@@ -113,48 +113,99 @@ public:
 #endif // C++ <= 201703L
 
 public:
-  MATRIX_CXX17_CONSTEXPR iterator begin() noexcept { return iterator(data_); }
-  MATRIX_CXX17_CONSTEXPR const_iterator begin() const noexcept { return const_iterator(data_); }
-  MATRIX_CXX17_CONSTEXPR const_iterator cbegin() const noexcept { return const_iterator(data_); }
-  MATRIX_CXX17_CONSTEXPR reverse_iterator rbegin() noexcept { return reverse_iterator(data_ + rows_ * cols_ - 1); }
-  MATRIX_CXX17_CONSTEXPR const_reverse_iterator rbegin() const noexcept {
-	return const_reverse_iterator(data_ + rows_ * cols_ - 1);
+  MATRIX_CXX17_CONSTEXPR
+  iterator begin() noexcept {
+	return iterator(data_);
   }
-  MATRIX_CXX17_CONSTEXPR const_reverse_iterator crbegin() const noexcept {
+
+  MATRIX_CXX17_CONSTEXPR
+  const_iterator begin() const noexcept {
+	return const_iterator(data_);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_iterator cbegin() const noexcept {
+	return const_iterator(data_);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  reverse_iterator rbegin() noexcept {
+	return reverse_iterator(data_ + rows_ * cols_ - 1);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_reverse_iterator rbegin() const noexcept {
 	return const_reverse_iterator(data_ + rows_ * cols_ - 1);
   }
 
-  MATRIX_CXX17_CONSTEXPR iterator end() noexcept { return iterator(data_ + rows_ * cols_); }
-  MATRIX_CXX17_CONSTEXPR const_iterator end() const noexcept { return const_iterator(data_ + rows_ * cols_); }
-  MATRIX_CXX17_CONSTEXPR const_iterator cend() const noexcept { return const_iterator(data_ + rows_ * cols_); }
-  MATRIX_CXX17_CONSTEXPR reverse_iterator rend() noexcept { return reverse_iterator(data_ - 1); }
-  MATRIX_CXX17_CONSTEXPR const_reverse_iterator rend() const noexcept { return const_reverse_iterator(data_ - 1); }
-  MATRIX_CXX17_CONSTEXPR const_reverse_iterator crend() const noexcept { return const_reverse_iterator(data_ - 1); }
+  MATRIX_CXX17_CONSTEXPR
+  const_reverse_iterator crbegin() const noexcept {
+	return const_reverse_iterator(data_ + rows_ * cols_ - 1);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  iterator end() noexcept {
+	return iterator(data_ + rows_ * cols_);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_iterator end() const noexcept {
+	return const_iterator(data_ + rows_ * cols_);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_iterator cend() const noexcept {
+	return const_iterator(data_ + rows_ * cols_);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  reverse_iterator rend() noexcept {
+	return reverse_iterator(data_ - 1);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_reverse_iterator rend() const noexcept {
+	return const_reverse_iterator(data_ - 1);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_reverse_iterator crend() const noexcept {
+	return const_reverse_iterator(data_ - 1);
+  }
 
 public:
-  MATRIX_CXX17_CONSTEXPR reference operator()(size_type row, size_type col) {
+  MATRIX_CXX17_CONSTEXPR
+  reference operator()(size_type row, size_type col) {
 	return data_[row * cols_ + col];
   }
 
-  MATRIX_CXX17_CONSTEXPR const_reference operator()(size_type row, size_type col) const {
+  MATRIX_CXX17_CONSTEXPR
+  const_reference operator()(size_type row, size_type col) const {
 	return data_[row * cols_ + col];
   }
 
-  MATRIX_CXX17_CONSTEXPR reference at(size_type row, size_type col) {
+  MATRIX_CXX17_CONSTEXPR
+  reference at(size_type row, size_type col) {
 	if (row >= rows_ or col >= cols_)
 	  throw std::out_of_range("row or col is out of matrix bounds");
 	return (*this)(row, col);
   }
 
-  MATRIX_CXX17_CONSTEXPR const_reference at(size_type row, size_type col) const {
+  MATRIX_CXX17_CONSTEXPR
+  const_reference at(size_type row, size_type col) const {
 	if (row >= rows_ or col >= cols_)
 	  throw std::out_of_range("row or col is out of matrix bounds");
 	return (*this)(row, col);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR size_type rows() const noexcept { return rows_; }
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR size_type cols() const noexcept { return cols_; }
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR size_type size() const noexcept { return rows_ * cols_; }
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  size_type rows() const noexcept { return rows_; }
+
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  size_type cols() const noexcept { return cols_; }
+
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  size_type size() const noexcept { return rows_ * cols_; }
 
 public:
   void print(std::ostream &os = std::cout, matrix_debug_settings s = matrix_debug_settings{}) const {
@@ -175,7 +226,8 @@ public:
 
 public:
   template<typename UnaryOperation>
-  MATRIX_CXX17_CONSTEXPR void transform(UnaryOperation &&op) {
+  MATRIX_CXX17_CONSTEXPR
+  void transform(UnaryOperation &&op) {
 	std::transform(begin(), end(), begin(), std::forward<UnaryOperation>(op));
   }
 
@@ -213,7 +265,8 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX23_CONSTEXPR static_matrix round() const {
+  MATRIX_CXX23_CONSTEXPR
+  static_matrix round() const {
 	static_matrix m(*this);
 	std::transform(m.begin(), m.end(), m.begin(), [](const value_type &item) { return std::round(item); });
 	return m;
@@ -224,7 +277,8 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX23_CONSTEXPR static_matrix floor() const {
+  MATRIX_CXX23_CONSTEXPR
+  static_matrix floor() const {
 	static_matrix m(*this);
 	std::transform(m.begin(), m.end(), m.begin(), [](const value_type &item) { return std::floor(item); });
 	return m;
@@ -235,7 +289,8 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX23_CONSTEXPR static_matrix ceil() const {
+  MATRIX_CXX23_CONSTEXPR
+  static_matrix ceil() const {
 	static_matrix m(*this);
 	std::transform(m.begin(), m.end(), m.begin(), [](const value_type &item) { return std::ceil(item); });
 	return m;
@@ -246,7 +301,8 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX17_CONSTEXPR static_matrix zero() const {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix zero() const {
 	return static_matrix<T, Rows, Cols>();
   }
 
@@ -266,7 +322,8 @@ public:
 #if __cplusplus > 201703L
   MATRIX_CXX17_CONSTEXPR static_matrix identity() const requires(Rows == Cols) {
 #else
-  MATRIX_CXX17_CONSTEXPR static_matrix identity() const {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix identity() const {
 	static_assert(Rows == Cols, "Matrix must be square");
 #endif // C++ <= 201703L
 	static_matrix<T, Rows, Cols> identity;
@@ -324,7 +381,8 @@ public:
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> add(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
   template<typename U>
-  MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> add(const static_matrix<U, Rows, Cols> &rhs) const {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix<T, Rows, Cols> add(const static_matrix<U, Rows, Cols> &rhs) const {
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
 	static_matrix<T, Rows, Cols> addition;
@@ -342,7 +400,8 @@ public:
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> sub(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
   template<typename U>
-  MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> sub(const static_matrix<U, Rows, Cols> &rhs) const {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix<T, Rows, Cols> sub(const static_matrix<U, Rows, Cols> &rhs) const {
 	static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
 #endif // C++ <= 201703L
 	static_matrix<T, Rows, Cols> substraction;
@@ -360,7 +419,8 @@ public:
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> div_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
   template<typename U>
-  MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> div_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix<T, Rows, Cols> div_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
 	static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
 #endif // C++ <= 201703L
 	static_matrix<T, Rows, Cols> division;
@@ -378,7 +438,8 @@ public:
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> mul_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
   template<typename U>
-  MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> mul_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix<T, Rows, Cols> mul_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
 	static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
 #endif // C++ <= 201703L
 	static_matrix<T, Rows, Cols> multpipled;
@@ -390,13 +451,15 @@ public:
 	return multpipled;
   }
 
-  MATRIX_CXX17_CONSTEXPR value_type sum() const {
+  MATRIX_CXX17_CONSTEXPR
+  value_type sum() const {
 	return std::accumulate(begin(), end(), value_type{});
   }
 
 public:
   template<std::size_t Cols2>
-  MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols + Cols2> join_right(const static_matrix<T, Rows, Cols2> &rhs) {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix<T, Rows, Cols + Cols2> join_right(const static_matrix<T, Rows, Cols2> &rhs) {
 	static_matrix<T, Rows, Cols + Cols2> join_matrix;
 
 	for (size_type row = 0; row != join_matrix.rows(); ++row)
@@ -411,7 +474,8 @@ public:
   }
 
   template<std::size_t Cols2>
-  MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols + Cols2> join_left(const static_matrix<T, Rows, Cols2> &rhs) {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix<T, Rows, Cols + Cols2> join_left(const static_matrix<T, Rows, Cols2> &rhs) {
 	static_matrix<T, Rows, Cols + Cols2> join_matrix;
 
 	for (size_type row = 0; row != join_matrix.rows(); ++row)
@@ -426,7 +490,8 @@ public:
   }
 
   template<std::size_t Rows2>
-  MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows + Rows2, Cols> join_top(const static_matrix<T, Rows2, Cols> &rhs) {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix<T, Rows + Rows2, Cols> join_top(const static_matrix<T, Rows2, Cols> &rhs) {
 	static_matrix<T, Rows + Rows2, Cols> join_matrix;
 
 	for (size_type row = 0; row != join_matrix.rows(); ++row)
@@ -441,7 +506,8 @@ public:
   }
 
   template<std::size_t Rows2>
-  MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows + Rows2, Cols> join_bottom(const static_matrix<T, Rows2, Cols> &rhs) {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix<T, Rows + Rows2, Cols> join_bottom(const static_matrix<T, Rows2, Cols> &rhs) {
 	static_matrix<T, Rows + Rows2, Cols> join_matrix;
 
 	for (size_type row = 0; row != join_matrix.rows(); ++row)
@@ -456,7 +522,8 @@ public:
   }
 
 public:
-  MATRIX_CXX17_CONSTEXPR static_matrix<T, Cols, Rows> transpose() const {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix<T, Cols, Rows> transpose() const {
 	static_matrix<T, Cols, Rows> transposed;
 
 	for (size_type row = 0; row != rows_; ++row)
@@ -469,7 +536,8 @@ public:
 #if __cplusplus > 201703L
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows - 1, Cols - 1> minor(size_type row, size_type col) const requires (non_zero_dimension<Rows - 1, Cols - 1>) {
 #else
-  MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows - 1, Cols - 1> minor(size_type row, size_type col) const {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix<T, Rows - 1, Cols - 1> minor(size_type row, size_type col) const {
 #endif // C++ <= 201703L
 	static_matrix<T, Rows - 1, Cols - 1> minored;
 
@@ -488,9 +556,11 @@ public:
 	return minored;
   }
 
-  MATRIX_CXX17_CONSTEXPR void swap_rows(size_type row1, size_type row2) {
+  MATRIX_CXX17_CONSTEXPR
+  void swap_rows(size_type row1, size_type row2) {
 #if __cplusplus > 201703L
 	std::swap_ranges(begin() + row1 * cols_, begin() + row1 * cols_ + cols_, begin() + row2 * cols_);
+	return;
 #else
 	size_type items = Cols, begin1_index = row1 * Cols, begin2_index = row2 * Cols;
 	for (size_type i = 0; i != items; ++i) {
@@ -502,10 +572,12 @@ public:
 #endif
   }
 
-  MATRIX_CXX17_CONSTEXPR void swap_cols(size_type col1, size_type col2) {
+  MATRIX_CXX17_CONSTEXPR
+  void swap_cols(size_type col1, size_type col2) {
 	for (size_type row = 0; row != Rows; ++row) {
 #if __cplusplus > 201703L
 	  std::swap((*this)(row, col1), (*this)(row, col2));
+	  return;
 #else
 	  value_type tmp = (*this)(row, col1);
 	  (*this)(row, col1) = (*this)(row, col2);
@@ -514,14 +586,16 @@ public:
 	}
   }
 
-  MATRIX_CXX17_CONSTEXPR double minor_item(size_type row, size_type col) const {
+  MATRIX_CXX17_CONSTEXPR
+  double minor_item(size_type row, size_type col) const {
 	return minor(row, col).determinant_gaussian();
   }
 
 #if __cplusplus > 201703L
   MATRIX_CXX17_CONSTEXPR double determinant_gaussian() const requires(Rows == Cols) {
 #else
-  MATRIX_CXX17_CONSTEXPR double determinant_gaussian() const {
+  MATRIX_CXX17_CONSTEXPR
+  double determinant_gaussian() const {
 	static_assert(Rows == Cols, "Matrix must be square");
 #endif // C++ <= 201703L
 	double determinant_value = 1;
@@ -567,7 +641,8 @@ public:
 #if __cplusplus > 201703L
   MATRIX_CXX17_CONSTEXPR double determinant_laplacian() const requires(Rows == Cols) {
 #else
-  MATRIX_CXX17_CONSTEXPR double determinant_laplacian() const {
+  MATRIX_CXX17_CONSTEXPR
+  double determinant_laplacian() const {
 	static_assert(Rows == Cols, "Matrix must be square");
 #endif // C++ <= 201703L
 	double determinant_value{};
@@ -598,7 +673,8 @@ public:
 #if __cplusplus > 201703L
   MATRIX_CXX17_CONSTEXPR static_matrix calc_complements() const requires(Rows == Cols) {
 #else
-  MATRIX_CXX17_CONSTEXPR static_matrix calc_complements() const {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix calc_complements() const {
 	static_assert(Rows == Cols, "Matrix must be square");
 #endif // C++ <= 201703L
 	static_matrix<value_type, Rows, Cols> complements;
@@ -616,7 +692,8 @@ public:
 #if __cplusplus > 201703L
   MATRIX_CXX17_CONSTEXPR static_matrix inverse() const requires(Rows == Cols) {
 #else
-  MATRIX_CXX17_CONSTEXPR static_matrix inverse() const {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix inverse() const {
 	static_assert(Rows == Cols, "Matrix must be square");
 #endif // C++ <= 201703L
 	double det = determinant_gaussian();
@@ -630,7 +707,8 @@ public:
 #if __cplusplus > 201703L
   MATRIX_CXX17_CONSTEXPR value_type trace() const requires(Rows == Cols) {
 #else
-  MATRIX_CXX17_CONSTEXPR value_type trace() const {
+  MATRIX_CXX17_CONSTEXPR
+  value_type trace() const {
 	static_assert(Rows == Cols, "Matrix must be square");
 #endif // C++ <= 201703L
 	value_type tr{};
@@ -647,7 +725,8 @@ public:
   MATRIX_CXX17_CONSTEXPR std::array<U, Rows * Cols> to_array() const {
 #else
   template<typename U = T>
-  MATRIX_CXX17_CONSTEXPR std::array<U, Rows * Cols> to_array() const {
+  MATRIX_CXX17_CONSTEXPR
+  std::array<U, Rows * Cols> to_array() const {
 	static_assert(std::is_fundamental<U>::value, "Template parameter U must be fundamental");
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
@@ -667,7 +746,8 @@ public:
   MATRIX_CXX17_CONSTEXPR static_matrix<U, Rows, Cols> convert_to() const {
 #else
   template<typename U>
-  MATRIX_CXX17_CONSTEXPR static_matrix<U, Rows, Cols> convert_to() const {
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix<U, Rows, Cols> convert_to() const {
 	static_assert(std::is_fundamental<U>::value, "Template parameter U must be fundamental");
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
@@ -681,7 +761,8 @@ public:
   }
 
 public:
-  MATRIX_CXX17_CONSTEXPR bool equal_to(const static_matrix &rhs) const {
+  MATRIX_CXX17_CONSTEXPR
+  bool equal_to(const static_matrix &rhs) const {
 	T epsilon;
 	MATRIX_CXX17_CONSTEXPR bool is_bool = std::is_same<bool, T>::value;
 
@@ -740,10 +821,9 @@ requires (std::convertible_to<U, T>)
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator+(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator+(const static_matrix<T,
-																										 Rows,
-																										 Cols> &lhs,
-																					 const U &value) {
+MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+static_matrix<T, Rows, Cols> operator+(const static_matrix<T, Rows, Cols> &lhs,
+									   const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
   static_matrix<T, Rows, Cols> addition = lhs.add(static_matrix<T, Rows, Cols>(value));
@@ -756,12 +836,9 @@ requires (std::convertible_to<U, T> and Rows1 == Rows2 and Cols1 == Cols2)
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
 #else
 template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T,
-																										   Rows1,
-																										   Cols1> &lhs,
-																					   const static_matrix<U,
-																										   Rows2,
-																										   Cols2> &rhs) {
+MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T, Rows1, Cols1> &lhs,
+										 const static_matrix<U, Rows2, Cols2> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
   static_assert(Rows1 == Rows2 and Cols1 == Cols2, "Matrix sizes must be same");
 #endif // C++ <= 201703L
@@ -788,10 +865,9 @@ requires (std::convertible_to<U, T>)
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator-(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator-(const static_matrix<T,
-																										 Rows,
-																										 Cols> &lhs,
-																					 const U &value) {
+MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+static_matrix<T, Rows, Cols> operator-(const static_matrix<T, Rows, Cols> &lhs,
+									   const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
   static_matrix<T, Rows, Cols> substract = lhs.sub(static_matrix<T, Rows, Cols>(value));
@@ -804,12 +880,9 @@ requires (std::convertible_to<U, T> and Rows1 == Rows2 and Cols1 == Cols2)
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator-(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
 #else
 template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator-(const static_matrix<T,
-																										   Rows1,
-																										   Cols1> &lhs,
-																					   const static_matrix<U,
-																										   Rows2,
-																										   Cols2> &rhs) {
+MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+static_matrix<T, Rows1, Cols1> operator-(const static_matrix<T, Rows1, Cols1> &lhs,
+										 const static_matrix<U, Rows2, Cols2> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
   static_assert(Rows1 == Rows2 and Cols1 == Cols2, "Matrix sizes must be same");
 #endif // C++ <= 201703L
@@ -836,10 +909,9 @@ requires (std::convertible_to<U, T>)
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator*(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator*(const static_matrix<T,
-																										 Rows,
-																										 Cols> &lhs,
-																					 const U &value) {
+MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+static_matrix<T, Rows, Cols> operator*(const static_matrix<T, Rows, Cols> &lhs,
+									   const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
   static_matrix<T, Rows, Cols> multiplication = lhs.mul_by_element(static_matrix<T, Rows, Cols>(value));
@@ -852,12 +924,9 @@ requires (std::convertible_to<U, T> and Cols1 == Rows2)
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols2> operator*(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
 #else
 template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols2> operator*(const static_matrix<T,
-																										   Rows1,
-																										   Cols1> &lhs,
-																					   const static_matrix<U,
-																										   Rows2,
-																										   Cols2> &rhs) {
+MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+static_matrix<T, Rows1, Cols2> operator*(const static_matrix<T, Rows1, Cols1> &lhs,
+										 const static_matrix<U, Rows2, Cols2> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
   static_assert(Cols1 == Rows2, "Cols1 must be equal Rows2");
 #endif // C++ <= 201703L
@@ -884,10 +953,9 @@ requires (std::convertible_to<U, T>)
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator/(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator/(const static_matrix<T,
-																										 Rows,
-																										 Cols> &lhs,
-																					 const U &value) {
+MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+static_matrix<T, Rows, Cols> operator/(const static_matrix<T, Rows, Cols> &lhs,
+									   const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
   static_matrix<T, Rows, Cols> division = lhs.div_by_element(static_matrix<T, Rows, Cols>(value));
@@ -912,8 +980,9 @@ template <fundamental T, std::size_t Rows, std::size_t Cols>
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR bool operator==(const static_matrix<T, Rows, Cols> &lhs, const static_matrix<T, Rows, Cols> &rhs) {
 #else
 template<typename T, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR bool operator==(const static_matrix<T, Rows, Cols> &lhs,
-															  const static_matrix<T, Rows, Cols> &rhs) {
+MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+bool operator==(const static_matrix<T, Rows, Cols> &lhs,
+				const static_matrix<T, Rows, Cols> &rhs) {
 #endif // C++ <= 201703L
   return lhs.equal_to(rhs);
 }
@@ -923,8 +992,9 @@ template <fundamental T, std::size_t Rows, std::size_t Cols>
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR bool operator!=(const static_matrix<T, Rows, Cols> &lhs, const static_matrix<T, Rows, Cols> &rhs) {
 #else
 template<typename T, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR bool operator!=(const static_matrix<T, Rows, Cols> &lhs,
-															  const static_matrix<T, Rows, Cols> &rhs) {
+MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+bool operator!=(const static_matrix<T, Rows, Cols> &lhs,
+				const static_matrix<T, Rows, Cols> &rhs) {
 #endif // C++ <= 201703L
   return !(lhs == rhs);
 }

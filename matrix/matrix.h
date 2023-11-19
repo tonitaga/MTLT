@@ -136,21 +136,65 @@ public:
   }
 
 public:
-  MATRIX_CXX17_CONSTEXPR iterator begin() noexcept { return iterator(data_); }
-  MATRIX_CXX17_CONSTEXPR const_iterator begin() const noexcept { return const_iterator(data_); }
-  MATRIX_CXX17_CONSTEXPR reverse_iterator rbegin() noexcept { return reverse_iterator(data_ + rows_ * cols_ - 1); }
-  MATRIX_CXX17_CONSTEXPR const_reverse_iterator rbegin() const noexcept {
+  MATRIX_CXX17_CONSTEXPR
+  iterator begin() noexcept {
+	return iterator(data_);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_iterator begin() const noexcept {
+	return const_iterator(data_);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  reverse_iterator rbegin() noexcept {
+	return reverse_iterator(data_ + rows_ * cols_ - 1);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_reverse_iterator rbegin() const noexcept {
 	return const_reverse_iterator(data_ + rows_ * cols_ - 1);
   }
-  MATRIX_CXX17_CONSTEXPR const_iterator cbegin() const noexcept { return begin(); }
-  MATRIX_CXX17_CONSTEXPR const_reverse_iterator crbegin() const noexcept { return rbegin(); }
 
-  MATRIX_CXX17_CONSTEXPR iterator end() noexcept { return iterator(data_ + rows_ * cols_); }
-  MATRIX_CXX17_CONSTEXPR const_iterator end() const noexcept { return const_iterator(data_ + rows_ * cols_); }
-  MATRIX_CXX17_CONSTEXPR reverse_iterator rend() noexcept { return reverse_iterator(data_ - 1); }
-  MATRIX_CXX17_CONSTEXPR const_reverse_iterator rend() const noexcept { return const_reverse_iterator(data_ - 1); }
-  MATRIX_CXX17_CONSTEXPR const_iterator cend() const noexcept { return end(); }
-  MATRIX_CXX17_CONSTEXPR const_reverse_iterator crend() const noexcept { return rend(); }
+  MATRIX_CXX17_CONSTEXPR
+  const_iterator cbegin() const noexcept {
+	return begin();
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_reverse_iterator crbegin() const noexcept {
+	return rbegin();
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  iterator end() noexcept {
+	return iterator(data_ + rows_ * cols_);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_iterator end() const noexcept {
+	return const_iterator(data_ + rows_ * cols_);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  reverse_iterator rend() noexcept {
+	return reverse_iterator(data_ - 1);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_reverse_iterator rend() const noexcept {
+	return const_reverse_iterator(data_ - 1);
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_iterator cend() const noexcept {
+	return end();
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_reverse_iterator crend() const noexcept {
+	return rend();
+  }
 
 public:
   reference operator()(size_type row, size_type col) {
@@ -175,9 +219,14 @@ public:
 	return (*this)(row, col);
   }
 
-  MATRIX_CXX17_NODISCARD size_type rows() const noexcept { return rows_; }
-  MATRIX_CXX17_NODISCARD size_type cols() const noexcept { return cols_; }
-  MATRIX_CXX17_NODISCARD size_type size() const noexcept { return rows_ * cols_; }
+  MATRIX_CXX17_NODISCARD
+  size_type rows() const noexcept { return rows_; }
+
+  MATRIX_CXX17_NODISCARD
+  size_type cols() const noexcept { return cols_; }
+
+  MATRIX_CXX17_NODISCARD
+  size_type size() const noexcept { return rows_ * cols_; }
 
   void rows(size_type rows) {
 	if (rows_ == rows)
