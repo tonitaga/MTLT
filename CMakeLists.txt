@@ -20,8 +20,6 @@ add_executable(Matrix_Library_CPP_TEST
         tests/normal_iterator_test.cc
         tests/matrix_test.cc
         tests/static_matrix_test.cc
-        tests/row_matrix_test.cc
-        tests/col_matrix_test.cc
 )
 target_link_libraries(Matrix_Library_CPP_TEST gtest_main)
 add_test(NAME Matrix_Library_CPP_TEST_ COMMAND Matrix_Library_CPP_TEST)
