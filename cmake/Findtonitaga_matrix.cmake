@@ -1,0 +1,9 @@
+get_filename_component(TONITAGA_MATRIX_CURRENT_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+set(TONITAGA_MATRIX_INCLUDE_DIRS "${TONITAGA_MATRIX_CURRENT_DIR}/../../include")
+
+add_library(tonitaga-matrix INTERFACE IMPORTED)
+
+set_target_properties(tonitaga-matrix PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${TONITAGA_MATRIX_INCLUDE_DIRS}"
+)
