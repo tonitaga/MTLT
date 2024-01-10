@@ -577,7 +577,6 @@ public:
 	for (size_type row = 0; row != Rows; ++row) {
 #if __cplusplus > 201703L
 	  std::swap((*this)(row, col1), (*this)(row, col2));
-	  return;
 #else
 	  value_type tmp = (*this)(row, col1);
 	  (*this)(row, col1) = (*this)(row, col2);
@@ -586,7 +585,7 @@ public:
 	}
   }
 
-  MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
   double minor_item(size_type row, size_type col) const {
 	return minor(row, col).determinant_gaussian();
   }
@@ -594,7 +593,7 @@ public:
 #if __cplusplus > 201703L
   MATRIX_CXX17_CONSTEXPR double determinant_gaussian() const requires(Rows == Cols) {
 #else
-  MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
   double determinant_gaussian() const {
 	static_assert(Rows == Cols, "Matrix must be square");
 #endif // C++ <= 201703L
