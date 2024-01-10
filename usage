@@ -1,0 +1,4 @@
+The package tonitaga_matrix provides CMake targets:
+
+    find_package(tonitaga_matrix REQUIRED)
+    target_include_directories(main PRIVATE ${TONITAGA_MATRIX_INCLUDE_DIR})
