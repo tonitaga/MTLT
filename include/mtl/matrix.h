@@ -22,6 +22,7 @@
 #include <chrono>
 #include <vector>
 #include <iomanip>
+#include <numeric>
 #include <iostream>
 #include <algorithm>
 #include <type_traits>

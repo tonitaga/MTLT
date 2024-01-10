@@ -27,6 +27,7 @@
 #include <random>
 #include <chrono>
 #include <iomanip>
+#include <numeric>
 #include <iostream>
 #include <algorithm>
 #include <type_traits>
