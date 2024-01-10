@@ -30,9 +30,9 @@
 #include <concepts>
 #endif
 
-#include <matrix/matrix_state.h>
-#include <matrix/matrix_normal_iterator.h>
-#include <matrix/matrix_reverse_iterator.h>
+#include <mtl/matrix_state.h>
+#include <mtl/matrix_reverse_iterator.h>
+#include <mtl/matrix_normal_iterator.h>
 
 namespace mtl {
 #if __cplusplus > 201703L
@@ -73,7 +73,7 @@ public:
 		(*this)(row, col) = matrix_vector[row][col];
   }
 
-  MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, const std::initializer_list<T> &initializer)
+  MATRIX_CXX20_CONSTEXPR matrix(size_type rows, size_type cols, const std::initializer_list<T> &initializer)
 	  : matrix(rows, cols) {
 	std::copy(initializer.begin(), initializer.end(), begin());
   }
@@ -141,7 +141,7 @@ public:
 	return iterator(data_);
   }
 
-  MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
   const_iterator begin() const noexcept {
 	return const_iterator(data_);
   }
@@ -151,17 +151,17 @@ public:
 	return reverse_iterator(data_ + rows_ * cols_ - 1);
   }
 
-  MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator rbegin() const noexcept {
 	return const_reverse_iterator(data_ + rows_ * cols_ - 1);
   }
 
-  MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
   const_iterator cbegin() const noexcept {
 	return begin();
   }
 
-  MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator crbegin() const noexcept {
 	return rbegin();
   }
@@ -171,7 +171,7 @@ public:
 	return iterator(data_ + rows_ * cols_);
   }
 
-  MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
   const_iterator end() const noexcept {
 	return const_iterator(data_ + rows_ * cols_);
   }
@@ -181,17 +181,17 @@ public:
 	return reverse_iterator(data_ - 1);
   }
 
-  MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator rend() const noexcept {
 	return const_reverse_iterator(data_ - 1);
   }
 
-  MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
   const_iterator cend() const noexcept {
 	return end();
   }
 
-  MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator crend() const noexcept {
 	return rend();
   }
@@ -212,7 +212,7 @@ public:
 	return (*this)(row, col);
   }
 
-  const_reference at(size_type row, size_type col) const {
+  MATRIX_CXX17_NODISCARD const_reference at(size_type row, size_type col) const {
 	if (row >= rows_ or col >= cols_)
 	  throw std::out_of_range("row or col is out of range of matrix");
 
@@ -417,7 +417,7 @@ public:
 	return *this;
   }
 
-  matrix round() const {
+  MATRIX_CXX17_NODISCARD matrix round() const {
 	matrix<T> rounded(*this);
 	rounded.transform([](const value_type &item) { return std::round(item); });
 	return rounded;
@@ -428,7 +428,7 @@ public:
 	return *this;
   }
 
-  matrix floor() const {
+  MATRIX_CXX17_NODISCARD matrix floor() const {
 	matrix<T> floored(*this);
 	floored.transform([](const value_type &item) { return std::floor(item); });
 	return floored;
@@ -439,7 +439,7 @@ public:
 	return *this;
   }
 
-  matrix ceil() const {
+  MATRIX_CXX17_NODISCARD matrix ceil() const {
 	matrix<T> ceiled(*this);
 	ceiled.transform([](const value_type &item) { return std::ceil(item); });
 	return ceiled;
@@ -450,7 +450,7 @@ public:
 	return *this;
   }
 
-  matrix zero() const {
+  MATRIX_CXX17_NODISCARD matrix zero() const {
 	return matrix<T>(rows_, cols_);
   }
 
@@ -465,7 +465,7 @@ public:
 	return *this;
   }
 
-  value_type sum() const {
+  MATRIX_CXX17_NODISCARD value_type sum() const {
 	return std::accumulate(begin(), end(), value_type{});
   }
 
@@ -477,7 +477,7 @@ public:
 	*this = join_left(rhs);
   }
 
-  matrix join_left(const matrix &rhs) const {
+  MATRIX_CXX17_NODISCARD matrix join_left(const matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join left rhs matrix to lhs, because lhs.rows() != rhs.rows()");
 
@@ -511,7 +511,7 @@ public:
 		  (*this)(row, col) = rhs(row, col - cols2);
   }
 
-  matrix join_right(const matrix &rhs) const {
+  MATRIX_CXX17_NODISCARD matrix join_right(const matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join right rhs matrix to lhs, because lhs.rows() != rhs.rows()");
 
@@ -536,7 +536,7 @@ public:
 	*this = join_top(rhs);
   }
 
-  matrix join_top(const matrix &rhs) const {
+  MATRIX_CXX17_NODISCARD matrix join_top(const matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join top rhs matrix to lhs, because lhs.cols() != rhs.cols()");
 
@@ -570,7 +570,7 @@ public:
 	  }
   }
 
-  matrix join_bottom(const matrix &rhs) const {
+  MATRIX_CXX17_NODISCARD matrix join_bottom(const matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join bottom rhs matrix to lhs, because lhs.cols() != rhs.cols()");
 
@@ -589,7 +589,7 @@ public:
   }
 
 public:
-  matrix transpose() const {
+  MATRIX_CXX17_NODISCARD matrix transpose() const {
 	matrix transposed(cols_, rows_);
 
 	for (size_type row = 0; row != rows_; ++row)
@@ -599,7 +599,7 @@ public:
 	return transposed;
   }
 
-  matrix minor(size_type row, size_type col) const {
+  MATRIX_CXX17_NODISCARD matrix minor(size_type row, size_type col) const {
 	matrix minor(rows() - 1, cols() - 1);
 
 	size_type skip_row = 0, skip_col = 0;
@@ -619,11 +619,11 @@ public:
 	return minor;
   }
 
-  double minor_item(size_type row, size_type col) const {
+  MATRIX_CXX17_NODISCARD double minor_item(size_type row, size_type col) const {
 	return minor(row, col).determinant_gaussian();
   }
 
-  double determinant_gaussian() const {
+  MATRIX_CXX17_NODISCARD double determinant_gaussian() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("determinant_gaussian can be found only for square matrices");
 
@@ -667,7 +667,7 @@ public:
 	return determinant_value;
   }
 
-  double determinant_laplacian() const {
+  MATRIX_CXX17_NODISCARD double determinant_laplacian() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("determinant_gaussian can be found only for square matrices");
 
@@ -689,7 +689,7 @@ public:
 	return determinant_value;
   }
 
-  value_type trace() const {
+  MATRIX_CXX17_NODISCARD value_type trace() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("Can't find trace for non square matrices");
 
@@ -699,7 +699,7 @@ public:
 	return tr;
   }
 
-  matrix calc_complements() const {
+  MATRIX_CXX17_NODISCARD matrix calc_complements() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("Complements matrix can be found only for square matrices");
 
@@ -717,7 +717,7 @@ public:
 	return complements;
   }
 
-  matrix inverse() const {
+  MATRIX_CXX17_NODISCARD matrix inverse() const {
 	double det = determinant_gaussian();
 
 	if (det <= matrix_epsilon<double>::epsilon)
@@ -742,7 +742,7 @@ public:
   }
 
 public:
-  bool equal_to(const matrix &rhs) const {
+  MATRIX_CXX17_NODISCARD bool equal_to(const matrix &rhs) const {
 	T epsilon;
 	MATRIX_CXX17_CONSTEXPR bool is_bool = std::is_same<bool, T>::value;
 

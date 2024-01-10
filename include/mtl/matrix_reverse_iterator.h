@@ -19,7 +19,7 @@
 
 #include <iterator>
 
-#include <matrix/matrix_config.h>
+#include <mtl/matrix_config.h>
 
 namespace mtl {
 template<typename NormalIterator>
