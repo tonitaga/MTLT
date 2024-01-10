@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <matrix/static_matrix.h>
+#include <mtl/static_matrix.h>
 
 using namespace mtl;
 

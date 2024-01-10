@@ -23,5 +23,5 @@ endmacro()
 
 ####################################################################################
 
-include("${CMAKE_CURRENT_LIST_DIR}/tonitaga_mtl-targets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/mtl-targets.cmake")
 check_required_components("mtl")

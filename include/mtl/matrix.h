@@ -30,9 +30,9 @@
 #include <concepts>
 #endif
 
-#include <matrix/matrix_state.h>
-#include <matrix/matrix_reverse_iterator.h>
-#include <matrix/matrix_normal_iterator.h>
+#include <mtl/matrix_state.h>
+#include <mtl/matrix_reverse_iterator.h>
+#include <mtl/matrix_normal_iterator.h>
 
 namespace mtl {
 #if __cplusplus > 201703L

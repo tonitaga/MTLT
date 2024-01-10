@@ -1,4 +1,4 @@
-The package tonitaga_mtl provides CMake targets:
+The package mtl provides CMake targets:
 
     find_package(mtl REQUIRED)
-    target_link-libraries(main PRIVATE mtl::mtl)
+    target_link_libraries(${PROJECT_NAME} PRIVATE mtl::mtl)
