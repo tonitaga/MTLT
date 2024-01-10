@@ -1,5 +1,7 @@
 # MTL - Matrix Template Library
 
+MTL is a header-only template matrix library that supports fundamental data types, and has been C++ standard since 11
+
 ## Install and Configuration
 
 #### 1. vcpkg and cmake
