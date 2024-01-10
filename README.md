@@ -1,124 +1,74 @@
-# Matrix Template Library
+# MTL - Matrix Template Library
 
-This is a C++ template matrix library that provides operations on matrices.
+## Install and Configuration
 
-## MTL project template
-
-To configure mtl project template follow the instructions in **mtl-template** folder in README.md
-
-## Installation
-
-To install the matrix template library, follow these steps:
-
-1. Ensure you have the `g++` compiler installed on your system.
-2. Clone or download the matrix library repository.
+#### 1. vcpkg and cmake
 
 ```shell
-   git clone https://github.com/tonitaga/Matrix-Library-CPP.git
-```
-3. Open a terminal and navigate to the repository's root directory.
-
-```shell
-   cd Matrix-Library-CPP
+git clone https://github.com/Microsoft/vcpkg.git
+.\vcpkg\bootstrap-vcpkg.bat
+vcpkg install mtl
 ```
 
-4. To install library use makefile
+Then configure in your project CMakeLists.txt
 
-4.1 Test Library before install
+```cmake
+cmake_minimum_required(VERSION 3.16...3.5)
+project(PROJECT)
 
-```shell
-   make test
+find_package(mtl REQUIRED)
+
+add_executable(${PROJECT_NAME} main.cc)
+target_link_libraries(${PROJECT_NAME} PRIVATE mtl::mtl)
 ```
 
-4.2 Install library
-
-* Need sudo before main in MacOS and Linux
-```shell
-   make install
-```
-
-5. Create empty file main.cc and paste the code
-
-```cpp
-#include <matrix/matrix.h>
-#include <matrix/static_matrix.h>
+Write simple source code in main.cc for check
+```c++
+#include <mtl/matrix.h>
 
 int main() {
-    mtl::matrix<int> matrix1(3, 3, 1);
-    mtl::static_matrix<int, 3, 3> matrix2(1);
-
-    int trace1 = matrix1.trace();
-    int trace2 = matrix2.trace();
-
-    int determinant1 = matrix1.determinant();
-    int determinant2 = matrix2.determinant();
-
-    matrix1.fill_random(1, 9);
-    matrix2.fill_random(1, 9);
-
-    auto inverse1 = matrix1.convert_to<double>().inverse();
-    auto inverse2 = matrix2.convert_to<double>().inverse();
-
-    auto complements1 = matrix1.calc_complements();
-    auto complements2 = matrix2.calc_complements();
-
-    mtl::print(trace1, trace2,
-              determinant1, determinant2,
-              matrix1, matrix2,
-              inverse1, inverse2,
-              complements1, complements2);
-    return EXIT_SUCCESS;
+  mtl::matrix<int> matrix(3, 3, {
+	1, 2, 3,
+	4, 5, 6,
+	7, 8, 9
+  });
+  
+  mtl::print(matrix);
 }
 ```
 
-6. Compile file
-
-* Using C++20 Standard
+Build your program using cmake
 ```shell
-   g++ -std=c++20 -Wall -Werror -Wextra main.cc -o use_matrix
+mkdir build
+cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=[vcpkg_root]/scripts/buildsystems/vcpkg.cmake
+cmake --build .
 ```
 
-* Using C++17 Standard
-```shell
-   g++ -std=c++17 -Wall -Werror -Wextra main.cc -o use_matrix
-```
-
-* Using C++14 Standard
-```shell
-   g++ -std=c++14 -Wall -Werror -Wextra main.cc -o use_matrix
-```
-
-* Using C++11 Standard
-```shell
-   g++ -std=c++11 -Wall -Werror -Wextra main.cc -o use_matrix
-```
-
-7. Run compiled file
+#### 2. Install as git submodule
 
 ```shell
-   ./use_matrix
+mkdir third_party
+cd third_party
+git submodule add https://github.com/tonitaga/Matrix-Template-Library-CPP.git
 ```
 
-## Uninstallation
+Configure CMakeLists.txt
+```cmake
+cmake_minimum_required(VERSION 3.16...3.5)
+project(PROJECT)
 
-To uninstall the matrix template library, follow these steps:
+include_directories(third_party/Matrix-Template-Library-CPP/include)
 
-1. Open a terminal and navigate to the repository's root directory.
+add_executable(${PROJECT_NAME} main.cc)
+```
+
+Build your program using cmake
 
 ```shell
-   cd Matrix-Library-CPP
+git submodule update --init
+mkdir build
+cd build
+cmake ..
+cmake --build .
 ```
-
-2. To uninstall library use makefile
-
-* Need sudo before main in MacOS and Linux
-```shell
-   make uninstall
-```
-
-## Rode map
-
-* In v1.0 version of the Matrix-Template-Library-CPP will be fixed most bugs of Library. (Estimated completion time to October 1, 2023)
-* In v1.1 version of the Matrix-Template-Library-CPP it will be possible to use not only C++20 standard but also older standards. (Estimated completion time to October 3, 2023)
-* In v1.2 version of the Matrix-Template-Library-CPP will be more methods, matrix operations semantic will be another (if matrix of ints add with double value, result will be double matrix) (Estimated completion time to October 12, 2023)
-* In v1.3 version of the Matrix-Template-Library-CPP will be possible to use matrices not only fundamental types, new release with cmake mtl template (Estimated completion time to October 30, 2023)
