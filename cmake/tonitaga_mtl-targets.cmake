@@ -19,7 +19,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_cmake_targets_defined "")
 set(_cmake_targets_not_defined "")
 set(_cmake_expected_targets "")
-foreach(_cmake_expected_target IN ITEMS tonitaga-matrix::tonitaga-matrix)
+foreach(_cmake_expected_target IN ITEMS mtl::mtl)
   list(APPEND _cmake_expected_targets "${_cmake_expected_target}")
   if(TARGET "${_cmake_expected_target}")
     list(APPEND _cmake_targets_defined "${_cmake_expected_target}")
@@ -54,10 +54,10 @@ if(_IMPORT_PREFIX STREQUAL "/")
   set(_IMPORT_PREFIX "")
 endif()
 
-# Create imported target tonitaga-matrix::tonitaga-matrix
-add_library(tonitaga-matrix::tonitaga-matrix INTERFACE IMPORTED)
+# Create imported target mtl::mtl
+add_library(mtl::mtl INTERFACE IMPORTED)
 
-set_target_properties(tonitaga-matrix::tonitaga-matrix PROPERTIES
+set_target_properties(mtl::mtl PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
 )
 
@@ -66,7 +66,7 @@ if(CMAKE_VERSION VERSION_LESS 3.0.0)
 endif()
 
 # Load information for each installed configuration.
-file(GLOB _cmake_config_files "${CMAKE_CURRENT_LIST_DIR}/tonitaga_matrix-targets-*.cmake")
+file(GLOB _cmake_config_files "${CMAKE_CURRENT_LIST_DIR}/mtl-targets-*.cmake")
 foreach(_cmake_config_file IN LISTS _cmake_config_files)
   include("${_cmake_config_file}")
 endforeach()

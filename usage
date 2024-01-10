@@ -1,4 +1,4 @@
-The package tonitaga_matrix provides CMake targets:
+The package tonitaga_mtl provides CMake targets:
 
-    find_package(tonitaga_matrix REQUIRED)
-    target_include_directories(main PRIVATE ${TONITAGA_MATRIX_INCLUDE_DIR})
+    find_package(mtl REQUIRED)
+    target_link-libraries(main PRIVATE mtl::mtl)
