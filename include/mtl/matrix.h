@@ -207,14 +207,14 @@ public:
   }
 
   reference at(size_type row, size_type col) {
-	if (row >= rows_ or col >= cols_)
+	if (row >= rows_ || col >= cols_)
 	  throw std::out_of_range("row or col is out of range of matrix");
 
 	return (*this)(row, col);
   }
 
   MATRIX_CXX17_NODISCARD const_reference at(size_type row, size_type col) const {
-	if (row >= rows_ or col >= cols_)
+	if (row >= rows_ || col >= cols_)
 	  throw std::out_of_range("row or col is out of range of matrix");
 
 	return (*this)(row, col);
@@ -257,7 +257,7 @@ public:
 	*this = std::move(tmp);
   }
   void resize(size_type rows, size_type cols) {
-	if (cols_ == cols and rows_ == rows)
+	if (cols_ == cols && rows_ == rows)
 	  return;
 
 	matrix tmp(rows, cols);
@@ -344,7 +344,7 @@ public:
   }
 
   matrix &div(const value_type &number) {
-	if (std::is_integral<T>::value and number == 0)
+	if (std::is_integral<T>::value && number == 0)
 	  throw std::logic_error("Dividing by zero");
 
 	transform([&number](const value_type &item) { return item / number; });
@@ -365,7 +365,7 @@ public:
   matrix &add(const matrix<U> &rhs) {
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-	if (rhs.rows() != rows_ or rhs.cols() != cols_)
+	if (rhs.rows() != rows_ || rhs.cols() != cols_)
 	  throw std::logic_error("Can't add different sized matrices");
 
 	transform(rhs, [](const T &lhs, const U &rhs) { return lhs + rhs; });
@@ -386,7 +386,7 @@ public:
   matrix &sub(const matrix<U> &rhs) {
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-	if (rhs.rows() != rows_ or rhs.cols() != cols_)
+	if (rhs.rows() != rows_ || rhs.cols() != cols_)
 	  throw std::logic_error("Can't add different sized matrices");
 
 	transform(rhs, [](const T &lhs, const U &rhs) { return lhs - rhs; });
@@ -675,9 +675,9 @@ public:
 	int sign = 1;
 	double determinant_value{};
 
-	if (rows_ == 1 and cols_ == 1)
+	if (rows_ == 1 && cols_ == 1)
 	  determinant_value = (*this)(0, 0);
-	else if (rows_ == 2 and cols_ == 2)
+	else if (rows_ == 2 && cols_ == 2)
 	  determinant_value = ((*this)(0, 0) * (*this)(1, 1)) - ((*this)(1, 0) * (*this)(0, 1));
 	else {
 	  for (size_type col = 0; col != cols_; ++col) {
@@ -728,14 +728,14 @@ public:
   }
 
   void swap_rows(size_type row1, size_type row2) {
-	if (row1 >= rows_ or row2 >= rows_)
+	if (row1 >= rows_ || row2 >= rows_)
 	  throw std::logic_error("row1 or row2 is bigger that this->rows()");
 
 	std::swap_ranges(begin() + row1 * cols_, begin() + row1 * cols_ + cols_, begin() + row2 * cols_);
   }
 
   void swap_cols(size_type col1, size_type col2) {
-	if (col1 >= cols_ or col2 >= cols_)
+	if (col1 >= cols_ || col2 >= cols_)
 	  throw std::logic_error("col1 or col2 is bigger that this->cols()");
 
 	for (size_type row = 0; row != rows_; ++row)

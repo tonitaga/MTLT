@@ -187,14 +187,14 @@ public:
 
   MATRIX_CXX17_CONSTEXPR
   reference at(size_type row, size_type col) {
-	if (row >= rows_ or col >= cols_)
+	if (row >= rows_ || col >= cols_)
 	  throw std::out_of_range("row or col is out of matrix bounds");
 	return (*this)(row, col);
   }
 
   MATRIX_CXX17_CONSTEXPR
   const_reference at(size_type row, size_type col) const {
-	if (row >= rows_ or col >= cols_)
+	if (row >= rows_ || col >= cols_)
 	  throw std::out_of_range("row or col is out of matrix bounds");
 	return (*this)(row, col);
   }
@@ -359,12 +359,12 @@ public:
 
 #if __cplusplus > 201703L
   template<fundamental U, size_type Rows2, size_type Cols2>
-  requires(non_zero_dimension<Rows2, Cols2> and std::convertible_to<U, T> and Cols == Rows2)
+  requires(non_zero_dimension<Rows2, Cols2> && std::convertible_to<U, T> && Cols == Rows2)
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols2> mul(const static_matrix<U, Rows2, Cols2> &rhs) const {
 #else
   template<typename U, size_type Rows2, size_type Cols2>
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols2> mul(const static_matrix<U, Rows2, Cols2> &rhs) const {
-	static_assert(Rows2 != 0 and Cols2 != 0 and std::is_convertible<U, T>::value and Cols == Rows2);
+	static_assert(Rows2 != 0 && Cols2 != 0 && std::is_convertible<U, T>::value && Cols == Rows2);
 #endif // C++ <= 201703L
 	static_matrix<T, Rows, Cols2> multiplied;
 
@@ -649,14 +649,14 @@ public:
 	int sign = 1;
 
 #if __cplusplus > 201703L
-	if MATRIX_CXX17_CONSTEXPR (Rows == 1 and Cols == 1)
+	if MATRIX_CXX17_CONSTEXPR (Rows == 1 && Cols == 1)
 		determinant_value = (*this)(0, 0);
-	else if MATRIX_CXX17_CONSTEXPR (Rows == 2 and Cols == 2)
+	else if MATRIX_CXX17_CONSTEXPR (Rows == 2 && Cols == 2)
 		determinant_value = ((*this)(0, 0) * (*this)(1, 1)) - ((*this)(1, 0) * (*this)(0, 1));
 #else
-	if (Rows == 1 and Cols == 1)
+	if (Rows == 1 && Cols == 1)
 	  determinant_value = (*this)(0, 0);
-	else if (Rows == 2 and Cols == 2)
+	else if (Rows == 2 && Cols == 2)
 	  determinant_value = ((*this)(0, 0) * (*this)(1, 1)) - ((*this)(1, 0) * (*this)(0, 1));
 #endif // C++ <= 201703L
 	else {
@@ -832,7 +832,7 @@ static_matrix<T, Rows, Cols> operator+(const static_matrix<T, Rows, Cols> &lhs,
 
 #if __cplusplus > 201703L
 template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
-requires (std::convertible_to<U, T> and Rows1 == Rows2 and Cols1 == Cols2)
+requires (std::convertible_to<U, T> && Rows1 == Rows2 && Cols1 == Cols2)
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
 #else
 template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
@@ -840,7 +840,7 @@ MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
 static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T, Rows1, Cols1> &lhs,
 										 const static_matrix<U, Rows2, Cols2> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-  static_assert(Rows1 == Rows2 and Cols1 == Cols2, "Matrix sizes must be same");
+  static_assert(Rows1 == Rows2 && Cols1 == Cols2, "Matrix sizes must be same");
 #endif // C++ <= 201703L
   static_matrix<T, Rows1, Cols1> addition = lhs.add(rhs);
   return addition;
@@ -876,7 +876,7 @@ static_matrix<T, Rows, Cols> operator-(const static_matrix<T, Rows, Cols> &lhs,
 
 #if __cplusplus > 201703L
 template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
-requires (std::convertible_to<U, T> and Rows1 == Rows2 and Cols1 == Cols2)
+requires (std::convertible_to<U, T> && Rows1 == Rows2 && Cols1 == Cols2)
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator-(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
 #else
 template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
@@ -884,7 +884,7 @@ MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
 static_matrix<T, Rows1, Cols1> operator-(const static_matrix<T, Rows1, Cols1> &lhs,
 										 const static_matrix<U, Rows2, Cols2> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-  static_assert(Rows1 == Rows2 and Cols1 == Cols2, "Matrix sizes must be same");
+  static_assert(Rows1 == Rows2 && Cols1 == Cols2, "Matrix sizes must be same");
 #endif // C++ <= 201703L
   static_matrix<T, Rows1, Cols1> substract = lhs.sub(rhs);
   return substract;
@@ -920,7 +920,7 @@ static_matrix<T, Rows, Cols> operator*(const static_matrix<T, Rows, Cols> &lhs,
 
 #if __cplusplus > 201703L
 template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
-requires (std::convertible_to<U, T> and Cols1 == Rows2)
+requires (std::convertible_to<U, T> && Cols1 == Rows2)
 MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols2> operator*(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
 #else
 template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
