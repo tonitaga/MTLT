@@ -25,7 +25,7 @@ template <typename T>
 concept fundamental = std::is_fundamental_v<T>;
 
 template <std::size_t Rows, std::size_t Cols>
-concept non_zero_dimension = requires { Rows != 0 and Cols != 0; };
+concept non_zero_dimension = requires { Rows != 0 && Cols != 0; };
 
 template <typename T>
 concept printable = requires(T t, std::ostream os) {
