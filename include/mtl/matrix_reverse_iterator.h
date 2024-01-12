@@ -38,22 +38,40 @@ public:
 public:
   using iterator_type = typename NormalIterator::iterator_type;
   using pointer = typename NormalIterator::pointer;
+  using const_pointer = typename NormalIterator::const_pointer;
   using reference = typename NormalIterator::reference;
+  using const_reference = typename NormalIterator::const_reference;
   using value_type = typename NormalIterator::value_type;
   using difference_type = typename NormalIterator::difference_type;
   using iterator_category = typename NormalIterator::iterator_category;
 
 public:
   MATRIX_CXX17_CONSTEXPR
-  reference operator*() const noexcept { return *current_; }
+  reference operator*() noexcept { return *current_; }
 
   MATRIX_CXX17_CONSTEXPR
-  pointer operator->() const noexcept { return current_.Base(); }
+  const_reference operator*() const noexcept { return *current_; }
+
+  MATRIX_CXX17_CONSTEXPR
+  pointer operator->() noexcept { return current_.Base(); }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_pointer operator->() const noexcept { return current_.Base(); }
 
   MATRIX_CXX17_CONSTEXPR
   matrix_reverse_iterator &operator++() noexcept {
 	--current_;
 	return *this;
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  reference operator[](difference_type n) noexcept {
+	return current_[-n];
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_reference operator[](difference_type n) const noexcept {
+	return current_[-n];
   }
 
   MATRIX_CXX17_CONSTEXPR
