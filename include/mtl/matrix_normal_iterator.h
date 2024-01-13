@@ -29,11 +29,13 @@ protected:
 
 public:
   using iterator_type = Iterator;
-  using pointer = Iterator;
-  using reference = decltype(*current_) &;
-  using value_type = decltype(*current_);
-  using difference_type = std::ptrdiff_t;
   using iterator_category = std::random_access_iterator_tag;
+  using value_type = typename std::remove_reference<decltype(*current_)>::type;
+  using pointer = Iterator;
+  using const_pointer = const Iterator;
+  using reference = value_type &;
+  using const_reference = const value_type &;
+  using difference_type = std::ptrdiff_t;
 
 public:
   MATRIX_CXX17_CONSTEXPR
@@ -44,13 +46,24 @@ public:
 
 public:
   MATRIX_CXX17_CONSTEXPR
-  reference operator*() const noexcept { return *current_; }
+  reference operator*() noexcept { return *current_; }
 
   MATRIX_CXX17_CONSTEXPR
-  pointer operator->() const noexcept { return current_; }
+  const_reference operator*() const noexcept { return *current_; }
+
+  MATRIX_CXX17_CONSTEXPR
+  pointer operator->() noexcept { return current_; }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_pointer operator->() const noexcept { return current_; }
 
   MATRIX_CXX17_CONSTEXPR
   reference operator[](difference_type n) noexcept {
+	return current_[n];
+  }
+
+  MATRIX_CXX17_CONSTEXPR
+  const_reference operator[](difference_type n) const noexcept {
 	return current_[n];
   }
 
