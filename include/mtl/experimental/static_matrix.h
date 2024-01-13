@@ -366,7 +366,7 @@ public:
 #else
   template<typename U, size_type Rows2, size_type Cols2>
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols2> mul(const static_matrix<U, Rows2, Cols2> &rhs) const {
-	static_assert(Rows2 != 0 && Cols2 != 0 && std::is_convertible<U, T>::value && Cols == Rows2);
+	static_assert(is_non_zero_dimension<Rows2, Cols2>::value && std::is_convertible<U, T>::value && Cols == Rows2);
 #endif // C++ <= 201703L
 	static_matrix<T, Rows, Cols2> multiplied;
 
