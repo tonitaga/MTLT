@@ -14,8 +14,8 @@
  *
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
-#define MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
+#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_
+#define MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_
 
 #include <cmath>
 #include <random>
@@ -25,24 +25,27 @@
 #include <numeric>
 #include <iostream>
 #include <algorithm>
-#include <type_traits>
+#include <functional>
 
 #if __cplusplus > 201703L
 #include <concepts>
 #endif
 
-#include <mtl/matrix_state.h>
-#include <mtl/matrix_reverse_iterator.h>
 #include <mtl/matrix_normal_iterator.h>
+#include <mtl/matrix_reverse_iterator.h>
 
-namespace mtl {
+#include <mtl/experimental/matrix_config.h>
+#include <mtl/experimental/matrix_type_traits.h>
+
+namespace mtl::experimental {
 #if __cplusplus > 201703L
 template <fundamental T>
 class matrix {
 #else
 template<typename T>
 class matrix {
-  static_assert(std::is_fundamental<T>::value, "Template parameter T must be fundamental");
+  static_assert(std::is_fundamental<T>::value,
+      "Template parameter T must be fundamental");
 #endif // C++ <= 201703L
 public:
   using value_type = typename std::allocator_traits<std::allocator<T>>::value_type;
@@ -721,7 +724,7 @@ public:
   MATRIX_CXX17_NODISCARD matrix inverse() const {
 	double det = determinant_gaussian();
 
-	if (det <= matrix_epsilon<double>::epsilon)
+	if (det <= 1e-6)
 	  throw std::logic_error("Can't found inverse matrix because determinant is zero");
 
 	return calc_complements().transpose().mul(1 / det);
@@ -744,38 +747,12 @@ public:
 
 public:
   MATRIX_CXX17_NODISCARD bool equal_to(const matrix &rhs) const {
-	T epsilon;
-	MATRIX_CXX17_CONSTEXPR bool is_bool = std::is_same<bool, T>::value;
+	std::not_equal_to<value_type> compare;
 
-#if __cplusplus >= 201703L
-	if MATRIX_CXX17_CONSTEXPR (!is_bool)
-#else
-	  if (!is_bool)
-#endif // C++ <= 201703L
-	  epsilon = matrix_epsilon<T>::epsilon;
-
-	for (size_type row = 0; row != rows_; ++row) {
-	  for (size_type col = 0; col != cols_; ++col) {
-		value_type left = (*this)(row, col), right = rhs(row, col);
-
-#if __cplusplus >= 201703L
-		if MATRIX_CXX17_CONSTEXPR (is_bool) {
-#else
-		  if (is_bool) {
-#endif // C++ <= 201703L
-		  if (left != right)
-			return false;
-		} else {
-		  if (left < 0)
-			left = -left;
-		  if (right < 0)
-			right = -right;
-
-		  if (left - right > epsilon)
-			return false;
-		}
-	  }
-	}
+	for (size_type row = 0; row != rows_; ++row)
+	  for (size_type col = 0; col != cols_; ++col)
+		if (compare((*this)(row, col), rhs(row, col)))
+		  return false;
 
 	return true;
   }
@@ -1053,4 +1030,4 @@ bool inline operator!=(const matrix<T> &lhs, const matrix<T> &rhs) {
 }
 }
 
-#endif //MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
+#endif //MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_

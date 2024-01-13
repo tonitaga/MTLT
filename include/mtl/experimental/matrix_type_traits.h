@@ -5,20 +5,24 @@
 #include <ostream>
 #include <type_traits>
 
+#include <mtl/experimental/matrix_config.h>
+
 #if __cplusplus > 201703L
 #include <concepts>
 #endif // __cplusplus > 201703L
 
 namespace mtl::experimental {
 
-template <typename T>
+template<typename T>
 struct is_atomic : std::false_type {};
 
-template <typename T>
+template<typename T>
 struct is_atomic<std::atomic<T>> : std::true_type {};
 
-template <typename T>
-inline constexpr bool is_atomic_v = is_atomic<T>::value;
+#if __cplusplus >= 201402L
+template<typename T>
+MATRIX_CXX17_INLINE constexpr bool is_atomic_v = is_atomic<T>::value;
+#endif // __cplusplus >= 201402L
 
 #if __cplusplus > 201703L
 
@@ -29,7 +33,7 @@ concept atomic = is_atomic_v<T>;
 
 namespace detail {
 
-template <typename T, typename ValueType = typename T::value_type>
+template<typename T, typename ValueType = typename T::value_type>
 struct is_fundamental_atomic {
   static constexpr bool value =
 	  std::is_fundamental<ValueType>::value && is_atomic<T>::value;
@@ -37,11 +41,14 @@ struct is_fundamental_atomic {
 
 } // namespace detail end
 
-template <typename T>
+template<typename T>
 struct is_fundamental_atomic : detail::is_fundamental_atomic<T> {};
 
-template <typename T>
-inline constexpr bool is_fundamental_atomic_v = is_fundamental_atomic<T>::value;
+#if __cplusplus >= 201402L
+template<typename T>
+MATRIX_CXX17_INLINE constexpr bool is_fundamental_atomic_v = is_fundamental_atomic<T>::value;
+#endif // __cplusplus >= 201402L
+
 
 #if __cplusplus > 201703L
 
@@ -56,14 +63,16 @@ concept fundamental_or_fundamental_atomic = fundamental<T> || fundamental_atomic
 
 #endif // __cplusplus > 201703L
 
-template <std::size_t Rows, std::size_t Cols>
-struct is_non_zero_dimension : std::false_type {};
+template<std::size_t Rows, std::size_t Cols>
+struct is_non_zero_dimension : std::true_type {};
 
-template <>
-struct is_non_zero_dimension<0, 0> : std::true_type {};
+template<>
+struct is_non_zero_dimension<0, 0> : std::false_type {};
 
-template <std::size_t Rows, std::size_t Cols>
-inline constexpr bool is_non_zero_dimension_v = is_non_zero_dimension<Rows, Cols>::value;
+#if __cplusplus >= 201402L
+template<std::size_t Rows, std::size_t Cols>
+MATRIX_CXX17_INLINE constexpr bool is_non_zero_dimension_v = is_non_zero_dimension<Rows, Cols>::value;
+#endif // __cplusplus >= 201402L
 
 #if __cplusplus > 201703L
 
@@ -72,15 +81,59 @@ concept non_zero_dimension = is_non_zero_dimension_v<Rows, Cols>;
 
 #endif // __cplusplus > 201703L
 
-template <typename T>
+template<typename T>
 struct is_printable {
+private:
   template<typename U>
-  static auto printable_test(const U& u) -> decltype(u.print(), true) {};
+  static auto printable_test(const U &u) -> decltype(u.print(), true) {};
 
-  static int printable_test(...) { return 0; };
+  struct non_printable_type {};
+  static non_printable_type printable_test(...) { return {}; };
 
-  static constexpr bool value = (sizeof(printable_test(T{})) == 1);
+  using result_type = decltype(printable_test(std::declval<T>()));
+
+public:
+  static constexpr bool value = !std::is_same<result_type, non_printable_type>::value;
 };
+
+#if __cplusplus >= 201402L
+template<typename T>
+MATRIX_CXX17_INLINE constexpr bool is_printable_v = is_printable<T>::value;
+#endif // __cplusplus >= 201402L
+
+template<typename Stream, typename T>
+struct is_streamable {
+private:
+  template<typename S, typename U>
+  static auto streamable_test(S &&s, U &&u) -> decltype(std::forward<S>(s) << std::forward<U>(u)) {};
+
+  struct non_streamable_type {};
+  static non_streamable_type streamable_test(...) { return {}; };
+
+  using result_type = decltype(streamable_test(std::declval<Stream>(), std::declval<T>()));
+
+public:
+  static constexpr bool value =
+	  !std::is_same<result_type, non_streamable_type>::value;
+};
+
+#if __cplusplus >= 201402L
+template<typename Stream, typename T>
+MATRIX_CXX17_INLINE constexpr bool is_streamable_v = is_streamable<Stream, T>::value;
+#endif // __cplusplus >= 201402L
+
+#if __cplusplus > 201703L
+
+template <typename T>
+concept printable = is_printable_v<T>;
+
+template <typename T>
+concept streamable = is_streamable_v<std::ostream, T> || is_streamable_v<std::stringstream, T> || is_streamable_v<std::ofstream, T>;
+
+template <typename T>
+concept printable_or_streamable = printable<T> || streamable<T>;
+
+#endif // __cplusplus > 201703L
 
 } // namespace mtl::experimental end
 
