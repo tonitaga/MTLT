@@ -14,8 +14,16 @@
  *
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_CONFIG_H_
-#define MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_CONFIG_H_
+#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_EXPERIMENTAL_CONFIG_H_
+#define MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_EXPERIMENTAL_CONFIG_H_
+
+struct matrix_debug_settings {
+  int width = 3;
+  int precision = 3;
+  char separator = ' ';
+  char end = '\n';
+  bool is_double_end = false;
+};
 
 #ifndef MATRIX_CXX17_CONSTEXPR
 #  if __cplusplus >= 201703L
@@ -65,4 +73,4 @@
 #  endif
 #endif
 
-#endif //MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_CONFIG_H_
+#endif // MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_EXPERIMENTAL_CONFIG_H_
