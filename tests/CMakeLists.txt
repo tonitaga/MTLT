@@ -18,12 +18,14 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_executable(${PROJECT_NAME}
+        atomic_matrix_test.cc
         reverse_iterator_test.cc
         normal_iterator_test.cc
         matrix_test.cc
         static_matrix_test.cc
         stl_algo_matrix_test.cpp
         type_traits_test.cc
+        atomic_matrix_test.cc
 )
 
 target_link_libraries(${PROJECT_NAME} gtest_main)
