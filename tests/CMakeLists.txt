@@ -22,6 +22,7 @@ add_executable(${PROJECT_NAME}
         normal_iterator_test.cc
         matrix_test.cc
         static_matrix_test.cc
+        stl_algo_matrix_test.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} gtest_main)
