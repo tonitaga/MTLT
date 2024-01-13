@@ -72,7 +72,7 @@ public:
   MATRIX_CXX17_CONSTEXPR explicit atomic_matrix(size_type square) : atomic_matrix(square, square) {};
 
   template<typename Container,
-	  std::enable_if<
+	  typename std::enable_if<
 		  std::is_convertible<typename Container::value_type, atomic_value_type>::value ||
 			  std::is_same<typename Container::value_type, atomic_type>::value, bool>::type = true>
   MATRIX_CXX17_CONSTEXPR atomic_matrix(size_type rows, size_type cols, const Container &container)
@@ -902,8 +902,8 @@ atomic_matrix<T, Atomic> inline &operator*=(atomic_matrix<T, Atomic> &lhs, const
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline &operator/=(atomic_matrix<T, Atomic> &lhs, const U &value) {
 #else
-  template<typename T, typename U>
-  matrix<T> inline &operator/=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U, template<typename> class Atomic>
+  atomic_matrix<T, Atomic> inline &operator/=(atomic_matrix<T, Atomic> &lhs, const U &value) {
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.div(value);
@@ -953,7 +953,7 @@ atomic_matrix<T, Atomic> inline operator*(const atomic_matrix<T, Atomic> &lhs, c
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
 #else
-  template<typename T, typename U>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
