@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5...3.16)
 project(mtl-test LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -Wno-unused-but-set-variable")
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "-std=c++20 -Wall -Wno-unused-but-set-variable")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(../include)
@@ -23,6 +23,7 @@ add_executable(${PROJECT_NAME}
         matrix_test.cc
         static_matrix_test.cc
         stl_algo_matrix_test.cpp
+        type_traits_test.cc
 )
 
 target_link_libraries(${PROJECT_NAME} gtest_main)
