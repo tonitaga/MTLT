@@ -39,13 +39,13 @@
 
 namespace mtl::experimental {
 #if __cplusplus > 201703L
-template <fundamental T>
+template<fundamental T>
 class matrix {
 #else
-template<typename T>
-class matrix {
-  static_assert(std::is_fundamental<T>::value,
-      "Template parameter T must be fundamental");
+  template<typename T>
+  class matrix {
+	static_assert(std::is_fundamental<T>::value,
+		"Template parameter T must be fundamental");
 #endif // C++ <= 201703L
 public:
   using value_type = typename std::allocator_traits<std::allocator<T>>::value_type;
@@ -83,16 +83,15 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<typename Container>
-  requires(std::convertible_to<typename Container::value_type, T>)
+  template<typename Container> requires(std::convertible_to<typename Container::value_type, T>)
   MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
 	  : matrix(rows, cols) {
 #else
-  template<typename Container>
-  MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
-	  : matrix(rows, cols) {
-	static_assert(std::is_convertible<typename Container::value_type, T>::value,
-				  "Container::value_type must be convertible to T");
+	template<typename Container>
+	MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
+		: matrix(rows, cols) {
+	  static_assert(std::is_convertible<typename Container::value_type, T>::value,
+					"Container::value_type must be convertible to T");
 #endif // C++ <= 201703L
 	std::copy(container.begin(), container.end(), begin());
   }
@@ -275,7 +274,7 @@ public:
   }
 
   void clear() noexcept {
-	rows_ = cols_ = value_type{};
+	rows_ = cols_ = size_type {};
 	delete[] data_;
 	data_ = nullptr;
   }
@@ -322,13 +321,12 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<typename U>
-  requires(std::convertible_to<U, T>)
+  template<typename U> requires(std::convertible_to<U, T>)
   matrix &mul(const matrix<U> &rhs) {
 #else
-  template<typename U>
-  matrix &mul(const matrix<U> &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+	template<typename U>
+	matrix &mul(const matrix<U> &rhs) {
+	  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	if (cols_ != rhs.rows())
 	  throw std::logic_error("Can't multiply two matrices because lhs.cols() != rhs.rows()");
@@ -360,13 +358,12 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<typename U>
-  requires(std::convertible_to<U, T>)
+  template<typename U> requires(std::convertible_to<U, T>)
   matrix &add(const matrix<U> &rhs) {
 #else
-  template<typename U>
-  matrix &add(const matrix<U> &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+	template<typename U>
+	matrix &add(const matrix<U> &rhs) {
+	  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	if (rhs.rows() != rows_ || rhs.cols() != cols_)
 	  throw std::logic_error("Can't add different sized matrices");
@@ -381,13 +378,12 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<typename U>
-  requires(std::convertible_to<U, T>)
+  template<typename U> requires(std::convertible_to<U, T>)
   matrix &sub(const matrix<U> &rhs) {
 #else
-  template<typename U>
-  matrix &sub(const matrix<U> &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+	template<typename U>
+	matrix &sub(const matrix<U> &rhs) {
+	  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	if (rhs.rows() != rows_ || rhs.cols() != cols_)
 	  throw std::logic_error("Can't add different sized matrices");
@@ -398,6 +394,7 @@ public:
 
   matrix &fill(const value_type &number) {
 	generate([&number]() { return number; });
+
 	return *this;
   }
 
@@ -760,13 +757,12 @@ public:
 public:
 
 #if __cplusplus > 201703L
-  template<fundamental U>
-  requires (std::convertible_to<U, T>)
+  template<fundamental U> requires (std::convertible_to<U, T>)
   matrix<U> convert_to() const {
 #else
-  template<typename U>
-  matrix<U> convert_to() const {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+	template<typename U>
+	matrix<U> convert_to() const {
+	  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	matrix<U> convert(rows_, cols_);
 	std::copy(begin(), end(), convert.begin());
@@ -774,13 +770,12 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<fundamental U = T>
-  requires (std::convertible_to<U, T>)
+  template<fundamental U = T> requires (std::convertible_to<U, T>)
   std::vector<U> to_vector() const {
 #else
-  template<typename U = T>
-  std::vector<U> to_vector() const {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+	template<typename U = T>
+	std::vector<U> to_vector() const {
+	  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	std::vector<U> v(rows_ *cols_);
 	std::copy(begin(), end(), v.begin());
@@ -788,13 +783,12 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<fundamental U = T>
-  requires (std::convertible_to<U, T>)
+  template<fundamental U = T> requires (std::convertible_to<U, T>)
   std::vector<std::vector<U>> to_matrix_vector() const {
 #else
-  template<typename U = T>
-  std::vector<std::vector<U>> to_matrix_vector() const {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+	template<typename U = T>
+	std::vector<std::vector<U>> to_matrix_vector() const {
+	  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	std::vector<std::vector<U>> v(rows_, std::vector<U>(cols_));
 
@@ -817,104 +811,96 @@ std::ostream &operator<<(std::ostream &out, const matrix<T> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator +=(matrix<T> &lhs, const matrix<U> &rhs) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline &operator+=(matrix<T> &lhs, const matrix<U> &rhs) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline &operator+=(matrix<T> &lhs, const matrix<U> &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.add(rhs);
   return lhs;
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator -=(matrix<T> &lhs, const matrix<U> &rhs) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline &operator-=(matrix<T> &lhs, const matrix<U> &rhs) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline &operator-=(matrix<T> &lhs, const matrix<U> &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.sub(rhs);
   return lhs;
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator *=(matrix<T> &lhs, const matrix<U> &rhs) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline &operator*=(matrix<T> &lhs, const matrix<U> &rhs) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline &operator*=(matrix<T> &lhs, const matrix<U> &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.mul(rhs);
   return lhs;
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator +=(matrix<T> &lhs, const U &value) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline &operator+=(matrix<T> &lhs, const U &value) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline &operator+=(matrix<T> &lhs, const U &value) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.add(value);
   return lhs;
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator -=(matrix<T> &lhs, const U &value) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline &operator-=(matrix<T> &lhs, const U &value) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline &operator-=(matrix<T> &lhs, const U &value) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.sub(value);
   return lhs;
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator *=(matrix<T> &lhs, const U &value) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline &operator*=(matrix<T> &lhs, const U &value) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline &operator*=(matrix<T> &lhs, const U &value) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.mul(value);
   return lhs;
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator /=(matrix<T> &lhs, const U &value) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline &operator/=(matrix<T> &lhs, const U &value) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline &operator/=(matrix<T> &lhs, const U &value) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.div(value);
   return lhs;
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator +(const matrix<T> &lhs, const matrix<U> &rhs) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline operator+(const matrix<T> &lhs, const matrix<U> &rhs) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline operator+(const matrix<T> &lhs, const matrix<U> &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   matrix<T> result(lhs);
   result.add(rhs);
@@ -922,13 +908,12 @@ matrix<T> inline operator+(const matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator -(const matrix<T> &lhs, const matrix<U> &rhs) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline operator-(const matrix<T> &lhs, const matrix<U> &rhs) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline operator-(const matrix<T> &lhs, const matrix<U> &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   matrix<T> result(lhs);
   result.sub(rhs);
@@ -936,13 +921,12 @@ matrix<T> inline operator-(const matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator *(const matrix<T> &lhs, const matrix<U> &rhs) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline operator*(const matrix<T> &lhs, const matrix<U> &rhs) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline operator*(const matrix<T> &lhs, const matrix<U> &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   matrix<T> result(lhs);
   result.mul(rhs);
@@ -950,13 +934,12 @@ matrix<T> inline operator*(const matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator +(const matrix<T> &lhs, const U &rhs) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline operator+(const matrix<T> &lhs, const U &rhs) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline operator+(const matrix<T> &lhs, const U &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   matrix<T> result(lhs);
   result.add(rhs);
@@ -964,13 +947,12 @@ matrix<T> inline operator+(const matrix<T> &lhs, const U &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator -(const matrix<T> &lhs, const U &rhs) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline operator-(const matrix<T> &lhs, const U &rhs) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline operator-(const matrix<T> &lhs, const U &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   matrix<T> result(lhs);
   result.sub(rhs);
@@ -978,13 +960,12 @@ matrix<T> inline operator-(const matrix<T> &lhs, const U &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator *(const matrix<T> &lhs, const U &rhs) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline operator*(const matrix<T> &lhs, const U &rhs) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline operator*(const matrix<T> &lhs, const U &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   matrix<T> result(lhs);
   result.mul(rhs);
@@ -992,13 +973,12 @@ matrix<T> inline operator*(const matrix<T> &lhs, const U &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<U> inline operator *(const U &rhs, const matrix<T> &lhs) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<U> inline operator*(const U &rhs, const matrix<T> &lhs) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<U> inline operator*(const U &rhs, const matrix<T> &lhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   matrix<U> result(lhs);
   result.mul(rhs);
@@ -1006,13 +986,12 @@ matrix<U> inline operator*(const U &rhs, const matrix<T> &lhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator /(const matrix<T> &lhs, const U &rhs) {
-#else
-template<typename T, typename U>
+template<typename T, typename U> requires (std::convertible_to<U, T>)
 matrix<T> inline operator/(const matrix<T> &lhs, const U &rhs) {
-  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#else
+  template<typename T, typename U>
+  matrix<T> inline operator/(const matrix<T> &lhs, const U &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   matrix<T> result(lhs);
   result.div(rhs);
