@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <mtl/matrix.h>
+#include <mtl/experimental/matrix.h>
 
-using namespace mtl;
+using namespace mtl::experimental;
 
 TEST(Dynamicmatrix, Emptymatrix) {
   matrix<int> m;
