@@ -735,12 +735,19 @@ public:
   }
 
   MATRIX_CXX17_NODISCARD atomic_matrix inverse() const {
-	double det = determinant_gaussian();
+	double determinant = determinant_gaussian();
 
-	if (det <= 1e-6)
+	if (std::fabs(determinant) <= 1e-6)
 	  throw std::logic_error("Can't found inverse matrix because determinant is zero");
 
-	return calc_complements().transpose().mul(1 / det);
+	return calc_complements().transpose().mul(1 / determinant);
+  }
+
+  MATRIX_CXX17_NODISCARD atomic_matrix inverse(double determinant) const {
+	if (std::fabs(determinant) <= 1e-6)
+	  throw std::logic_error("Can't found inverse matrix because determinant is zero");
+
+	return calc_complements().transpose().mul(1 / determinant);
   }
 
   void swap_rows(size_type row1, size_type row2) {
