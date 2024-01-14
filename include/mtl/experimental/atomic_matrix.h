@@ -9,6 +9,9 @@
  *        The Template Matrix Library for fundamental types
  *        contains most of the operations on matrices.
  *
+ *        The Template Matrix Library is written in STL style
+ *        and supports STL Algorithms Library
+ *
  *        The Template Matrix library is written in the C++20 standard
  *        Supports C++11 C++14 C++17 C++20 C++23 versions
  *

@@ -9,6 +9,9 @@
  *        The Template Matrix Library for fundamental types
  *        contains most of the operations on matrices.
  *
+ *        The Template Matrix Library is written in STL style
+ *        and supports STL Algorithms Library
+ *
  *        The Template Matrix library is written in the C++20 standard
  *        Supports C++11 C++14 C++17 C++20 C++23 versions
  *
@@ -35,6 +38,7 @@
 
 #include <mtl/matrix_normal_iterator.h>
 #include <mtl/matrix_reverse_iterator.h>
+
 #include <mtl/experimental/matrix_type_traits.h>
 #include <mtl/experimental/matrix_config.h>
 
@@ -92,7 +96,8 @@ public:
 	  std::copy(container.begin(), container.end(), begin());
   }
 #else
-  template<typename Container>
+  template<typename Container,
+      typename std::enable_if<std::is_convertible<typename Container::value_type, value_type>::value, bool>::type = true>
   MATRIX_CXX17_CONSTEXPR explicit static_matrix(const Container &container) {
 	static_assert(std::is_convertible<typename Container::value_type, T>::value,
 				  "Container::value_type must be convertible to T");
