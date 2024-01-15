@@ -6,7 +6,7 @@
  *        Email:    gubaydullin.nurislam@gmail.com
  *        Telegram: @tonitaga
  *
- *        The Template Matrix Library for fundamental types
+ *        The Template Matrix Library for different types
  *        contains most of the operations on matrices.
  *
  *        The Template Matrix library is written in the C++20 standard
@@ -39,15 +39,9 @@
 #include <mtl/experimental/matrix_type_traits.h>
 
 namespace mtl::experimental {
-#if __cplusplus > 201703L
-template<fundamental T>
-class matrix {
-#else
+
 template<typename T>
 class matrix {
-  static_assert(std::is_fundamental<T>::value,
-				"Template parameter T must be fundamental");
-#endif // C++ <= 201703L
 public:
   using value_type = typename std::allocator_traits<std::allocator<T>>::value_type;
   using pointer = typename std::allocator_traits<std::allocator<T>>::pointer;

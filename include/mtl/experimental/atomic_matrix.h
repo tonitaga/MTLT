@@ -6,7 +6,7 @@
  *        Email:    gubaydullin.nurislam@gmail.com
  *        Telegram: @tonitaga
  *
- *        The Template Matrix Library for Atomic fundamental types
+ *        The Template Matrix Library for Atomic types
  *        contains most of the operations on matrices.
  *
  *        The Template Matrix library is written in the C++20 standard
@@ -43,9 +43,8 @@ namespace mtl::experimental {
 template<typename T, template<typename> class Atomic = std::atomic>
 class atomic_matrix {
 public:
-  static_assert(is_fundamental_atomic<Atomic<T>>::value,
-				"\n1) Atomic<T> must be atomic type"
-				"\n2) Atomic<T>::value_type must be fundamental type");
+  static_assert(is_atomic<Atomic<T>>::value,
+				"\nAtomic<T> must be atomic type");
 
 public:
   using atomic_type = Atomic<T>;

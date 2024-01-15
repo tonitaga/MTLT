@@ -46,7 +46,6 @@ class static_matrix {
 #else
 template<typename T, std::size_t Rows, std::size_t Cols>
 class static_matrix {
-  static_assert(std::is_fundamental<T>::value, "Template parameter T must be fundamental");
 #endif // C++ <= 201703L
 public:
   using value_type = T;

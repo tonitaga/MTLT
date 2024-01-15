@@ -6,7 +6,7 @@
  *        Email:    gubaydullin.nurislam@gmail.com
  *        Telegram: @tonitaga
  *
- *        The Template Matrix Library for fundamental types
+ *        The Template Matrix Library for different types
  *        contains most of the operations on matrices.
  *
  *        The Template Matrix library is written in the C++20 standard
