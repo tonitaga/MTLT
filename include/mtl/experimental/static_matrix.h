@@ -796,6 +796,11 @@ private:
   value_type data_[Rows * Cols]{};
 };
 
+template<typename T, std::size_t Rows, std::size_t Cols>
+using fundamental_static_matrix = typename std::conditional<std::negation<std::is_fundamental<T>>::value,
+															detail::incomplete_compile_error_generation_type,
+															static_matrix<T, Rows, Cols>>::type;
+
 #if __cplusplus > 201703L
 template<fundamental T, std::size_t Rows, std::size_t Cols>
 std::ostream &operator<<(std::ostream &out, const static_matrix<T, Rows, Cols> &rhs) {

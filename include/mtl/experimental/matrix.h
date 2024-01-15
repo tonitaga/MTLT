@@ -345,16 +345,16 @@ public:
 #else
   template<typename U>
   matrix &mul_by_element(const matrix<U> &rhs) {
-    static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-    if (rows_ != rhs.rows() or cols_ != rhs.cols())
-      throw std::logic_error("Can't multiply by element two matrices because rows != rhs.rows() or cols != rhs.cols()");
+	if (rows_ != rhs.rows() or cols_ != rhs.cols())
+	  throw std::logic_error("Can't multiply by element two matrices because rows != rhs.rows() or cols != rhs.cols()");
 
-    for (size_type row = 0; row != rows_; ++row)
-      for (size_type col = 0; col != cols_; ++col)
-          (*this)(row, col) *= rhs(row, col);
+	for (size_type row = 0; row != rows_; ++row)
+	  for (size_type col = 0; col != cols_; ++col)
+		(*this)(row, col) *= rhs(row, col);
 
-    return *this;
+	return *this;
   }
 
   matrix &div(const value_type &number) {
@@ -797,7 +797,7 @@ public:
   std::vector<U> to_vector() const {
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-	std::vector<U> v(rows_ * cols_);
+	std::vector<U> v(rows_ *cols_);
 	std::copy(begin(), end(), v.begin());
 	return v;
   }
@@ -823,6 +823,11 @@ private:
   size_type rows_{}, cols_{};
   pointer data_ = nullptr;
 };
+
+template<typename T>
+using fundamental_matrix = typename std::conditional<std::negation<std::is_fundamental<T>>::value,
+													 detail::incomplete_compile_error_generation_type,
+													 matrix<T>>::type;
 
 template<typename T>
 std::ostream &operator<<(std::ostream &out, const matrix<T> &rhs) {

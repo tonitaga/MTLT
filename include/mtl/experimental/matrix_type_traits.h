@@ -198,6 +198,12 @@ concept printable_or_streamable = printable<T> || streamable<T>;
 
 #endif // __cplusplus > 201703L
 
+namespace detail {
+
+struct incomplete_compile_error_generation_type;
+
+}
+
 } // namespace mtl::experimental end
 
 #endif //MATRIX_TEMPLATE_LIBRARY_EXPERIMENTAL_TYPE_TRAITS_H_

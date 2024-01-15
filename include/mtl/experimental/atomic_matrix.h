@@ -332,9 +332,9 @@ public:
   template<typename U> requires(std::convertible_to<U, T>)
   atomic_matrix &mul(const atomic_matrix<U> &rhs) {
 #else
-	template<typename U>
-	atomic_matrix &mul(const atomic_matrix<U> &rhs) {
-	  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  template<typename U>
+  atomic_matrix &mul(const atomic_matrix<U> &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	if (cols_ != rhs.rows())
 	  throw std::logic_error("Can't multiply two matrices because lhs.cols() != rhs.rows()");
@@ -347,18 +347,17 @@ public:
 	  for (size_type col = 0; col != cols; ++col)
 		for (size_type k = 0; k != cols_; ++k) {
 #if __cpluplus > 201703L
-          multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
+		  multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
 #elif __cpluplus == 201703L
-          if constexpr (std::is_floating_point_v<atomic_value_type>) {
-            multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
-          } else {
-            multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
-          }
+		  if constexpr (std::is_floating_point_v<atomic_value_type>) {
+			multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
+		  } else {
+			multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
+		  }
 #else
-          multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
+		  multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
 #endif // __cpluplus == 201703L
-        }
-
+		}
 
 	*this = std::move(multiplied);
 	return *this;
@@ -381,9 +380,9 @@ public:
   template<typename U> requires(std::convertible_to<U, T>)
   atomic_matrix &add(const atomic_matrix<U> &rhs) {
 #else
-	template<typename U>
-	atomic_matrix &add(const atomic_matrix<U> &rhs) {
-	  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  template<typename U>
+  atomic_matrix &add(const atomic_matrix<U> &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	if (rhs.rows() != rows_ || rhs.cols() != cols_)
 	  throw std::logic_error("Can't add different sized matrices");
@@ -401,9 +400,9 @@ public:
   template<typename U> requires(std::convertible_to<U, T>)
   atomic_matrix &sub(const atomic_matrix<U> &rhs) {
 #else
-	template<typename U>
-	atomic_matrix &sub(const atomic_matrix<U> &rhs) {
-	  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  template<typename U>
+  atomic_matrix &sub(const atomic_matrix<U> &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	if (rhs.rows() != rows_ || rhs.cols() != cols_)
 	  throw std::logic_error("Can't add different sized matrices");
@@ -689,7 +688,7 @@ public:
 #if __cpluplus > 201703L
 		  matrix(row, col).fetch_sub(matrix(row, i) * matrix(i, col) / pivot);
 #else
-          matrix(row, col).store(matrix(row, col) - (matrix(row, i) * matrix(i, col) / pivot));
+		  matrix(row, col).store(matrix(row, col) - (matrix(row, i) * matrix(i, col) / pivot));
 #endif // __cpluplus > 201703L
 		}
 	  }
@@ -807,9 +806,9 @@ public:
   template<fundamental U> requires (std::convertible_to<U, T>)
   atomic_matrix<U> convert_to() const {
 #else
-	template<typename U>
-	atomic_matrix<U> convert_to() const {
-	  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  template<typename U>
+  atomic_matrix<U> convert_to() const {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	atomic_matrix<U> convert(rows_, cols_);
 
@@ -826,11 +825,11 @@ public:
   template<fundamental U = T> requires (std::convertible_to<U, T>)
   std::vector<Atomic<U>> to_vector() const {
 #else
-	template<typename U = T>
-	std::vector<Atomic<U>> to_vector() const {
-	  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  template<typename U = T>
+  std::vector<Atomic<U>> to_vector() const {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-	std::vector<Atomic<U>> v(rows_ *cols_);
+	std::vector<Atomic<U>> v(rows_ * cols_);
 	auto begin = v.begin();
 	for (const auto &value : *this) {
 	  (*begin).store(value);
@@ -840,9 +839,14 @@ public:
   }
 
 private:
-  size_type rows_ {}, cols_ {};
+  size_type rows_{}, cols_{};
   pointer data_ = nullptr;
 };
+
+template<typename T, template<typename> class Atomic = std::atomic>
+using fundamental_atomic_matrix = typename std::conditional<std::negation<std::is_fundamental<T>>::value,
+															detail::incomplete_compile_error_generation_type,
+															atomic_matrix<T, Atomic>>::type;
 
 template<typename T, template<typename> class Atomic>
 std::ostream &operator<<(std::ostream &out, const atomic_matrix<T, Atomic> &rhs) {
@@ -854,9 +858,9 @@ std::ostream &operator<<(std::ostream &out, const atomic_matrix<T, Atomic> &rhs)
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline &operator+=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
-atomic_matrix <T, Atomic> inline &operator+=(atomic_matrix <T, Atomic> &lhs, const atomic_matrix <U, Atomic> &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline &operator+=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.add(rhs);
   return lhs;
@@ -866,9 +870,9 @@ atomic_matrix <T, Atomic> inline &operator+=(atomic_matrix <T, Atomic> &lhs, con
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline &operator-=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline &operator-=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.sub(rhs);
   return lhs;
@@ -878,9 +882,9 @@ atomic_matrix<T, Atomic> inline &operator-=(atomic_matrix<T, Atomic> &lhs, const
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline &operator*=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline &operator*=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.mul(rhs);
   return lhs;
@@ -890,9 +894,9 @@ atomic_matrix<T, Atomic> inline &operator*=(atomic_matrix<T, Atomic> &lhs, const
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline &operator+=(atomic_matrix<T, Atomic> &lhs, const U &value) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline &operator+=(atomic_matrix<T, Atomic> &lhs, const U &value) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.add(value);
   return lhs;
@@ -902,9 +906,9 @@ atomic_matrix<T, Atomic> inline &operator+=(atomic_matrix<T, Atomic> &lhs, const
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline &operator-=(atomic_matrix<T, Atomic> &lhs, const U &value) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline &operator-=(atomic_matrix<T, Atomic> &lhs, const U &value) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.sub(value);
   return lhs;
@@ -914,9 +918,9 @@ atomic_matrix<T, Atomic> inline &operator-=(atomic_matrix<T, Atomic> &lhs, const
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline &operator*=(atomic_matrix<T, Atomic> &lhs, const U &value) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline &operator*=(atomic_matrix<T, Atomic> &lhs, const U &value) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.mul(value);
   return lhs;
@@ -927,8 +931,8 @@ template<typename T, typename U, template<typename> class Atomic> requires (std:
 atomic_matrix<T, Atomic> inline &operator/=(atomic_matrix<T, Atomic> &lhs, const U &value) {
 #else
 template<typename T, typename U, template<typename> class Atomic>
-  atomic_matrix<T, Atomic> inline &operator/=(atomic_matrix<T, Atomic> &lhs, const U &value) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+atomic_matrix<T, Atomic> inline &operator/=(atomic_matrix<T, Atomic> &lhs, const U &value) {
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.div(value);
   return lhs;
@@ -938,9 +942,9 @@ template<typename T, typename U, template<typename> class Atomic>
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   atomic_matrix<T, Atomic> result(lhs);
   result.add(rhs);
@@ -951,9 +955,9 @@ atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, c
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline operator-(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline operator-(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   atomic_matrix<T, Atomic> result(lhs);
   result.sub(rhs);
@@ -964,9 +968,9 @@ atomic_matrix<T, Atomic> inline operator-(const atomic_matrix<T, Atomic> &lhs, c
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline operator*(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
-  atomic_matrix<T, Atomic> inline operator*(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline operator*(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   atomic_matrix<T, Atomic> result(lhs);
   result.mul(rhs);
@@ -979,7 +983,7 @@ atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, c
 #else
 template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   atomic_matrix<T, Atomic> result(lhs);
   result.add(rhs);
@@ -990,9 +994,9 @@ atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, c
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline operator-(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline operator-(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   atomic_matrix<T, Atomic> result(lhs);
   result.sub(rhs);
@@ -1003,9 +1007,9 @@ atomic_matrix<T, Atomic> inline operator-(const atomic_matrix<T, Atomic> &lhs, c
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline operator*(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline operator*(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   atomic_matrix<T, Atomic> result(lhs);
   result.mul(rhs);
@@ -1016,9 +1020,9 @@ atomic_matrix<T, Atomic> inline operator*(const atomic_matrix<T, Atomic> &lhs, c
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<U, Atomic> inline operator*(const U &rhs, const atomic_matrix<T, Atomic> &lhs) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<U, Atomic> inline operator*(const U &rhs, const atomic_matrix<T, Atomic> &lhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   atomic_matrix<T, Atomic> result(lhs);
   result.mul(rhs);
@@ -1029,9 +1033,9 @@ atomic_matrix<U, Atomic> inline operator*(const U &rhs, const atomic_matrix<T, A
 template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
 atomic_matrix<T, Atomic> inline operator/(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
 #else
-  template<typename T, typename U, template<typename> class Atomic>
+template<typename T, typename U, template<typename> class Atomic>
 atomic_matrix<T, Atomic> inline operator/(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+  static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   atomic_matrix<T, Atomic> result(lhs);
   result.div(rhs);
