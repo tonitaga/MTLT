@@ -24,6 +24,16 @@
 
 namespace mtl::experimental {
 
+namespace detail {
+
+struct print {
+  static std::string sep;
+};
+
+inline std::string print::sep = "\n";
+
+}
+
 template<typename Head>
 void print(Head &&head) {
 #if __cplusplus >= 201703L

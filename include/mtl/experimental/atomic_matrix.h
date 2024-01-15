@@ -68,6 +68,7 @@ public:
 	  : rows_(rows), cols_(cols), data_(new value_type[rows * cols]{}) {
 	if (f != value_type{})
 	  fill(f);
+
   }
 
   MATRIX_CXX17_CONSTEXPR explicit atomic_matrix(size_type square) : atomic_matrix(square, square) {};
@@ -345,8 +346,20 @@ public:
 	atomic_matrix multiplied(rows, cols);
 	for (size_type row = 0; row != rows; ++row)
 	  for (size_type col = 0; col != cols; ++col)
-		for (size_type k = 0; k != cols_; ++k)
-		  multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
+		for (size_type k = 0; k != cols_; ++k) {
+#if __cpluplus > 201703L
+          multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
+#elif __cpluplus == 201703L
+          if constexpr (std::is_floating_point_v<atomic_value_type>) {
+            multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
+          } else {
+            multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
+          }
+#else
+          multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
+#endif // __cpluplus == 201703L
+        }
+
 
 	*this = std::move(multiplied);
 	return *this;
@@ -674,7 +687,11 @@ public:
 
 	  for (size_type row = i + 1; row != kN; ++row) {
 		for (size_type col = i + 1; col != kN; ++col) {
+#if __cpluplus > 201703L
 		  matrix(row, col).fetch_sub(matrix(row, i) * matrix(i, col) / pivot);
+#else
+          matrix(row, col).store(matrix(row, col) - (matrix(row, i) * matrix(i, col) / pivot));
+#endif // __cpluplus > 201703L
 		}
 	  }
 	}

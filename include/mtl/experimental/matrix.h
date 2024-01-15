@@ -345,6 +345,24 @@ public:
 	return *this;
   }
 
+#if __cplusplus > 201703L
+  template<typename U> requires(std::convertible_to<U, T>)
+  matrix &mul_by_element(const matrix<U> &rhs) {
+#else
+  template<typename U>
+  matrix &mul_by_element(const matrix<U> &rhs) {
+    static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#endif
+    if (rows_ != rhs.rows() or cols_ != rhs.cols())
+      throw std::logic_error("Can't multiply by element two matrices because rows != rhs.rows() or cols != rhs.cols()");
+
+    for (size_type row = 0; row != rows_; ++row)
+      for (size_type col = 0; col != cols_; ++col)
+          (*this)(row, col) *= rhs(row, col);
+
+    return *this;
+  }
+
   matrix &div(const value_type &number) {
 	if (std::is_integral<T>::value && number == 0)
 	  throw std::logic_error("Dividing by zero");
