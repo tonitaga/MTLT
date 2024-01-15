@@ -30,19 +30,50 @@
 
 namespace mtl::experimental {
 
+/**
+ * @struct is_atomic
+ * This is a struct template that checks if a type T is an atomic type.
+ * It uses partial template specialization to set the base std::false_type for general types and
+ * std::true_type for atomic types. If the type is atomic, is_atomic<T>::value will be true
+ *
+ * Write for your Atomic class the specialization
+ *
+ * @code
+ * namespace mtl::experimental {
+ * template<typename T>
+ * struct is_atomic<YourAtomic<T>> : std::true_type {};
+ * }
+ * @endcode
+ */
 template<typename T>
 struct is_atomic : std::false_type {};
 
+/**
+ * @struct is_atomic
+ * Specialization of is_atomic struct for std::atomic
+ */
 template<typename T>
 struct is_atomic<std::atomic<T>> : std::true_type {};
 
 #if __cplusplus >= 201402L
+
+/**
+ * @var is_atomic_v
+ * This is a variable template that provides a convenient way
+ * to check if a type is atomic.
+ * This is available if the C++ version is C++14 or later
+ */
 template<typename T>
 MATRIX_CXX17_INLINE constexpr bool is_atomic_v = is_atomic<T>::value;
 #endif // __cplusplus >= 201402L
 
 #if __cplusplus > 201703L
 
+/**
+ * @concept atomic
+ * This is a concept that checks if a type is atomic.
+ * It is available if the C++ version is C++20 or later.
+ */
 template <typename T>
 concept atomic = is_atomic_v<T>;
 
@@ -50,22 +81,37 @@ concept atomic = is_atomic_v<T>;
 
 namespace detail {
 
-template<typename T, typename ValueType = typename T::value_type>
+template<typename T>
 struct is_fundamental_atomic {
   static constexpr bool value =
-	  std::is_fundamental<ValueType>::value && is_atomic<T>::value;
+	  std::is_fundamental<typename T::value_type>::value && is_atomic<T>::value;
 };
 
 } // namespace detail end
 
+/**
+ * @struct is_fundamental_atomic
+ * This struct checks if a type T is both atomic and fundamental.
+ * It does this through a nested struct within the detail namespace
+ * and then exposes this check through the is_fundamental_atomic<T> struct
+ */
 template<typename T>
-struct is_fundamental_atomic : detail::is_fundamental_atomic<T> {};
+struct is_fundamental_atomic : std::conditional<std::is_fundamental<T>::value,
+												std::false_type,
+												detail::is_fundamental_atomic<T>>::type {
+};
 
 #if __cplusplus >= 201402L
+
+/**
+ * @var is_fundamental_atomic_v
+ * This is a variable template that provides a convenient way
+ * to check if a type is fundamental_atomic.
+ * This is available if the C++ version is C++14 or later
+ */
 template<typename T>
 MATRIX_CXX17_INLINE constexpr bool is_fundamental_atomic_v = is_fundamental_atomic<T>::value;
 #endif // __cplusplus >= 201402L
-
 
 #if __cplusplus > 201703L
 
