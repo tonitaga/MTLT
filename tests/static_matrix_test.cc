@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <mtl/static_matrix.h>
+#include <mtl/experimental/static_matrix.h>
 
-using namespace mtl;
+using namespace mtl::experimental;
 
 TEST(StaticMatrix, Sizedmatrix) {
   static_matrix<int, 3, 3> m(5);
