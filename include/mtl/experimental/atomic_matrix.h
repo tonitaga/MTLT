@@ -41,7 +41,7 @@
 namespace mtl::experimental {
 
 template<typename T, template<typename> class Atomic = std::atomic>
-class atomic_matrix {
+class atomic_matrix final {
 public:
   static_assert(is_atomic<Atomic<T>>::value,
 				"\nAtomic<T> must be atomic type");

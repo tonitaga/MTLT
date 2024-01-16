@@ -42,10 +42,10 @@
 namespace mtl::experimental {
 #if __cplusplus > 201703L
 template<fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
-class static_matrix {
+class static_matrix final {
 #else
 template<typename T, std::size_t Rows, std::size_t Cols>
-class static_matrix {
+class static_matrix final {
 #endif // C++ <= 201703L
 public:
   using value_type = T;

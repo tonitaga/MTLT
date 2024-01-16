@@ -41,7 +41,7 @@
 namespace mtl::experimental {
 
 template<typename T>
-class matrix {
+class matrix final {
 public:
   using value_type = typename std::allocator_traits<std::allocator<T>>::value_type;
   using pointer = typename std::allocator_traits<std::allocator<T>>::pointer;
