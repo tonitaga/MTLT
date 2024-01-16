@@ -415,11 +415,9 @@ public:
 	return *this;
   }
 
-  atomic_matrix &fill(const atomic_value_type &number) {
-	for (size_type row = 0; row != rows_; ++row)
-	  for (size_type col = 0; col != cols_; ++col)
-		(*this)(row, col).store(number);
-
+  atomic_matrix &fill(const atomic_value_type &v) {
+	for (auto &value : *this)
+	  value.store(v);
 	return *this;
   }
 

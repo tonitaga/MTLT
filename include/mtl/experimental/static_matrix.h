@@ -246,8 +246,9 @@ public:
 	std::generate(begin(), end(), std::forward<Operation>(op));
   }
 
-  static_matrix &fill(const value_type &number) {
-	std::fill(begin(), end(), number);
+  static_matrix &fill(const value_type &v) {
+	std::fill(begin(), end(), v);
+	return *this;
   }
 
   static_matrix &fill_random(const value_type &left, const value_type &right) {
