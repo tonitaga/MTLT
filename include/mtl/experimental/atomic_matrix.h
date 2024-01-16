@@ -147,7 +147,7 @@ public:
 	return iterator(data_);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_iterator begin() const noexcept {
 	return const_iterator(data_);
   }
@@ -157,17 +157,17 @@ public:
 	return reverse_iterator(data_ + rows_ * cols_ - 1);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator rbegin() const noexcept {
 	return const_reverse_iterator(data_ + rows_ * cols_ - 1);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_iterator cbegin() const noexcept {
 	return begin();
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator crbegin() const noexcept {
 	return rbegin();
   }
@@ -177,7 +177,7 @@ public:
 	return iterator(data_ + rows_ * cols_);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_iterator end() const noexcept {
 	return const_iterator(data_ + rows_ * cols_);
   }
@@ -187,17 +187,17 @@ public:
 	return reverse_iterator(data_ - 1);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator rend() const noexcept {
 	return const_reverse_iterator(data_ - 1);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_iterator cend() const noexcept {
 	return end();
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator crend() const noexcept {
 	return rend();
   }
@@ -218,7 +218,7 @@ public:
 	return (*this)(row, col);
   }
 
-  MATRIX_CXX17_NODISCARD const_reference at(size_type row, size_type col) const {
+  const_reference at(size_type row, size_type col) const {
 	if (row >= rows_ || col >= cols_)
 	  throw std::out_of_range("row or col is out of range of matrix");
 
@@ -347,16 +347,20 @@ public:
 	  for (size_type col = 0; col != cols; ++col)
 		for (size_type k = 0; k != cols_; ++k) {
 #if __cpluplus > 201703L
-		  multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
-#elif __cpluplus == 201703L
-		  if constexpr (std::is_floating_point_v<atomic_value_type>) {
-			multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
-		  } else {
+		  if constexpr (std::is_fundamental<atomic_value_type>::value) {
 			multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
+		  } else {
+			multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
+		  }
+#elif __cpluplus == 201703L
+          if constexpr (std::is_integral<atomic_value_type>::value) {
+			multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
+		  } else {
+			multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
 		  }
 #else
 		  multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
-#endif // __cpluplus == 201703L
+#endif
 		}
 
 	*this = std::move(multiplied);
@@ -439,7 +443,7 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix round() const {
+  atomic_matrix round() const {
 	atomic_matrix rounded(*this);
 	rounded.transform([](const atomic_value_type &item) { return std::round(item); });
 	return rounded;
@@ -450,7 +454,7 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix floor() const {
+  atomic_matrix floor() const {
 	atomic_matrix floored(*this);
 	floored.transform([](const atomic_value_type &item) { return std::floor(item); });
 	return floored;
@@ -461,7 +465,7 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix ceil() const {
+  atomic_matrix ceil() const {
 	atomic_matrix ceiled(*this);
 	ceiled.transform([](const atomic_value_type &item) { return std::ceil(item); });
 	return ceiled;
@@ -472,7 +476,7 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix zero() const {
+  atomic_matrix zero() const {
 	return atomic_matrix(rows_, cols_);
   }
 
@@ -487,7 +491,7 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX17_NODISCARD atomic_value_type sum() const {
+  atomic_value_type sum() const {
 	atomic_value_type sum{};
 	for (const auto &value : *this)
 	  sum += value;
@@ -503,7 +507,7 @@ public:
 	*this = join_left(rhs);
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix join_left(const atomic_matrix &rhs) const {
+  atomic_matrix join_left(const atomic_matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join left rhs matrix to lhs, because lhs.rows() != rhs.rows()");
 
@@ -537,7 +541,7 @@ public:
 		  (*this)(row, col).store(rhs(row, col - cols2));
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix join_right(const atomic_matrix &rhs) const {
+  atomic_matrix join_right(const atomic_matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join right rhs matrix to lhs, because lhs.rows() != rhs.rows()");
 
@@ -562,7 +566,7 @@ public:
 	*this = join_top(rhs);
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix join_top(const atomic_matrix &rhs) const {
+  atomic_matrix join_top(const atomic_matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join top rhs matrix to lhs, because lhs.cols() != rhs.cols()");
 
@@ -596,7 +600,7 @@ public:
 	  }
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix join_bottom(const atomic_matrix &rhs) const {
+  atomic_matrix join_bottom(const atomic_matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join bottom rhs matrix to lhs, because lhs.cols() != rhs.cols()");
 
@@ -615,7 +619,7 @@ public:
   }
 
 public:
-  MATRIX_CXX17_NODISCARD atomic_matrix transpose() const {
+  atomic_matrix transpose() const {
 	atomic_matrix transposed(cols_, rows_);
 
 	for (size_type row = 0; row != rows_; ++row)
@@ -625,7 +629,7 @@ public:
 	return transposed;
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix minor(size_type row, size_type col) const {
+  atomic_matrix minor(size_type row, size_type col) const {
 	atomic_matrix minor(rows() - 1, cols() - 1);
 
 	size_type skip_row = 0, skip_col = 0;
@@ -645,11 +649,11 @@ public:
 	return minor;
   }
 
-  MATRIX_CXX17_NODISCARD double minor_item(size_type row, size_type col) const {
+  double minor_item(size_type row, size_type col) const {
 	return minor(row, col).determinant_gaussian();
   }
 
-  MATRIX_CXX17_NODISCARD double determinant_gaussian() const {
+  double determinant_gaussian() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("determinant_gaussian can be found only for square matrices");
 
@@ -683,21 +687,34 @@ public:
 
 	  determinant_value *= pivot;
 
+
 	  for (size_type row = i + 1; row != kN; ++row) {
 		for (size_type col = i + 1; col != kN; ++col) {
 #if __cpluplus > 201703L
-		  matrix(row, col).fetch_sub(matrix(row, i) * matrix(i, col) / pivot);
+		  if constexpr (std::is_fundamental<atomic_value_type>::value) {
+		  	matrix(row, col).fetch_sub(matrix(row, i) * matrix(i, col) / pivot);
+		  } else {
+		  	matrix(row, col).store(matrix(row, col) - (matrix(row, i) * matrix(i, col) / pivot));
+		  }
+#elif __cplusplus == 201703L
+		  if constexpr (std::is_integral<atomic_value_type>::value) {
+			matrix(row, col).fetch_sub(matrix(row, i) * matrix(i, col) / pivot);
+		  } else {
+			matrix(row, col).store(matrix(row, col) - (matrix(row, i) * matrix(i, col) / pivot));
+		  }
 #else
 		  matrix(row, col).store(matrix(row, col) - (matrix(row, i) * matrix(i, col) / pivot));
-#endif // __cpluplus > 201703L
+#endif
 		}
 	  }
+
+
 	}
 
 	return determinant_value;
   }
 
-  MATRIX_CXX17_NODISCARD double determinant_laplacian() const {
+  double determinant_laplacian() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("determinant_gaussian can be found only for square matrices");
 
@@ -719,7 +736,7 @@ public:
 	return determinant_value;
   }
 
-  MATRIX_CXX17_NODISCARD atomic_value_type trace() const {
+  atomic_value_type trace() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("Can't find trace for non square matrices");
 
@@ -729,7 +746,7 @@ public:
 	return tr;
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix calc_complements() const {
+  atomic_matrix calc_complements() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("Complements matrix can be found only for square matrices");
 
@@ -747,7 +764,7 @@ public:
 	return complements;
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix inverse() const {
+  atomic_matrix inverse() const {
 	double determinant = determinant_gaussian();
 
 	if (std::fabs(determinant) <= 1e-6)
@@ -756,7 +773,7 @@ public:
 	return calc_complements().transpose().mul(1 / determinant);
   }
 
-  MATRIX_CXX17_NODISCARD atomic_matrix inverse(double determinant) const {
+  atomic_matrix inverse(double determinant) const {
 	if (std::fabs(determinant) <= 1e-6)
 	  throw std::logic_error("Can't found inverse matrix because determinant is zero");
 
@@ -790,12 +807,15 @@ public:
   }
 
 public:
-  MATRIX_CXX17_NODISCARD bool equal_to(const atomic_matrix &rhs) const {
-	std::not_equal_to<value_type> compare;
+  template<typename EqualCompare = std::equal_to<value_type>>
+  bool equal_to(const atomic_matrix &rhs) const {
+	if (rows_ != rhs.rows() || cols_ != rhs.cols())
+	  return false;
 
+	EqualCompare compare;
 	for (size_type row = 0; row != rows_; ++row)
 	  for (size_type col = 0; col != cols_; ++col)
-		if (compare((*this)(row, col), rhs(row, col)))
+		if (!compare((*this)(row, col), rhs(row, col)))
 		  return false;
 
 	return true;
@@ -803,7 +823,7 @@ public:
 
 public:
 #if __cplusplus > 201703L
-  template<fundamental U> requires (std::convertible_to<U, T>)
+  template<typename U> requires (std::convertible_to<U, T>)
   atomic_matrix<U> convert_to() const {
 #else
   template<typename U>
@@ -822,7 +842,7 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<fundamental U = T> requires (std::convertible_to<U, T>)
+  template<typename U = T> requires (std::convertible_to<U, T>)
   std::vector<Atomic<U>> to_vector() const {
 #else
   template<typename U = T>
@@ -844,7 +864,7 @@ private:
 };
 
 template<typename T, template<typename> class Atomic = std::atomic>
-using fundamental_atomic_matrix = typename std::conditional<std::negation<std::is_fundamental<T>>::value,
+using fundamental_atomic_matrix = typename std::conditional<!std::is_fundamental<T>::value,
 															detail::incomplete_compile_error_generation_type,
 															atomic_matrix<T, Atomic>>::type;
 
