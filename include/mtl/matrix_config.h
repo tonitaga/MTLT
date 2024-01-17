@@ -6,16 +6,29 @@
  *        Email:    gubaydullin.nurislam@gmail.com
  *        Telegram: @tonitaga
  *
- *        The Template Matrix Library for fundamental types
+ *        The Template Matrix Library for different types
  *        contains most of the operations on matrices.
  *
  *        The Template Matrix library is written in the C++20 standard
- *        Supports C++11 C++14 C++17 C++20 C++23 versions
- *
+ *        Supports C++11 C++14 C++17 C++20 C++23 versions. Also
+ *        The Library is  written in STL style and supports
+ *        STL Algorithms Library.
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_CONFIG_H_
-#define MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_CONFIG_H_
+#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_EXPERIMENTAL_CONFIG_H_
+#define MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_EXPERIMENTAL_CONFIG_H_
+
+namespace mtl {
+
+struct matrix_debug_settings {
+  int width = 3;
+  int precision = 3;
+  char separator = ' ';
+  char end = '\n';
+  bool is_double_end = false;
+};
+
+}
 
 #ifndef MATRIX_CXX17_CONSTEXPR
 #  if __cplusplus >= 201703L
@@ -57,4 +70,12 @@
 #  endif
 #endif
 
-#endif //MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_CONFIG_H_
+#ifndef MATRIX_CXX17_INLINE
+#  if __cplusplus >= 201703L
+#    define MATRIX_CXX17_INLINE inline
+#  else
+#    define MATRIX_CXX17_INLINE
+#  endif
+#endif
+
+#endif // MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_EXPERIMENTAL_CONFIG_H_

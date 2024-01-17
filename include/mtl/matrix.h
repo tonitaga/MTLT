@@ -6,16 +6,17 @@
  *        Email:    gubaydullin.nurislam@gmail.com
  *        Telegram: @tonitaga
  *
- *        The Template Matrix Library for fundamental types
+ *        The Template Matrix Library for different types
  *        contains most of the operations on matrices.
  *
  *        The Template Matrix library is written in the C++20 standard
- *        Supports C++11 C++14 C++17 C++20 C++23 versions
- *
+ *        Supports C++11 C++14 C++17 C++20 C++23 versions. Also
+ *        The Library is  written in STL style and supports
+ *        STL Algorithms Library.
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
-#define MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
+#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_
+#define MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_
 
 #include <cmath>
 #include <random>
@@ -25,25 +26,22 @@
 #include <numeric>
 #include <iostream>
 #include <algorithm>
-#include <type_traits>
+#include <functional>
 
 #if __cplusplus > 201703L
 #include <concepts>
 #endif
 
-#include <mtl/matrix_state.h>
-#include <mtl/matrix_reverse_iterator.h>
 #include <mtl/matrix_normal_iterator.h>
+#include <mtl/matrix_reverse_iterator.h>
+
+#include <mtl/matrix_config.h>
+#include <mtl/matrix_type_traits.h>
 
 namespace mtl {
-#if __cplusplus > 201703L
-template <fundamental T>
-class matrix {
-#else
+
 template<typename T>
-class matrix {
-  static_assert(std::is_fundamental<T>::value, "Template parameter T must be fundamental");
-#endif // C++ <= 201703L
+class matrix final {
 public:
   using value_type = typename std::allocator_traits<std::allocator<T>>::value_type;
   using pointer = typename std::allocator_traits<std::allocator<T>>::pointer;
@@ -80,16 +78,15 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<typename Container>
-  requires(std::convertible_to<typename Container::value_type, T>)
+  template<typename Container> requires(std::convertible_to<typename Container::value_type, T>)
   MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
 	  : matrix(rows, cols) {
 #else
-  template<typename Container>
-  MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
+  template<typename Container,
+	  typename std::enable_if<
+		  std::is_convertible<typename Container::value_type, value_type>::value, bool>::type = true>
+  MATRIX_CXX20_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
 	  : matrix(rows, cols) {
-	static_assert(std::is_convertible<typename Container::value_type, T>::value,
-				  "Container::value_type must be convertible to T");
 #endif // C++ <= 201703L
 	std::copy(container.begin(), container.end(), begin());
   }
@@ -142,7 +139,7 @@ public:
 	return iterator(data_);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_iterator begin() const noexcept {
 	return const_iterator(data_);
   }
@@ -152,17 +149,17 @@ public:
 	return reverse_iterator(data_ + rows_ * cols_ - 1);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator rbegin() const noexcept {
 	return const_reverse_iterator(data_ + rows_ * cols_ - 1);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_iterator cbegin() const noexcept {
 	return begin();
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator crbegin() const noexcept {
 	return rbegin();
   }
@@ -172,7 +169,7 @@ public:
 	return iterator(data_ + rows_ * cols_);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_iterator end() const noexcept {
 	return const_iterator(data_ + rows_ * cols_);
   }
@@ -182,17 +179,17 @@ public:
 	return reverse_iterator(data_ - 1);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator rend() const noexcept {
 	return const_reverse_iterator(data_ - 1);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_iterator cend() const noexcept {
 	return end();
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   const_reverse_iterator crend() const noexcept {
 	return rend();
   }
@@ -213,7 +210,7 @@ public:
 	return (*this)(row, col);
   }
 
-  MATRIX_CXX17_NODISCARD const_reference at(size_type row, size_type col) const {
+  const_reference at(size_type row, size_type col) const {
 	if (row >= rows_ || col >= cols_)
 	  throw std::out_of_range("row or col is out of range of matrix");
 
@@ -272,7 +269,7 @@ public:
   }
 
   void clear() noexcept {
-	rows_ = cols_ = value_type{};
+	rows_ = cols_ = size_type{};
 	delete[] data_;
 	data_ = nullptr;
   }
@@ -319,8 +316,7 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<typename U>
-  requires(std::convertible_to<U, T>)
+  template<typename U> requires(std::convertible_to<U, T>)
   matrix &mul(const matrix<U> &rhs) {
 #else
   template<typename U>
@@ -343,6 +339,24 @@ public:
 	return *this;
   }
 
+#if __cplusplus > 201703L
+  template<typename U> requires(std::convertible_to<U, T>)
+  matrix &mul_by_element(const matrix<U> &rhs) {
+#else
+  template<typename U>
+  matrix &mul_by_element(const matrix<U> &rhs) {
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+#endif
+	if (rows_ != rhs.rows() or cols_ != rhs.cols())
+	  throw std::logic_error("Can't multiply by element two matrices because rows != rhs.rows() or cols != rhs.cols()");
+
+	for (size_type row = 0; row != rows_; ++row)
+	  for (size_type col = 0; col != cols_; ++col)
+		(*this)(row, col) *= rhs(row, col);
+
+	return *this;
+  }
+
   matrix &div(const value_type &number) {
 	if (std::is_integral<T>::value && number == 0)
 	  throw std::logic_error("Dividing by zero");
@@ -357,8 +371,7 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<typename U>
-  requires(std::convertible_to<U, T>)
+  template<typename U> requires(std::convertible_to<U, T>)
   matrix &add(const matrix<U> &rhs) {
 #else
   template<typename U>
@@ -378,8 +391,7 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<typename U>
-  requires(std::convertible_to<U, T>)
+  template<typename U> requires(std::convertible_to<U, T>)
   matrix &sub(const matrix<U> &rhs) {
 #else
   template<typename U>
@@ -395,6 +407,7 @@ public:
 
   matrix &fill(const value_type &number) {
 	generate([&number]() { return number; });
+
 	return *this;
   }
 
@@ -418,7 +431,7 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX17_NODISCARD matrix round() const {
+  matrix round() const {
 	matrix<T> rounded(*this);
 	rounded.transform([](const value_type &item) { return std::round(item); });
 	return rounded;
@@ -429,7 +442,7 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX17_NODISCARD matrix floor() const {
+  matrix floor() const {
 	matrix<T> floored(*this);
 	floored.transform([](const value_type &item) { return std::floor(item); });
 	return floored;
@@ -440,7 +453,7 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX17_NODISCARD matrix ceil() const {
+  matrix ceil() const {
 	matrix<T> ceiled(*this);
 	ceiled.transform([](const value_type &item) { return std::ceil(item); });
 	return ceiled;
@@ -451,7 +464,7 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX17_NODISCARD matrix zero() const {
+  matrix zero() const {
 	return matrix<T>(rows_, cols_);
   }
 
@@ -466,7 +479,7 @@ public:
 	return *this;
   }
 
-  MATRIX_CXX17_NODISCARD value_type sum() const {
+  value_type sum() const {
 	return std::accumulate(begin(), end(), value_type{});
   }
 
@@ -478,7 +491,7 @@ public:
 	*this = join_left(rhs);
   }
 
-  MATRIX_CXX17_NODISCARD matrix join_left(const matrix &rhs) const {
+  matrix join_left(const matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join left rhs matrix to lhs, because lhs.rows() != rhs.rows()");
 
@@ -512,7 +525,7 @@ public:
 		  (*this)(row, col) = rhs(row, col - cols2);
   }
 
-  MATRIX_CXX17_NODISCARD matrix join_right(const matrix &rhs) const {
+  matrix join_right(const matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join right rhs matrix to lhs, because lhs.rows() != rhs.rows()");
 
@@ -537,7 +550,7 @@ public:
 	*this = join_top(rhs);
   }
 
-  MATRIX_CXX17_NODISCARD matrix join_top(const matrix &rhs) const {
+  matrix join_top(const matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join top rhs matrix to lhs, because lhs.cols() != rhs.cols()");
 
@@ -571,7 +584,7 @@ public:
 	  }
   }
 
-  MATRIX_CXX17_NODISCARD matrix join_bottom(const matrix &rhs) const {
+  matrix join_bottom(const matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join bottom rhs matrix to lhs, because lhs.cols() != rhs.cols()");
 
@@ -590,7 +603,7 @@ public:
   }
 
 public:
-  MATRIX_CXX17_NODISCARD matrix transpose() const {
+  matrix transpose() const {
 	matrix transposed(cols_, rows_);
 
 	for (size_type row = 0; row != rows_; ++row)
@@ -600,7 +613,7 @@ public:
 	return transposed;
   }
 
-  MATRIX_CXX17_NODISCARD matrix minor(size_type row, size_type col) const {
+  matrix minor(size_type row, size_type col) const {
 	matrix minor(rows() - 1, cols() - 1);
 
 	size_type skip_row = 0, skip_col = 0;
@@ -620,11 +633,11 @@ public:
 	return minor;
   }
 
-  MATRIX_CXX17_NODISCARD double minor_item(size_type row, size_type col) const {
+  double minor_item(size_type row, size_type col) const {
 	return minor(row, col).determinant_gaussian();
   }
 
-  MATRIX_CXX17_NODISCARD double determinant_gaussian() const {
+  double determinant_gaussian() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("determinant_gaussian can be found only for square matrices");
 
@@ -668,9 +681,9 @@ public:
 	return determinant_value;
   }
 
-  MATRIX_CXX17_NODISCARD double determinant_laplacian() const {
+  double determinant_laplacian() const {
 	if (rows_ != cols_)
-	  throw std::logic_error("determinant_gaussian can be found only for square matrices");
+	  throw std::logic_error("determinant_laplacian can be found only for square matrices");
 
 	int sign = 1;
 	double determinant_value{};
@@ -690,7 +703,7 @@ public:
 	return determinant_value;
   }
 
-  MATRIX_CXX17_NODISCARD value_type trace() const {
+  value_type trace() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("Can't find trace for non square matrices");
 
@@ -700,7 +713,7 @@ public:
 	return tr;
   }
 
-  MATRIX_CXX17_NODISCARD matrix calc_complements() const {
+  matrix calc_complements() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("Complements matrix can be found only for square matrices");
 
@@ -718,13 +731,20 @@ public:
 	return complements;
   }
 
-  MATRIX_CXX17_NODISCARD matrix inverse() const {
-	double det = determinant_gaussian();
+  matrix inverse() const {
+	double determinant = determinant_gaussian();
 
-	if (det <= matrix_epsilon<double>::epsilon)
+	if (std::fabs(determinant) <= 1e-6)
 	  throw std::logic_error("Can't found inverse matrix because determinant is zero");
 
-	return calc_complements().transpose().mul(1 / det);
+	return calc_complements().transpose().mul(1 / determinant);
+  }
+
+  matrix inverse(double determinant) const {
+	if (std::fabs(determinant) <= 1e-6)
+	  throw std::logic_error("Can't found inverse matrix because determinant is zero");
+
+	return calc_complements().transpose().mul(1 / determinant);
   }
 
   void swap_rows(size_type row1, size_type row2) {
@@ -743,39 +763,16 @@ public:
   }
 
 public:
-  MATRIX_CXX17_NODISCARD bool equal_to(const matrix &rhs) const {
-	T epsilon;
-	MATRIX_CXX17_CONSTEXPR bool is_bool = std::is_same<bool, T>::value;
+  template<typename EqualCompare = std::equal_to<value_type>>
+  bool equal_to(const matrix &rhs) const {
+	if (rows_ != rhs.rows() || cols_ != rhs.cols())
+	  return false;
 
-#if __cplusplus >= 201703L
-	if MATRIX_CXX17_CONSTEXPR (!is_bool)
-#else
-	  if (!is_bool)
-#endif // C++ <= 201703L
-	  epsilon = matrix_epsilon<T>::epsilon;
-
-	for (size_type row = 0; row != rows_; ++row) {
-	  for (size_type col = 0; col != cols_; ++col) {
-		value_type left = (*this)(row, col), right = rhs(row, col);
-
-#if __cplusplus >= 201703L
-		if MATRIX_CXX17_CONSTEXPR (is_bool) {
-#else
-		  if (is_bool) {
-#endif // C++ <= 201703L
-		  if (left != right)
-			return false;
-		} else {
-		  if (left < 0)
-			left = -left;
-		  if (right < 0)
-			right = -right;
-
-		  if (left - right > epsilon)
-			return false;
-		}
-	  }
-	}
+	EqualCompare compare;
+	for (size_type row = 0; row != rows_; ++row)
+	  for (size_type col = 0; col != cols_; ++col)
+		if (!compare((*this)(row, col), rhs(row, col)))
+		  return false;
 
 	return true;
   }
@@ -783,8 +780,7 @@ public:
 public:
 
 #if __cplusplus > 201703L
-  template<fundamental U>
-  requires (std::convertible_to<U, T>)
+  template<typename U> requires (std::convertible_to<U, T>)
   matrix<U> convert_to() const {
 #else
   template<typename U>
@@ -797,8 +793,7 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<fundamental U = T>
-  requires (std::convertible_to<U, T>)
+  template<typename U = T> requires (std::convertible_to<U, T>)
   std::vector<U> to_vector() const {
 #else
   template<typename U = T>
@@ -811,8 +806,7 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<fundamental U = T>
-  requires (std::convertible_to<U, T>)
+  template<typename U = T> requires (std::convertible_to<U, T>)
   std::vector<std::vector<U>> to_matrix_vector() const {
 #else
   template<typename U = T>
@@ -834,15 +828,19 @@ private:
 };
 
 template<typename T>
+using fundamental_matrix = typename std::conditional<!std::is_fundamental<T>::value,
+													 detail::incomplete_compile_error_generation_type,
+													 matrix<T>>::type;
+
+template<typename T>
 std::ostream &operator<<(std::ostream &out, const matrix<T> &rhs) {
   rhs.print(out);
   return out;
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator +=(matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline &operator+=(matrix<T> &lhs, const matrix<U> &rhs) {
 #else
 template<typename T, typename U>
 matrix<T> inline &operator+=(matrix<T> &lhs, const matrix<U> &rhs) {
@@ -853,9 +851,8 @@ matrix<T> inline &operator+=(matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator -=(matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline &operator-=(matrix<T> &lhs, const matrix<U> &rhs) {
 #else
 template<typename T, typename U>
 matrix<T> inline &operator-=(matrix<T> &lhs, const matrix<U> &rhs) {
@@ -866,9 +863,8 @@ matrix<T> inline &operator-=(matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator *=(matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline &operator*=(matrix<T> &lhs, const matrix<U> &rhs) {
 #else
 template<typename T, typename U>
 matrix<T> inline &operator*=(matrix<T> &lhs, const matrix<U> &rhs) {
@@ -879,9 +875,8 @@ matrix<T> inline &operator*=(matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator +=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline &operator+=(matrix<T> &lhs, const U &value) {
 #else
 template<typename T, typename U>
 matrix<T> inline &operator+=(matrix<T> &lhs, const U &value) {
@@ -892,9 +887,8 @@ matrix<T> inline &operator+=(matrix<T> &lhs, const U &value) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator -=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline &operator-=(matrix<T> &lhs, const U &value) {
 #else
 template<typename T, typename U>
 matrix<T> inline &operator-=(matrix<T> &lhs, const U &value) {
@@ -905,9 +899,8 @@ matrix<T> inline &operator-=(matrix<T> &lhs, const U &value) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator *=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline &operator*=(matrix<T> &lhs, const U &value) {
 #else
 template<typename T, typename U>
 matrix<T> inline &operator*=(matrix<T> &lhs, const U &value) {
@@ -918,9 +911,8 @@ matrix<T> inline &operator*=(matrix<T> &lhs, const U &value) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline &operator /=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline &operator/=(matrix<T> &lhs, const U &value) {
 #else
 template<typename T, typename U>
 matrix<T> inline &operator/=(matrix<T> &lhs, const U &value) {
@@ -931,9 +923,8 @@ matrix<T> inline &operator/=(matrix<T> &lhs, const U &value) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator +(const matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline operator+(const matrix<T> &lhs, const matrix<U> &rhs) {
 #else
 template<typename T, typename U>
 matrix<T> inline operator+(const matrix<T> &lhs, const matrix<U> &rhs) {
@@ -945,9 +936,8 @@ matrix<T> inline operator+(const matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator -(const matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline operator-(const matrix<T> &lhs, const matrix<U> &rhs) {
 #else
 template<typename T, typename U>
 matrix<T> inline operator-(const matrix<T> &lhs, const matrix<U> &rhs) {
@@ -959,9 +949,8 @@ matrix<T> inline operator-(const matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator *(const matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline operator*(const matrix<T> &lhs, const matrix<U> &rhs) {
 #else
 template<typename T, typename U>
 matrix<T> inline operator*(const matrix<T> &lhs, const matrix<U> &rhs) {
@@ -973,9 +962,8 @@ matrix<T> inline operator*(const matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator +(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline operator+(const matrix<T> &lhs, const U &rhs) {
 #else
 template<typename T, typename U>
 matrix<T> inline operator+(const matrix<T> &lhs, const U &rhs) {
@@ -987,9 +975,8 @@ matrix<T> inline operator+(const matrix<T> &lhs, const U &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator -(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline operator-(const matrix<T> &lhs, const U &rhs) {
 #else
 template<typename T, typename U>
 matrix<T> inline operator-(const matrix<T> &lhs, const U &rhs) {
@@ -1001,9 +988,8 @@ matrix<T> inline operator-(const matrix<T> &lhs, const U &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator *(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline operator*(const matrix<T> &lhs, const U &rhs) {
 #else
 template<typename T, typename U>
 matrix<T> inline operator*(const matrix<T> &lhs, const U &rhs) {
@@ -1015,9 +1001,8 @@ matrix<T> inline operator*(const matrix<T> &lhs, const U &rhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<U> inline operator *(const U &rhs, const matrix<T> &lhs) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<U> inline operator*(const U &rhs, const matrix<T> &lhs) {
 #else
 template<typename T, typename U>
 matrix<U> inline operator*(const U &rhs, const matrix<T> &lhs) {
@@ -1029,9 +1014,8 @@ matrix<U> inline operator*(const U &rhs, const matrix<T> &lhs) {
 }
 
 #if __cplusplus > 201703L
-template <typename T, typename U>
-requires (std::convertible_to<U, T>)
-matrix<T> inline operator /(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U> requires (std::convertible_to<U, T>)
+matrix<T> inline operator/(const matrix<T> &lhs, const U &rhs) {
 #else
 template<typename T, typename U>
 matrix<T> inline operator/(const matrix<T> &lhs, const U &rhs) {
@@ -1053,4 +1037,4 @@ bool inline operator!=(const matrix<T> &lhs, const matrix<T> &rhs) {
 }
 }
 
-#endif //MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_H_
+#endif //MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_

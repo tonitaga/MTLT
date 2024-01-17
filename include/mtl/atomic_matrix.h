@@ -6,7 +6,7 @@
  *        Email:    gubaydullin.nurislam@gmail.com
  *        Telegram: @tonitaga
  *
- *        The Template Matrix Library for different types
+ *        The Template Matrix Library for Atomic types
  *        contains most of the operations on matrices.
  *
  *        The Template Matrix library is written in the C++20 standard
@@ -15,8 +15,8 @@
  *        STL Algorithms Library.
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_
-#define MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_
+#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_ATOMIC_MATRIX_H_
+#define MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_ATOMIC_MATRIX_H_
 
 #include <cmath>
 #include <random>
@@ -35,18 +35,24 @@
 #include <mtl/matrix_normal_iterator.h>
 #include <mtl/matrix_reverse_iterator.h>
 
-#include <mtl/experimental/matrix_config.h>
-#include <mtl/experimental/matrix_type_traits.h>
+#include <mtl/matrix_config.h>
+#include <mtl/matrix_type_traits.h>
 
-namespace mtl::experimental {
+namespace mtl {
 
-template<typename T>
-class matrix final {
+template<typename T, template<typename> class Atomic = std::atomic>
+class atomic_matrix final {
 public:
-  using value_type = typename std::allocator_traits<std::allocator<T>>::value_type;
-  using pointer = typename std::allocator_traits<std::allocator<T>>::pointer;
-  using const_pointer = typename std::allocator_traits<std::allocator<T>>::const_pointer;
-  using size_type = typename std::allocator_traits<std::allocator<T>>::size_type;
+  static_assert(is_atomic<Atomic<T>>::value,
+				"\nAtomic<T> must be atomic type");
+
+public:
+  using atomic_type = Atomic<T>;
+  using atomic_value_type = typename atomic_type::value_type;
+  using value_type = typename std::allocator_traits<std::allocator<atomic_type>>::value_type;
+  using pointer = typename std::allocator_traits<std::allocator<atomic_type>>::pointer;
+  using const_pointer = typename std::allocator_traits<std::allocator<atomic_type>>::const_pointer;
+  using size_type = typename std::allocator_traits<std::allocator<atomic_type>>::size_type;
   using reference = value_type &;
   using const_reference = const value_type &;
   using iterator = matrix_normal_iterator<pointer>;
@@ -55,70 +61,62 @@ public:
   using const_reverse_iterator = matrix_reverse_iterator<const_iterator>;
 
 public:
-  MATRIX_CXX17_CONSTEXPR matrix() noexcept = default;
+  MATRIX_CXX17_CONSTEXPR atomic_matrix() noexcept = default;
 
-  MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, value_type f = {})
+  MATRIX_CXX17_CONSTEXPR atomic_matrix(size_type rows, size_type cols, atomic_value_type f = {})
 	  : rows_(rows), cols_(cols), data_(new value_type[rows * cols]{}) {
 	if (f != value_type{})
 	  fill(f);
+
   }
 
-  MATRIX_CXX17_CONSTEXPR explicit matrix(size_type square) : matrix(square, square) {};
+  MATRIX_CXX17_CONSTEXPR explicit atomic_matrix(size_type square) : atomic_matrix(square, square) {};
 
-  MATRIX_CXX17_CONSTEXPR explicit matrix(const std::vector<std::vector<value_type>> &matrix_vector)
-	  : matrix(matrix_vector.size(), matrix_vector[0].size()) {
-	for (size_type row = 0; row != rows_; ++row)
-	  for (size_type col = 0; col != cols_; ++col)
-		(*this)(row, col) = matrix_vector[row][col];
-  }
-
-  MATRIX_CXX20_CONSTEXPR matrix(size_type rows, size_type cols, const std::initializer_list<T> &initializer)
-	  : matrix(rows, cols) {
-	std::copy(initializer.begin(), initializer.end(), begin());
-  }
-
-#if __cplusplus > 201703L
-  template<typename Container> requires(std::convertible_to<typename Container::value_type, T>)
-  MATRIX_CXX17_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
-	  : matrix(rows, cols) {
-#else
   template<typename Container,
 	  typename std::enable_if<
-		  std::is_convertible<typename Container::value_type, value_type>::value, bool>::type = true>
-  MATRIX_CXX20_CONSTEXPR matrix(size_type rows, size_type cols, const Container &container)
-	  : matrix(rows, cols) {
-#endif // C++ <= 201703L
-	std::copy(container.begin(), container.end(), begin());
+		  std::is_convertible<typename Container::value_type, atomic_value_type>::value ||
+			  std::is_same<typename Container::value_type, atomic_type>::value, bool>::type = true>
+  MATRIX_CXX17_CONSTEXPR atomic_matrix(size_type rows, size_type cols, const Container &container)
+	  : atomic_matrix(rows, cols) {
+	auto it = begin();
+	for (const auto &value : container) {
+	  (*it).store(value);
+	  ++it;
+	}
   }
 
-  static matrix identity(size_type rows, size_type cols) {
-	matrix identity(rows, cols);
+  MATRIX_CXX17_CONSTEXPR atomic_matrix(size_type rows, size_type cols,
+									   const std::initializer_list<atomic_value_type> &initializer)
+	  : atomic_matrix(rows, cols) {
+	auto it = begin();
+	for (const auto &value : initializer) {
+	  (*it).store(value);
+	  ++it;
+	}
+  }
+
+  static atomic_matrix identity(size_type rows, size_type cols) {
+	atomic_matrix identity(rows, cols);
 	identity.to_identity();
 	return identity;
   }
 
-  MATRIX_CXX17_CONSTEXPR matrix(const matrix &other)
-	  : matrix(other.rows_, other.cols_) {
-	std::copy(other.begin(), other.end(), begin());
+  MATRIX_CXX17_CONSTEXPR atomic_matrix(const atomic_matrix &other)
+	  : atomic_matrix(other.rows_, other.cols_) {
+	auto it = begin();
+	for (const auto &value : other) {
+	  (*it).store(value);
+	  ++it;
+	}
   }
 
-  MATRIX_CXX17_CONSTEXPR matrix(matrix &&other) noexcept
+  MATRIX_CXX17_CONSTEXPR atomic_matrix(atomic_matrix &&other) noexcept
 	  : rows_(other.rows_), cols_(other.cols_), data_(other.data_) {
 	other.rows_ = other.cols_ = size_type{};
 	other.data_ = nullptr;
   }
 
-  MATRIX_CXX17_CONSTEXPR matrix &operator=(const matrix &other) {
-	if (&other == this)
-	  return *this;
-
-	matrix tmp(other);
-	*this = std::move(tmp);
-
-	return *this;
-  }
-
-  MATRIX_CXX17_CONSTEXPR matrix &operator=(matrix &&other) noexcept {
+  MATRIX_CXX17_CONSTEXPR atomic_matrix &operator=(atomic_matrix &&other) noexcept {
 	if (&other == this)
 	  return *this;
 
@@ -129,7 +127,17 @@ public:
 	return *this;
   }
 
-  ~matrix() noexcept {
+  MATRIX_CXX17_CONSTEXPR atomic_matrix &operator=(const atomic_matrix &other) {
+	if (&other == this)
+	  return *this;
+
+	atomic_matrix tmp(other);
+	*this = std::move(tmp);
+
+	return *this;
+  }
+
+  ~atomic_matrix() noexcept {
 	delete[] data_;
   }
 
@@ -230,12 +238,12 @@ public:
 	if (rows_ == rows)
 	  return;
 
-	matrix tmp(rows, cols_);
+	atomic_matrix tmp(rows, cols_);
 	const size_type min_rows = std::min(rows, rows_);
 
 	for (size_type row = 0; row != min_rows; ++row)
 	  for (size_type col = 0; col != cols_; ++col)
-		tmp(row, col) = (*this)(row, col);
+		tmp(row, col).store((*this)(row, col));
 
 	*this = std::move(tmp);
   }
@@ -244,26 +252,27 @@ public:
 	if (cols_ == cols)
 	  return;
 
-	matrix tmp(rows_, cols);
+	atomic_matrix tmp(rows_, cols);
 	const size_type min_cols = std::min(cols, cols_);
 
 	for (size_type row = 0; row != rows_; ++row)
 	  for (size_type col = 0; col != min_cols; ++col)
-		tmp(row, col) = (*this)(row, col);
+		tmp(row, col).store((*this)(row, col));
 
 	*this = std::move(tmp);
   }
+
   void resize(size_type rows, size_type cols) {
 	if (cols_ == cols && rows_ == rows)
 	  return;
 
-	matrix tmp(rows, cols);
+	atomic_matrix tmp(rows, cols);
 	const size_type min_cols = std::min(cols, cols_);
 	const size_type min_rows = std::min(rows, rows_);
 
 	for (size_type row = 0; row != min_rows; ++row)
 	  for (size_type col = 0; col != min_cols; ++col)
-		tmp(row, col) = (*this)(row, col);
+		tmp(row, col).store((*this)(row, col));
 
 	*this = std::move(tmp);
   }
@@ -297,30 +306,34 @@ public:
 public:
   template<typename UnaryOperation>
   void transform(UnaryOperation &&op) {
-	std::transform(begin(), end(), begin(), std::forward<UnaryOperation>(op));
+	for (auto it = begin(); it != end(); ++it)
+	  (*it).store(op(*it));
   }
 
   template<typename BinaryOperation>
-  void transform(const matrix &other, BinaryOperation &&op) {
-	std::transform(begin(), end(), other.begin(), begin(), std::forward<BinaryOperation>(op));
+  void transform(const atomic_matrix &other, BinaryOperation &&op) {
+	auto this_it = begin();
+	for (auto it = other.begin(); it != other.end(); ++it, ++this_it)
+	  (*this_it).store(op(*it, *this_it));
   }
 
   template<typename Operation>
   void generate(Operation &&op) {
-	std::generate(begin(), end(), std::forward<Operation>(op));
+	for (auto it = begin(); it != end(); ++it)
+	  (*it).store(op());
   }
 
-  matrix &mul(const value_type &number) {
+  atomic_matrix &mul(const atomic_value_type &number) {
 	transform([&number](const value_type &item) { return item * number; });
 	return *this;
   }
 
 #if __cplusplus > 201703L
   template<typename U> requires(std::convertible_to<U, T>)
-  matrix &mul(const matrix<U> &rhs) {
+  atomic_matrix &mul(const atomic_matrix<U> &rhs) {
 #else
   template<typename U>
-  matrix &mul(const matrix<U> &rhs) {
+  atomic_matrix &mul(const atomic_matrix<U> &rhs) {
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	if (cols_ != rhs.rows())
@@ -329,53 +342,50 @@ public:
 	const size_type cols = rhs.cols();
 	const size_type rows = rows_;
 
-	matrix multiplied(rows, cols);
+	atomic_matrix multiplied(rows, cols);
 	for (size_type row = 0; row != rows; ++row)
 	  for (size_type col = 0; col != cols; ++col)
-		for (size_type k = 0; k != cols_; ++k)
-		  multiplied(row, col) += (*this)(row, k) * rhs(k, col);
+		for (size_type k = 0; k != cols_; ++k) {
+#if __cpluplus > 201703L
+		  if constexpr (std::is_fundamental<atomic_value_type>::value) {
+			multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
+		  } else {
+			multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
+		  }
+#elif __cpluplus == 201703L
+          if constexpr (std::is_integral<atomic_value_type>::value) {
+			multiplied(row, col).fetch_add((*this)(row, k) * rhs(k, col));
+		  } else {
+			multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
+		  }
+#else
+		  multiplied(row, col).store(multiplied(row, col) + (*this)(row, k) * rhs(k, col));
+#endif
+		}
 
 	*this = std::move(multiplied);
 	return *this;
   }
 
-#if __cplusplus > 201703L
-  template<typename U> requires(std::convertible_to<U, T>)
-  matrix &mul_by_element(const matrix<U> &rhs) {
-#else
-  template<typename U>
-  matrix &mul_by_element(const matrix<U> &rhs) {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
-	if (rows_ != rhs.rows() or cols_ != rhs.cols())
-	  throw std::logic_error("Can't multiply by element two matrices because rows != rhs.rows() or cols != rhs.cols()");
-
-	for (size_type row = 0; row != rows_; ++row)
-	  for (size_type col = 0; col != cols_; ++col)
-		(*this)(row, col) *= rhs(row, col);
-
-	return *this;
-  }
-
-  matrix &div(const value_type &number) {
-	if (std::is_integral<T>::value && number == 0)
+  atomic_matrix &div(const atomic_value_type &number) {
+	if (std::is_integral<atomic_value_type>::value && number == 0)
 	  throw std::logic_error("Dividing by zero");
 
 	transform([&number](const value_type &item) { return item / number; });
 	return *this;
   }
 
-  matrix &add(const value_type &number) {
+  atomic_matrix &add(const atomic_value_type &number) {
 	transform([&number](const value_type &item) { return item + number; });
 	return *this;
   }
 
 #if __cplusplus > 201703L
   template<typename U> requires(std::convertible_to<U, T>)
-  matrix &add(const matrix<U> &rhs) {
+  atomic_matrix &add(const atomic_matrix<U> &rhs) {
 #else
   template<typename U>
-  matrix &add(const matrix<U> &rhs) {
+  atomic_matrix &add(const atomic_matrix<U> &rhs) {
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	if (rhs.rows() != rows_ || rhs.cols() != cols_)
@@ -385,17 +395,17 @@ public:
 	return *this;
   }
 
-  matrix &sub(const value_type &number) {
+  atomic_matrix &sub(const atomic_value_type &number) {
 	transform([&number](const value_type &item) { return item - number; });
 	return *this;
   }
 
 #if __cplusplus > 201703L
   template<typename U> requires(std::convertible_to<U, T>)
-  matrix &sub(const matrix<U> &rhs) {
+  atomic_matrix &sub(const atomic_matrix<U> &rhs) {
 #else
   template<typename U>
-  matrix &sub(const matrix<U> &rhs) {
+  atomic_matrix &sub(const atomic_matrix<U> &rhs) {
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
 	if (rhs.rows() != rows_ || rhs.cols() != cols_)
@@ -405,13 +415,13 @@ public:
 	return *this;
   }
 
-  matrix &fill(const value_type &number) {
-	generate([&number]() { return number; });
-
+  atomic_matrix &fill(const atomic_value_type &v) {
+	for (auto &value : *this)
+	  value.store(v);
 	return *this;
   }
 
-  matrix &fill_random(const value_type &left, const value_type &right) {
+  atomic_matrix &fill_random(const atomic_value_type &left, const atomic_value_type &right) {
 	using namespace std::chrono;
 
 	std::default_random_engine re(system_clock::now().time_since_epoch().count());
@@ -426,91 +436,95 @@ public:
 	return *this;
   }
 
-  matrix &to_round() {
-	transform([](const value_type &item) { return std::round(item); });
+  atomic_matrix &to_round() {
+	transform([](const atomic_value_type &item) { return std::round(item); });
 	return *this;
   }
 
-  matrix round() const {
-	matrix<T> rounded(*this);
-	rounded.transform([](const value_type &item) { return std::round(item); });
+  atomic_matrix round() const {
+	atomic_matrix rounded(*this);
+	rounded.transform([](const atomic_value_type &item) { return std::round(item); });
 	return rounded;
   }
 
-  matrix &to_floor() {
-	transform([](const value_type &item) { return std::floor(item); });
+  atomic_matrix &to_floor() {
+	transform([](const atomic_value_type &item) { return std::floor(item); });
 	return *this;
   }
 
-  matrix floor() const {
-	matrix<T> floored(*this);
-	floored.transform([](const value_type &item) { return std::floor(item); });
+  atomic_matrix floor() const {
+	atomic_matrix floored(*this);
+	floored.transform([](const atomic_value_type &item) { return std::floor(item); });
 	return floored;
   }
 
-  matrix &to_ceil() {
-	transform([](const value_type &item) { return std::ceil(item); });
+  atomic_matrix &to_ceil() {
+	transform([](const atomic_value_type &item) { return std::ceil(item); });
 	return *this;
   }
 
-  matrix ceil() const {
-	matrix<T> ceiled(*this);
-	ceiled.transform([](const value_type &item) { return std::ceil(item); });
+  atomic_matrix ceil() const {
+	atomic_matrix ceiled(*this);
+	ceiled.transform([](const atomic_value_type &item) { return std::ceil(item); });
 	return ceiled;
   }
 
-  matrix &to_zero() {
-	generate([]() { return value_type{}; });
+  atomic_matrix &to_zero() {
+	generate([]() { return atomic_value_type{}; });
 	return *this;
   }
 
-  matrix zero() const {
-	return matrix<T>(rows_, cols_);
+  atomic_matrix zero() const {
+	return atomic_matrix(rows_, cols_);
   }
 
-  matrix &to_identity() {
+  atomic_matrix &to_identity() {
 	if (rows_ != cols_)
 	  throw std::logic_error("Only square matrices can be identity");
 
 	for (size_type row = 0; row != rows_; ++row)
 	  for (size_type col = 0; col != cols_; ++col)
-		(*this)(row, col) = row == col ? value_type{1} : value_type{};
+		(*this)(row, col).store(row == col ? value_type{1} : value_type{});
 
 	return *this;
   }
 
-  value_type sum() const {
-	return std::accumulate(begin(), end(), value_type{});
+  atomic_value_type sum() const {
+	atomic_value_type sum{};
+	for (const auto &value : *this)
+	  sum += value;
+
+	return sum;
   }
 
 public:
-  void to_join_left(const matrix &rhs) {
+  void to_join_left(const atomic_matrix &rhs) {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join left rhs matrix to lhs, because lhs.rows() != rhs.rows()");
 
 	*this = join_left(rhs);
   }
 
-  matrix join_left(const matrix &rhs) const {
+  atomic_matrix join_left(const atomic_matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join left rhs matrix to lhs, because lhs.rows() != rhs.rows()");
 
-	matrix<T> join_matrix(rows_, cols_ + rhs.cols());
+	atomic_matrix join_matrix(rows_, cols_ + rhs.cols());
 
 	size_type cols2 = rhs.cols();
 
 	for (size_type row = 0; row != join_matrix.rows(); ++row)
 	  for (size_type col = 0; col != join_matrix.cols(); ++col) {
 		if (col < cols2)
-		  join_matrix(row, col) = rhs(row, col);
+		  join_matrix(row, col).store(rhs(row, col));
 		else
-		  join_matrix(row, col) = (*this)(row, col - cols_);
+		  join_matrix(row, col).store((*this)(row, col - cols_));
 	  }
 
 	return join_matrix;
   }
 
-  void to_join_right(const matrix &rhs) {
+  void to_join_right(const atomic_matrix &rhs) {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join left rhs matrix to lhs, because lhs.rows() != rhs.rows()");
 
@@ -522,54 +536,54 @@ public:
 	for (size_type row = 0; row != rows_; ++row)
 	  for (size_type col = 0; col != cols_; ++col)
 		if (col >= old_cols)
-		  (*this)(row, col) = rhs(row, col - cols2);
+		  (*this)(row, col).store(rhs(row, col - cols2));
   }
 
-  matrix join_right(const matrix &rhs) const {
+  atomic_matrix join_right(const atomic_matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join right rhs matrix to lhs, because lhs.rows() != rhs.rows()");
 
-	matrix<T> join_matrix(rows_, cols_ + rhs.cols());
+	atomic_matrix join_matrix(rows_, cols_ + rhs.cols());
 	size_type cols2 = rhs.cols();
 
 	for (size_type row = 0; row != join_matrix.rows(); ++row)
 	  for (size_type col = 0; col != join_matrix.cols(); ++col) {
 		if (col < cols_)
-		  join_matrix(row, col) = (*this)(row, col);
+		  join_matrix(row, col).store((*this)(row, col));
 		else
-		  join_matrix(row, col) = rhs(row, col - cols2);
+		  join_matrix(row, col).store(rhs(row, col - cols2));
 	  }
 
 	return join_matrix;
   }
 
-  void to_join_top(const matrix &rhs) {
+  void to_join_top(const atomic_matrix &rhs) {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join top rhs matrix to lhs, because lhs.cols() != rhs.cols()");
 
 	*this = join_top(rhs);
   }
 
-  matrix join_top(const matrix &rhs) const {
+  atomic_matrix join_top(const atomic_matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join top rhs matrix to lhs, because lhs.cols() != rhs.cols()");
 
 	size_type old_rows = rows_;
 	size_type rows2 = rhs.rows();
-	matrix<T> join_matrix(rows_ + rhs.rows(), cols_);
+	atomic_matrix join_matrix(rows_ + rhs.rows(), cols_);
 
 	for (size_type row = 0; row != join_matrix.rows(); ++row)
 	  for (size_type col = 0; col != join_matrix.cols(); ++col) {
 		if (row < rows2)
-		  join_matrix(row, col) = rhs(row, col);
+		  join_matrix(row, col).store(rhs(row, col));
 		else
-		  join_matrix(row, col) = (*this)(row - old_rows, col);
+		  join_matrix(row, col).store((*this)(row - old_rows, col));
 	  }
 
 	return join_matrix;
   }
 
-  void to_join_bottom(const matrix &rhs) {
+  void to_join_bottom(const atomic_matrix &rhs) {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join bottom rhs matrix to lhs, because lhs.cols() != rhs.cols()");
 
@@ -580,41 +594,41 @@ public:
 	for (size_type row = 0; row != rows_; ++row)
 	  for (size_type col = 0; col != cols_; ++col) {
 		if (row >= old_rows)
-		  (*this)(row, col) = rhs(row - rows2, col);
+		  (*this)(row, col).store(rhs(row - rows2, col));
 	  }
   }
 
-  matrix join_bottom(const matrix &rhs) const {
+  atomic_matrix join_bottom(const atomic_matrix &rhs) const {
 	if (rhs.rows() != rows_)
 	  throw std::logic_error("Can't join bottom rhs matrix to lhs, because lhs.cols() != rhs.cols()");
 
-	matrix<T> join_matrix(rows_ + rhs.rows(), cols_);
+	atomic_matrix join_matrix(rows_ + rhs.rows(), cols_);
 	size_type rows2 = rhs.rows();
 
 	for (size_type row = 0; row != join_matrix.rows(); ++row)
 	  for (size_type col = 0; col != join_matrix.cols(); ++col) {
 		if (row < rows_)
-		  join_matrix(row, col) = (*this)(row, col);
+		  join_matrix(row, col).store((*this)(row, col));
 		else
-		  join_matrix(row, col) = rhs(row - rows2, col);
+		  join_matrix(row, col).store(rhs(row - rows2, col));
 	  }
 
 	return join_matrix;
   }
 
 public:
-  matrix transpose() const {
-	matrix transposed(cols_, rows_);
+  atomic_matrix transpose() const {
+	atomic_matrix transposed(cols_, rows_);
 
 	for (size_type row = 0; row != rows_; ++row)
 	  for (size_type col = 0; col != cols_; ++col)
-		transposed(col, row) = (*this)(row, col);
+		transposed(col, row).store((*this)(row, col));
 
 	return transposed;
   }
 
-  matrix minor(size_type row, size_type col) const {
-	matrix minor(rows() - 1, cols() - 1);
+  atomic_matrix minor(size_type row, size_type col) const {
+	atomic_matrix minor(rows() - 1, cols() - 1);
 
 	size_type skip_row = 0, skip_col = 0;
 	for (size_type r = 0; r != minor.rows_; ++r) {
@@ -626,7 +640,7 @@ public:
 		if (col == c)
 		  skip_col = 1;
 
-		minor(r, c) = (*this)(r + skip_row, c + skip_col);
+		minor(r, c).store((*this)(r + skip_row, c + skip_col));
 	  }
 	}
 
@@ -643,7 +657,7 @@ public:
 
 	double determinant_value = 1;
 
-	matrix<double> matrix(rows_, cols_, *this);
+	atomic_matrix<double> matrix(rows_, cols_, *this);
 	const size_type kN = matrix.rows();
 
 	for (size_type i = 0; i != kN; ++i) {
@@ -671,11 +685,28 @@ public:
 
 	  determinant_value *= pivot;
 
+
 	  for (size_type row = i + 1; row != kN; ++row) {
 		for (size_type col = i + 1; col != kN; ++col) {
-		  matrix(row, col) -= matrix(row, i) * matrix(i, col) / pivot;
+#if __cpluplus > 201703L
+		  if constexpr (std::is_fundamental<atomic_value_type>::value) {
+		  	matrix(row, col).fetch_sub(matrix(row, i) * matrix(i, col) / pivot);
+		  } else {
+		  	matrix(row, col).store(matrix(row, col) - (matrix(row, i) * matrix(i, col) / pivot));
+		  }
+#elif __cplusplus == 201703L
+		  if constexpr (std::is_integral<atomic_value_type>::value) {
+			matrix(row, col).fetch_sub(matrix(row, i) * matrix(i, col) / pivot);
+		  } else {
+			matrix(row, col).store(matrix(row, col) - (matrix(row, i) * matrix(i, col) / pivot));
+		  }
+#else
+		  matrix(row, col).store(matrix(row, col) - (matrix(row, i) * matrix(i, col) / pivot));
+#endif
 		}
 	  }
+
+
 	}
 
 	return determinant_value;
@@ -683,7 +714,7 @@ public:
 
   double determinant_laplacian() const {
 	if (rows_ != cols_)
-	  throw std::logic_error("determinant_laplacian can be found only for square matrices");
+	  throw std::logic_error("determinant_gaussian can be found only for square matrices");
 
 	int sign = 1;
 	double determinant_value{};
@@ -694,7 +725,7 @@ public:
 	  determinant_value = ((*this)(0, 0) * (*this)(1, 1)) - ((*this)(1, 0) * (*this)(0, 1));
 	else {
 	  for (size_type col = 0; col != cols_; ++col) {
-		matrix minored = minor(0, col);
+		atomic_matrix minored = minor(0, col);
 		determinant_value += sign * (*this)(0, col) * minored.determinant_laplacian();
 		sign = -sign;
 	  }
@@ -703,35 +734,35 @@ public:
 	return determinant_value;
   }
 
-  value_type trace() const {
+  atomic_value_type trace() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("Can't find trace for non square matrices");
 
-	value_type tr{};
+	atomic_value_type tr{};
 	for (size_type i = 0; i != rows_; ++i)
 	  tr += (*this)(i, i);
 	return tr;
   }
 
-  matrix calc_complements() const {
+  atomic_matrix calc_complements() const {
 	if (rows_ != cols_)
 	  throw std::logic_error("Complements matrix can be found only for square matrices");
 
-	matrix<T> complements(rows_, cols_);
+	atomic_matrix complements(rows_, cols_);
 
 	for (size_type row = 0; row != rows_; ++row) {
 	  for (size_type col = 0; col != cols_; ++col) {
-		complements(row, col) = minor_item(row, col);
+		complements(row, col).store(minor_item(row, col));
 
 		if ((row + col) % 2 != 0)
-		  complements(row, col) = -complements(row, col);
+		  complements(row, col).store(-complements(row, col));
 	  }
 	}
 
 	return complements;
   }
 
-  matrix inverse() const {
+  atomic_matrix inverse() const {
 	double determinant = determinant_gaussian();
 
 	if (std::fabs(determinant) <= 1e-6)
@@ -740,7 +771,7 @@ public:
 	return calc_complements().transpose().mul(1 / determinant);
   }
 
-  matrix inverse(double determinant) const {
+  atomic_matrix inverse(double determinant) const {
 	if (std::fabs(determinant) <= 1e-6)
 	  throw std::logic_error("Can't found inverse matrix because determinant is zero");
 
@@ -751,20 +782,31 @@ public:
 	if (row1 >= rows_ || row2 >= rows_)
 	  throw std::logic_error("row1 or row2 is bigger that this->rows()");
 
-	std::swap_ranges(begin() + row1 * cols_, begin() + row1 * cols_ + cols_, begin() + row2 * cols_);
+	auto begin1 = begin() + row1 * cols_, end = begin() + row1 * cols_ + cols_;
+	auto begin2 = begin() + row2 * cols_;
+
+	for (auto it = begin1; it != end; ++it) {
+	  atomic_value_type tmp = *it;
+	  (*it).store(*begin2);
+	  (*begin2).store(tmp);
+	  ++begin2;
+	}
   }
 
   void swap_cols(size_type col1, size_type col2) {
 	if (col1 >= cols_ || col2 >= cols_)
 	  throw std::logic_error("col1 or col2 is bigger that this->cols()");
 
-	for (size_type row = 0; row != rows_; ++row)
-	  std::swap((*this)(row, col1), (*this)(row, col2));
+	for (size_type row = 0; row != rows_; ++row) {
+	  atomic_value_type tmp = (*this)(row, col1);
+	  (*this)(row, col1).store((*this)(row, col2));
+	  (*this)(row, col2).store(tmp);
+	}
   }
 
 public:
   template<typename EqualCompare = std::equal_to<value_type>>
-  bool equal_to(const matrix &rhs) const {
+  bool equal_to(const atomic_matrix &rhs) const {
 	if (rows_ != rhs.rows() || cols_ != rhs.cols())
 	  return false;
 
@@ -778,47 +820,39 @@ public:
   }
 
 public:
-
 #if __cplusplus > 201703L
   template<typename U> requires (std::convertible_to<U, T>)
-  matrix<U> convert_to() const {
+  atomic_matrix<U> convert_to() const {
 #else
   template<typename U>
-  matrix<U> convert_to() const {
+  atomic_matrix<U> convert_to() const {
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-	matrix<U> convert(rows_, cols_);
-	std::copy(begin(), end(), convert.begin());
+	atomic_matrix<U> convert(rows_, cols_);
+
+	auto begin = convert.begin();
+	for (const auto &value : *this) {
+	  (*begin).store(value);
+	  ++begin;
+	}
+
 	return convert;
   }
 
 #if __cplusplus > 201703L
   template<typename U = T> requires (std::convertible_to<U, T>)
-  std::vector<U> to_vector() const {
+  std::vector<Atomic<U>> to_vector() const {
 #else
   template<typename U = T>
-  std::vector<U> to_vector() const {
+  std::vector<Atomic<U>> to_vector() const {
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-	std::vector<U> v(rows_ *cols_);
-	std::copy(begin(), end(), v.begin());
-	return v;
-  }
-
-#if __cplusplus > 201703L
-  template<typename U = T> requires (std::convertible_to<U, T>)
-  std::vector<std::vector<U>> to_matrix_vector() const {
-#else
-  template<typename U = T>
-  std::vector<std::vector<U>> to_matrix_vector() const {
-	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
-#endif
-	std::vector<std::vector<U>> v(rows_, std::vector<U>(cols_));
-
-	for (size_type row = 0; row != rows_; ++row)
-	  for (size_type col = 0; col != cols_; ++col)
-		v[row][col] = (*this)(row, col);
-
+	std::vector<Atomic<U>> v(rows_ * cols_);
+	auto begin = v.begin();
+	for (const auto &value : *this) {
+	  (*begin).store(value);
+	  ++begin;
+	}
 	return v;
   }
 
@@ -827,23 +861,23 @@ private:
   pointer data_ = nullptr;
 };
 
-template<typename T>
-using fundamental_matrix = typename std::conditional<!std::is_fundamental<T>::value,
-													 detail::incomplete_compile_error_generation_type,
-													 matrix<T>>::type;
+template<typename T, template<typename> class Atomic = std::atomic>
+using fundamental_atomic_matrix = typename std::conditional<!std::is_fundamental<T>::value,
+															detail::incomplete_compile_error_generation_type,
+															atomic_matrix<T, Atomic>>::type;
 
-template<typename T>
-std::ostream &operator<<(std::ostream &out, const matrix<T> &rhs) {
+template<typename T, template<typename> class Atomic>
+std::ostream &operator<<(std::ostream &out, const atomic_matrix<T, Atomic> &rhs) {
   rhs.print(out);
   return out;
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline &operator+=(matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline &operator+=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-template<typename T, typename U>
-matrix<T> inline &operator+=(matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline &operator+=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.add(rhs);
@@ -851,11 +885,11 @@ matrix<T> inline &operator+=(matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline &operator-=(matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline &operator-=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-template<typename T, typename U>
-matrix<T> inline &operator-=(matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline &operator-=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.sub(rhs);
@@ -863,11 +897,11 @@ matrix<T> inline &operator-=(matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline &operator*=(matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline &operator*=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-template<typename T, typename U>
-matrix<T> inline &operator*=(matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline &operator*=(atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.mul(rhs);
@@ -875,11 +909,11 @@ matrix<T> inline &operator*=(matrix<T> &lhs, const matrix<U> &rhs) {
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline &operator+=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline &operator+=(atomic_matrix<T, Atomic> &lhs, const U &value) {
 #else
-template<typename T, typename U>
-matrix<T> inline &operator+=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline &operator+=(atomic_matrix<T, Atomic> &lhs, const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.add(value);
@@ -887,11 +921,11 @@ matrix<T> inline &operator+=(matrix<T> &lhs, const U &value) {
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline &operator-=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline &operator-=(atomic_matrix<T, Atomic> &lhs, const U &value) {
 #else
-template<typename T, typename U>
-matrix<T> inline &operator-=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline &operator-=(atomic_matrix<T, Atomic> &lhs, const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.sub(value);
@@ -899,11 +933,11 @@ matrix<T> inline &operator-=(matrix<T> &lhs, const U &value) {
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline &operator*=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline &operator*=(atomic_matrix<T, Atomic> &lhs, const U &value) {
 #else
-template<typename T, typename U>
-matrix<T> inline &operator*=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline &operator*=(atomic_matrix<T, Atomic> &lhs, const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.mul(value);
@@ -911,11 +945,11 @@ matrix<T> inline &operator*=(matrix<T> &lhs, const U &value) {
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline &operator/=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline &operator/=(atomic_matrix<T, Atomic> &lhs, const U &value) {
 #else
-template<typename T, typename U>
-matrix<T> inline &operator/=(matrix<T> &lhs, const U &value) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline &operator/=(atomic_matrix<T, Atomic> &lhs, const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
   lhs.div(value);
@@ -923,118 +957,119 @@ matrix<T> inline &operator/=(matrix<T> &lhs, const U &value) {
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline operator+(const matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-template<typename T, typename U>
-matrix<T> inline operator+(const matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-  matrix<T> result(lhs);
+  atomic_matrix<T, Atomic> result(lhs);
   result.add(rhs);
   return result;
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline operator-(const matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline operator-(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-template<typename T, typename U>
-matrix<T> inline operator-(const matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline operator-(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-  matrix<T> result(lhs);
+  atomic_matrix<T, Atomic> result(lhs);
   result.sub(rhs);
   return result;
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline operator*(const matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline operator*(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
 #else
-template<typename T, typename U>
-matrix<T> inline operator*(const matrix<T> &lhs, const matrix<U> &rhs) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline operator*(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<U, Atomic> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-  matrix<T> result(lhs);
+  atomic_matrix<T, Atomic> result(lhs);
   result.mul(rhs);
   return result;
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline operator+(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
 #else
-template<typename T, typename U>
-matrix<T> inline operator+(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline operator+(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-  matrix<T> result(lhs);
+  atomic_matrix<T, Atomic> result(lhs);
   result.add(rhs);
   return result;
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline operator-(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline operator-(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
 #else
-template<typename T, typename U>
-matrix<T> inline operator-(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline operator-(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-  matrix<T> result(lhs);
+  atomic_matrix<T, Atomic> result(lhs);
   result.sub(rhs);
   return result;
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline operator*(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline operator*(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
 #else
-template<typename T, typename U>
-matrix<T> inline operator*(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline operator*(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-  matrix<T> result(lhs);
+  atomic_matrix<T, Atomic> result(lhs);
   result.mul(rhs);
   return result;
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<U> inline operator*(const U &rhs, const matrix<T> &lhs) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<U, Atomic> inline operator*(const U &rhs, const atomic_matrix<T, Atomic> &lhs) {
 #else
-template<typename T, typename U>
-matrix<U> inline operator*(const U &rhs, const matrix<T> &lhs) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<U, Atomic> inline operator*(const U &rhs, const atomic_matrix<T, Atomic> &lhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-  matrix<U> result(lhs);
+  atomic_matrix<T, Atomic> result(lhs);
   result.mul(rhs);
   return result;
 }
 
 #if __cplusplus > 201703L
-template<typename T, typename U> requires (std::convertible_to<U, T>)
-matrix<T> inline operator/(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U, template<typename> class Atomic> requires (std::convertible_to<U, T>)
+atomic_matrix<T, Atomic> inline operator/(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
 #else
-template<typename T, typename U>
-matrix<T> inline operator/(const matrix<T> &lhs, const U &rhs) {
+template<typename T, typename U, template<typename> class Atomic>
+atomic_matrix<T, Atomic> inline operator/(const atomic_matrix<T, Atomic> &lhs, const U &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif
-  matrix<T> result(lhs);
+  atomic_matrix<T, Atomic> result(lhs);
   result.div(rhs);
   return result;
 }
 
-template<typename T>
-bool inline operator==(const matrix<T> &lhs, const matrix<T> &rhs) {
+template<typename T, template<typename> class Atomic>
+bool inline operator==(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<T, Atomic> &rhs) {
   return lhs.equal_to(rhs);
 }
 
-template<typename T>
-bool inline operator!=(const matrix<T> &lhs, const matrix<T> &rhs) {
+template<typename T, template<typename> class Atomic>
+bool inline operator!=(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<T, Atomic> &rhs) {
   return !(lhs == rhs);
 }
+
 }
 
-#endif //MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_
+#endif // MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_ATOMIC_MATRIX_H_

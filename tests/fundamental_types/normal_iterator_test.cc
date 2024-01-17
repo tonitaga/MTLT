@@ -5,7 +5,7 @@
 
 using namespace mtl;
 
-TEST(NormalIterator, begin_matrix) {
+TEST(FTNormalIterator, begin_matrix) {
   matrix<int> m1(3, 3, {1, 2, 3, 4, 5, 6, 7, 8, 9});
   const matrix<int> m2(3, 3, {1, 2, 3, 4, 5, 6, 7, 8, 9});
 
@@ -25,7 +25,7 @@ TEST(NormalIterator, begin_matrix) {
   ASSERT_EQ(*(++begin2), 2);
 }
 
-TEST(NormalIterator, begin_static_matrix) {
+TEST(FTNormalIterator, begin_static_matrix) {
   static_matrix<int, 3, 3> m1({1, 2, 3, 4, 5, 6, 7, 8, 9});
   const static_matrix<int, 3, 3> m2({1, 2, 3, 4, 5, 6, 7, 8, 9});
 
@@ -45,7 +45,7 @@ TEST(NormalIterator, begin_static_matrix) {
   ASSERT_EQ(*(++begin2), 2);
 }
 
-TEST(NormalIterator, iter_tag) {
+TEST(FTNormalIterator, iter_tag) {
   bool is_same1 =
 	  std::is_same<static_matrix<int, 1, 1>::iterator::iterator_category, std::random_access_iterator_tag>::value;
   bool is_same2 = std::is_same<matrix<int>::iterator::iterator_category, std::random_access_iterator_tag>::value;
@@ -54,7 +54,7 @@ TEST(NormalIterator, iter_tag) {
   ASSERT_TRUE(is_same2);
 }
 
-TEST(NormalIterator, distance) {
+TEST(FTNormalIterator, distance) {
   matrix<int> m1(3, 3, {1, 2, 3, 4, 5, 6, 7, 8, 9});
   static_matrix<int, 3, 3> m2({1, 2, 3, 4, 5, 6, 7, 8, 9});
 
@@ -65,7 +65,7 @@ TEST(NormalIterator, distance) {
   ASSERT_EQ(std::distance(begin2, end2), 9);
 }
 
-TEST(NormalIterator, container_creation) {
+TEST(FTNormalIterator, container_creation) {
   matrix<int> m1(3, 3, {1, 2, 3, 4, 5, 6, 7, 8, 9});
   static_matrix<int, 3, 3> m2({1, 2, 3, 4, 5, 6, 7, 8, 9});
 

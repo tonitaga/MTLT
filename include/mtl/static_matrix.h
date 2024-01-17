@@ -10,12 +10,13 @@
  *        contains most of the operations on matrices.
  *
  *        The Template Matrix library is written in the C++20 standard
- *        Supports C++11 C++14 C++17 C++20 C++23 versions
- *
+ *        Supports C++11 C++14 C++17 C++20 C++23 versions. Also
+ *        The Library is  written in STL style and supports
+ *        STL Algorithms Library.
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_STATIC_MATRIX_H_
-#define MATRIX_TEMPLATE_LIBRARY_CPP_STATIC_MATRIX_H_
+#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_STATIC_MATRIX_H_
+#define MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_STATIC_MATRIX_H_
 
 #include <array>
 
@@ -32,19 +33,16 @@
 #include <algorithm>
 #include <type_traits>
 
-#include <mtl/matrix_state.h>
 #include <mtl/matrix_normal_iterator.h>
 #include <mtl/matrix_reverse_iterator.h>
 
+#include <mtl/matrix_type_traits.h>
+#include <mtl/matrix_config.h>
+
 namespace mtl {
-#if __cplusplus > 201703L
-template<fundamental T, std::size_t Rows, std::size_t Cols> requires(non_zero_dimension<Rows, Cols>)
-class static_matrix {
-#else
+
 template<typename T, std::size_t Rows, std::size_t Cols>
-class static_matrix {
-  static_assert(std::is_fundamental<T>::value, "Template parameter T must be fundamental");
-#endif // C++ <= 201703L
+class static_matrix final {
 public:
   using value_type = T;
   using pointer = value_type *;
@@ -72,25 +70,25 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<typename Container>
-  requires(std::convertible_to<typename Container::value_type, T>)
+  template<typename Container> requires(std::convertible_to<typename Container::value_type, T>)
   MATRIX_CXX17_CONSTEXPR explicit static_matrix(const Container &container) {
-	  if (Rows * Cols != container.size())
-		  throw std::logic_error("container has more/less items than in matrix");
+	if (Rows * Cols != container.size())
+	  throw std::logic_error("container has more/less items than in matrix");
 
-	  std::copy(container.begin(), container.end(), begin());
+	std::copy(container.begin(), container.end(), begin());
   }
 
-  template<typename Container>
-  requires(std::convertible_to<typename Container::value_type, T>)
+  template<typename Container> requires(std::convertible_to<typename Container::value_type, T>)
   MATRIX_CXX17_CONSTEXPR static_matrix &operator=(const Container &container) {
-	  if (Rows * Cols != container.size())
-		  throw std::logic_error("");
+	if (Rows * Cols != container.size())
+	  throw std::logic_error("");
 
-	  std::copy(container.begin(), container.end(), begin());
+	std::copy(container.begin(), container.end(), begin());
   }
 #else
-  template<typename Container>
+  template<typename Container,
+	  typename std::enable_if<
+		  std::is_convertible<typename Container::value_type, value_type>::value, bool>::type = true>
   MATRIX_CXX17_CONSTEXPR explicit static_matrix(const Container &container) {
 	static_assert(std::is_convertible<typename Container::value_type, T>::value,
 				  "Container::value_type must be convertible to T");
@@ -101,7 +99,9 @@ public:
 	std::copy(container.begin(), container.end(), begin());
   }
 
-  template<typename Container>
+  template<typename Container,
+	  typename std::enable_if<
+		  std::is_convertible<typename Container::value_type, value_type>::value, bool>::type = true>
   MATRIX_CXX17_CONSTEXPR static_matrix &operator=(const Container &container) {
 	static_assert(std::is_convertible<typename Container::value_type, T>::value,
 				  "Container::value_type must be convertible to T");
@@ -199,13 +199,13 @@ public:
 	return (*this)(row, col);
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   size_type rows() const noexcept { return rows_; }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   size_type cols() const noexcept { return cols_; }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   size_type size() const noexcept { return rows_ * cols_; }
 
 public:
@@ -242,8 +242,9 @@ public:
 	std::generate(begin(), end(), std::forward<Operation>(op));
   }
 
-  static_matrix &fill(const value_type &number) {
-	std::fill(begin(), end(), number);
+  static_matrix &fill(const value_type &v) {
+	std::fill(begin(), end(), v);
+	return *this;
   }
 
   static_matrix &fill_random(const value_type &left, const value_type &right) {
@@ -358,13 +359,13 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<fundamental U, size_type Rows2, size_type Cols2>
+  template<typename U, size_type Rows2, size_type Cols2>
   requires(non_zero_dimension<Rows2, Cols2> && std::convertible_to<U, T> && Cols == Rows2)
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols2> mul(const static_matrix<U, Rows2, Cols2> &rhs) const {
 #else
   template<typename U, size_type Rows2, size_type Cols2>
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols2> mul(const static_matrix<U, Rows2, Cols2> &rhs) const {
-	static_assert(Rows2 != 0 && Cols2 != 0 && std::is_convertible<U, T>::value && Cols == Rows2);
+	static_assert(is_non_zero_dimension<Rows2, Cols2>::value && std::is_convertible<U, T>::value && Cols == Rows2);
 #endif // C++ <= 201703L
 	static_matrix<T, Rows, Cols2> multiplied;
 
@@ -377,8 +378,7 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<fundamental U>
-  requires(std::convertible_to<U, T>)
+  template<typename U> requires(std::convertible_to<U, T>)
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> add(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
   template<typename U>
@@ -396,14 +396,13 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<fundamental U>
-  requires(std::convertible_to<U, T>)
+  template<typename U> requires(std::convertible_to<U, T>)
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> sub(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
   template<typename U>
   MATRIX_CXX17_CONSTEXPR
   static_matrix<T, Rows, Cols> sub(const static_matrix<U, Rows, Cols> &rhs) const {
-	static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
 	static_matrix<T, Rows, Cols> substraction;
 
@@ -415,14 +414,13 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<fundamental U>
-  requires(std::convertible_to<U, T>)
+  template<typename U> requires(std::convertible_to<U, T>)
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> div_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
   template<typename U>
   MATRIX_CXX17_CONSTEXPR
   static_matrix<T, Rows, Cols> div_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
-	static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
 	static_matrix<T, Rows, Cols> division;
 
@@ -434,14 +432,13 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<fundamental U>
-  requires(std::convertible_to<U, T>)
+  template<typename U> requires(std::convertible_to<U, T>)
   MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> mul_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
 #else
   template<typename U>
   MATRIX_CXX17_CONSTEXPR
   static_matrix<T, Rows, Cols> mul_by_element(const static_matrix<U, Rows, Cols> &rhs) const {
-	static_assert(std::is_convertible<U, T>::value, "Container::value_type must be convertible to T");
+	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
 	static_matrix<T, Rows, Cols> multpipled;
 
@@ -535,7 +532,8 @@ public:
   }
 
 #if __cplusplus > 201703L
-  MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows - 1, Cols - 1> minor(size_type row, size_type col) const requires (non_zero_dimension<Rows - 1, Cols - 1>) {
+  MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows - 1, Cols - 1> minor(size_type row,
+																	size_type col) const {
 #else
   MATRIX_CXX17_CONSTEXPR
   static_matrix<T, Rows - 1, Cols - 1> minor(size_type row, size_type col) const {
@@ -561,7 +559,6 @@ public:
   void swap_rows(size_type row1, size_type row2) {
 #if __cplusplus > 201703L
 	std::swap_ranges(begin() + row1 * cols_, begin() + row1 * cols_ + cols_, begin() + row2 * cols_);
-	return;
 #else
 	size_type items = Cols, begin1_index = row1 * Cols, begin2_index = row2 * Cols;
 	for (size_type i = 0; i != items; ++i) {
@@ -586,7 +583,7 @@ public:
 	}
   }
 
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   double minor_item(size_type row, size_type col) const {
 	return minor(row, col).determinant_gaussian();
   }
@@ -594,7 +591,7 @@ public:
 #if __cplusplus > 201703L
   MATRIX_CXX17_CONSTEXPR double determinant_gaussian() const requires(Rows == Cols) {
 #else
-  MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+  MATRIX_CXX17_CONSTEXPR
   double determinant_gaussian() const {
 	static_assert(Rows == Cols, "Matrix must be square");
 #endif // C++ <= 201703L
@@ -650,9 +647,9 @@ public:
 
 #if __cplusplus > 201703L
 	if MATRIX_CXX17_CONSTEXPR (Rows == 1 && Cols == 1)
-		determinant_value = (*this)(0, 0);
+	  determinant_value = (*this)(0, 0);
 	else if MATRIX_CXX17_CONSTEXPR (Rows == 2 && Cols == 2)
-		determinant_value = ((*this)(0, 0) * (*this)(1, 1)) - ((*this)(1, 0) * (*this)(0, 1));
+	  determinant_value = ((*this)(0, 0) * (*this)(1, 1)) - ((*this)(1, 0) * (*this)(0, 1));
 #else
 	if (Rows == 1 && Cols == 1)
 	  determinant_value = (*this)(0, 0);
@@ -696,12 +693,29 @@ public:
   static_matrix inverse() const {
 	static_assert(Rows == Cols, "Matrix must be square");
 #endif // C++ <= 201703L
-	double det = determinant_gaussian();
+	double determinant = determinant_gaussian();
 
-	if (det > matrix_epsilon<double>::epsilon)
-	  return calc_complements().transpose().mul_by_element(static_matrix<T, Rows, Cols>(1 / det));
+	double tmp = determinant < 0 ? -determinant : determinant;
+	if (tmp <= 1e-6)
+	  return zero();
 
-	return zero();
+	return calc_complements().transpose().
+		mul_by_element(static_matrix<T, Rows, Cols>(1 / determinant));
+  }
+
+#if __cplusplus > 201703L
+  MATRIX_CXX17_CONSTEXPR static_matrix inverse(double determinant) const requires(Rows == Cols) {
+#else
+  MATRIX_CXX17_CONSTEXPR
+  static_matrix inverse(double determinant) const {
+	static_assert(Rows == Cols, "Matrix must be square");
+#endif // C++ <= 201703L
+	double tmp = determinant < 0 ? -determinant : determinant;
+	if (tmp <= 1e-6)
+	  return zero();
+
+	return calc_complements().transpose().
+		mul_by_element(static_matrix<T, Rows, Cols>(1 / determinant));
   }
 
 #if __cplusplus > 201703L
@@ -720,14 +734,12 @@ public:
 public:
 #if __cplusplus > 201703L
 
-  template<fundamental U = T>
-  requires(std::convertible_to<U, T>)
+  template<typename U = T> requires(std::convertible_to<U, T>)
   MATRIX_CXX17_CONSTEXPR std::array<U, Rows * Cols> to_array() const {
 #else
   template<typename U = T>
   MATRIX_CXX17_CONSTEXPR
   std::array<U, Rows * Cols> to_array() const {
-	static_assert(std::is_fundamental<U>::value, "Template parameter U must be fundamental");
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
 	std::array<U, Rows * Cols> arr;
@@ -741,14 +753,12 @@ public:
   }
 
 #if __cplusplus > 201703L
-  template<fundamental U>
-  requires(std::convertible_to<U, T>)
+  template<typename U> requires(std::convertible_to<U, T>)
   MATRIX_CXX17_CONSTEXPR static_matrix<U, Rows, Cols> convert_to() const {
 #else
   template<typename U>
   MATRIX_CXX17_CONSTEXPR
   static_matrix<U, Rows, Cols> convert_to() const {
-	static_assert(std::is_fundamental<U>::value, "Template parameter U must be fundamental");
 	static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
 #endif // C++ <= 201703L
 	static_matrix<U, Rows, Cols> converted;
@@ -761,40 +771,14 @@ public:
   }
 
 public:
+  template<typename EqualCompare = std::equal_to<value_type>>
   MATRIX_CXX17_CONSTEXPR
   bool equal_to(const static_matrix &rhs) const {
-	T epsilon;
-	MATRIX_CXX17_CONSTEXPR bool is_bool = std::is_same<bool, T>::value;
-
-#if __cplusplus >= 201703L
-	if MATRIX_CXX17_CONSTEXPR (!is_bool)
-#else
-	  if (!is_bool)
-#endif // C++ <= 201703L
-	  epsilon = matrix_epsilon<T>::epsilon;
-
-	for (size_type row = 0; row != Rows; ++row) {
-	  for (size_type col = 0; col != Cols; ++col) {
-		value_type left = (*this)(row, col), right = rhs(row, col);
-
-#if __cplusplus >= 201703L
-		if MATRIX_CXX17_CONSTEXPR (is_bool) {
-#else
-		  if (is_bool) {
-#endif // C++ <= 201703L
-		  if (left != right)
-			return false;
-		} else {
-		  if (left < 0)
-			left = -left;
-		  if (right < 0)
-			right = -right;
-
-		  if (left - right > epsilon)
-			return false;
-		}
-	  }
-	}
+	EqualCompare compare;
+	for (size_type row = 0; row != rows_; ++row)
+	  for (size_type col = 0; col != cols_; ++col)
+		if (!compare((*this)(row, col), rhs(row, col)))
+		  return false;
 
 	return true;
   }
@@ -804,8 +788,13 @@ private:
   value_type data_[Rows * Cols]{};
 };
 
+template<typename T, std::size_t Rows, std::size_t Cols>
+using fundamental_static_matrix = typename std::conditional<!std::is_fundamental<T>::value,
+															detail::incomplete_compile_error_generation_type,
+															static_matrix<T, Rows, Cols>>::type;
+
 #if __cplusplus > 201703L
-template<fundamental T, std::size_t Rows, std::size_t Cols>
+template<typename T, std::size_t Rows, std::size_t Cols>
 std::ostream &operator<<(std::ostream &out, const static_matrix<T, Rows, Cols> &rhs) {
 #else
 template<typename T, std::size_t Rows, std::size_t Cols>
@@ -816,12 +805,14 @@ std::ostream &operator<<(std::ostream &out, const static_matrix<T, Rows, Cols> &
 }
 
 #if __cplusplus > 201703L
-template<fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
-requires (std::convertible_to<U, T>)
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator+(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
+template<typename T, typename U, std::size_t Rows, std::size_t Cols> requires (std::convertible_to<U, T>)
+MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator+(const static_matrix<T,
+																										 Rows,
+																										 Cols> &lhs,
+																					 const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+MATRIX_CXX17_CONSTEXPR
 static_matrix<T, Rows, Cols> operator+(const static_matrix<T, Rows, Cols> &lhs,
 									   const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
@@ -831,12 +822,17 @@ static_matrix<T, Rows, Cols> operator+(const static_matrix<T, Rows, Cols> &lhs,
 }
 
 #if __cplusplus > 201703L
-template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
+template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
 requires (std::convertible_to<U, T> && Rows1 == Rows2 && Cols1 == Cols2)
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
+MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T,
+																										   Rows1,
+																										   Cols1> &lhs,
+																					   const static_matrix<U,
+																										   Rows2,
+																										   Cols2> &rhs) {
 #else
 template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+MATRIX_CXX17_CONSTEXPR
 static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T, Rows1, Cols1> &lhs,
 										 const static_matrix<U, Rows2, Cols2> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
@@ -847,8 +843,7 @@ static_matrix<T, Rows1, Cols1> operator+(const static_matrix<T, Rows1, Cols1> &l
 }
 
 #if __cplusplus > 201703L
-template<fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
-requires (std::convertible_to<U, T>)
+template<typename T, typename U, std::size_t Rows, std::size_t Cols> requires (std::convertible_to<U, T>)
 static_matrix<T, Rows, Cols> &operator+=(static_matrix<T, Rows, Cols> &lhs, const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
@@ -860,12 +855,14 @@ static_matrix<T, Rows, Cols> &operator+=(static_matrix<T, Rows, Cols> &lhs, cons
 }
 
 #if __cplusplus > 201703L
-template<fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
-requires (std::convertible_to<U, T>)
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator-(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
+template<typename T, typename U, std::size_t Rows, std::size_t Cols> requires (std::convertible_to<U, T>)
+MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator-(const static_matrix<T,
+																										 Rows,
+																										 Cols> &lhs,
+																					 const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+MATRIX_CXX17_CONSTEXPR
 static_matrix<T, Rows, Cols> operator-(const static_matrix<T, Rows, Cols> &lhs,
 									   const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
@@ -875,12 +872,17 @@ static_matrix<T, Rows, Cols> operator-(const static_matrix<T, Rows, Cols> &lhs,
 }
 
 #if __cplusplus > 201703L
-template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
+template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
 requires (std::convertible_to<U, T> && Rows1 == Rows2 && Cols1 == Cols2)
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator-(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
+MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols1> operator-(const static_matrix<T,
+																										   Rows1,
+																										   Cols1> &lhs,
+																					   const static_matrix<U,
+																										   Rows2,
+																										   Cols2> &rhs) {
 #else
 template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+MATRIX_CXX17_CONSTEXPR
 static_matrix<T, Rows1, Cols1> operator-(const static_matrix<T, Rows1, Cols1> &lhs,
 										 const static_matrix<U, Rows2, Cols2> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
@@ -891,8 +893,7 @@ static_matrix<T, Rows1, Cols1> operator-(const static_matrix<T, Rows1, Cols1> &l
 }
 
 #if __cplusplus > 201703L
-template<fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
-requires (std::convertible_to<U, T>)
+template<typename T, typename U, std::size_t Rows, std::size_t Cols> requires (std::convertible_to<U, T>)
 static_matrix<T, Rows, Cols> &operator-=(static_matrix<T, Rows, Cols> &lhs, const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
@@ -904,12 +905,14 @@ static_matrix<T, Rows, Cols> &operator-=(static_matrix<T, Rows, Cols> &lhs, cons
 }
 
 #if __cplusplus > 201703L
-template<fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
-requires (std::convertible_to<U, T>)
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator*(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
+template<typename T, typename U, std::size_t Rows, std::size_t Cols> requires (std::convertible_to<U, T>)
+MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator*(const static_matrix<T,
+																										 Rows,
+																										 Cols> &lhs,
+																					 const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+MATRIX_CXX17_CONSTEXPR
 static_matrix<T, Rows, Cols> operator*(const static_matrix<T, Rows, Cols> &lhs,
 									   const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
@@ -919,12 +922,17 @@ static_matrix<T, Rows, Cols> operator*(const static_matrix<T, Rows, Cols> &lhs,
 }
 
 #if __cplusplus > 201703L
-template <fundamental T, fundamental U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
+template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
 requires (std::convertible_to<U, T> && Cols1 == Rows2)
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols2> operator*(const static_matrix<T, Rows1, Cols1> &lhs, const static_matrix<U, Rows2, Cols2> &rhs) {
+MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows1, Cols2> operator*(const static_matrix<T,
+																										   Rows1,
+																										   Cols1> &lhs,
+																					   const static_matrix<U,
+																										   Rows2,
+																										   Cols2> &rhs) {
 #else
 template<typename T, typename U, std::size_t Rows1, std::size_t Cols1, std::size_t Rows2, std::size_t Cols2>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+MATRIX_CXX17_CONSTEXPR
 static_matrix<T, Rows1, Cols2> operator*(const static_matrix<T, Rows1, Cols1> &lhs,
 										 const static_matrix<U, Rows2, Cols2> &rhs) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
@@ -935,8 +943,7 @@ static_matrix<T, Rows1, Cols2> operator*(const static_matrix<T, Rows1, Cols1> &l
 }
 
 #if __cplusplus > 201703L
-template<fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
-requires (std::convertible_to<U, T>)
+template<typename T, typename U, std::size_t Rows, std::size_t Cols> requires (std::convertible_to<U, T>)
 static_matrix<T, Rows, Cols> &operator*=(static_matrix<T, Rows, Cols> &lhs, const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
@@ -948,12 +955,14 @@ static_matrix<T, Rows, Cols> &operator*=(static_matrix<T, Rows, Cols> &lhs, cons
 }
 
 #if __cplusplus > 201703L
-template<fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
-requires (std::convertible_to<U, T>)
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator/(const static_matrix<T, Rows, Cols> &lhs, const U &value) {
+template<typename T, typename U, std::size_t Rows, std::size_t Cols> requires (std::convertible_to<U, T>)
+MATRIX_CXX17_CONSTEXPR static_matrix<T, Rows, Cols> operator/(const static_matrix<T,
+																										 Rows,
+																										 Cols> &lhs,
+																					 const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+MATRIX_CXX17_CONSTEXPR
 static_matrix<T, Rows, Cols> operator/(const static_matrix<T, Rows, Cols> &lhs,
 									   const U &value) {
   static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
@@ -963,9 +972,8 @@ static_matrix<T, Rows, Cols> operator/(const static_matrix<T, Rows, Cols> &lhs,
 }
 
 #if __cplusplus > 201703L
-template <fundamental T, fundamental U, std::size_t Rows, std::size_t Cols>
-requires (std::convertible_to<U, T>)
-static_matrix<T, Rows, Cols> &operator/=(static_matrix<T, Rows, Cols>&lhs, const U &value) {
+template<typename T, typename U, std::size_t Rows, std::size_t Cols> requires (std::convertible_to<U, T>)
+static_matrix<T, Rows, Cols> &operator/=(static_matrix<T, Rows, Cols> &lhs, const U &value) {
 #else
 template<typename T, typename U, std::size_t Rows, std::size_t Cols>
 static_matrix<T, Rows, Cols> &operator/=(static_matrix<T, Rows, Cols> &lhs, const U &value) {
@@ -976,11 +984,12 @@ static_matrix<T, Rows, Cols> &operator/=(static_matrix<T, Rows, Cols> &lhs, cons
 }
 
 #if __cplusplus > 201703L
-template <fundamental T, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR bool operator==(const static_matrix<T, Rows, Cols> &lhs, const static_matrix<T, Rows, Cols> &rhs) {
+template<typename T, std::size_t Rows, std::size_t Cols>
+MATRIX_CXX17_CONSTEXPR bool operator==(const static_matrix<T, Rows, Cols> &lhs,
+															  const static_matrix<T, Rows, Cols> &rhs) {
 #else
 template<typename T, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+MATRIX_CXX17_CONSTEXPR
 bool operator==(const static_matrix<T, Rows, Cols> &lhs,
 				const static_matrix<T, Rows, Cols> &rhs) {
 #endif // C++ <= 201703L
@@ -988,34 +997,34 @@ bool operator==(const static_matrix<T, Rows, Cols> &lhs,
 }
 
 #if __cplusplus > 201703L
-template <fundamental T, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR bool operator!=(const static_matrix<T, Rows, Cols> &lhs, const static_matrix<T, Rows, Cols> &rhs) {
+template<typename T, std::size_t Rows, std::size_t Cols>
+MATRIX_CXX17_CONSTEXPR bool operator!=(const static_matrix<T, Rows, Cols> &lhs,
+															  const static_matrix<T, Rows, Cols> &rhs) {
 #else
 template<typename T, std::size_t Rows, std::size_t Cols>
-MATRIX_CXX17_NODISCARD MATRIX_CXX17_CONSTEXPR
+MATRIX_CXX17_CONSTEXPR
 bool operator!=(const static_matrix<T, Rows, Cols> &lhs,
 				const static_matrix<T, Rows, Cols> &rhs) {
 #endif // C++ <= 201703L
   return !(lhs == rhs);
 }
 
-#if __cplusplus <= 201703L
 template<typename T>
 class static_matrix<T, 0, 0> {
-  static_assert(std::is_fundamental<T>::value, "Template parameter T must be fundamental");
 public:
   T determinant_laplacian() { return T{}; }
+  T determinant_gaussian() { return T{}; }
+
   static_matrix<T, 0, 0> minor(std::size_t, std::size_t) { return static_matrix<T, 0, 0>{}; };
 
   std::size_t rows() const noexcept { return 0; }
   std::size_t cols() const noexcept { return 0; }
 
   T &operator()(std::size_t, std::size_t) { return value_; }
-  T operator()(std::size_t, std::size_t) const { return value_; }
+  const T &operator()(std::size_t, std::size_t) const { return value_; }
 public:
   T value_;
 };
-#endif // C++ <= 201703L
 }
 
-#endif //MATRIX_TEMPLATE_LIBRARY_CPP_STATIC_MATRIX_H_
+#endif //MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_STATIC_MATRIX_H_

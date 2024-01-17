@@ -22,13 +22,13 @@
 #include <ostream>
 #include <type_traits>
 
-#include <mtl/experimental/matrix_config.h>
+#include <mtl/matrix_config.h>
 
 #if __cplusplus > 201703L
 #include <concepts>
 #endif // __cplusplus > 201703L
 
-namespace mtl::experimental {
+namespace mtl {
 
 /**
  * @struct is_atomic

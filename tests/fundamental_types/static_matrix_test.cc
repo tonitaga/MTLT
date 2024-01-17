@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include <mtl/experimental/static_matrix.h>
+#include <mtl/static_matrix.h>
 
-using namespace mtl::experimental;
+using namespace mtl;
 
-TEST(StaticMatrix, Sizedmatrix) {
+TEST(FTStaticMatrix, Sizedmatrix) {
   static_matrix<int, 3, 3> m(5);
   ASSERT_EQ(m.size(), 9);
   ASSERT_EQ(m.rows(), 3);
@@ -12,7 +12,7 @@ TEST(StaticMatrix, Sizedmatrix) {
   ASSERT_EQ(m(0, 0), 5);
 }
 
-TEST(StaticMatrix, arrayConstructor) {
+TEST(FTStaticMatrix, arrayConstructor) {
   static_matrix<int, 3, 3> m({1, 2, 3, 4, 5, 6, 7, 8, 9});
   ASSERT_EQ(m.size(), 9);
   ASSERT_EQ(m.rows(), 3);
@@ -20,7 +20,7 @@ TEST(StaticMatrix, arrayConstructor) {
   ASSERT_EQ(m(0, 0), 1);
 }
 
-TEST(StaticMatrix, containerConstructor) {
+TEST(FTStaticMatrix, containerConstructor) {
   static_matrix<int, 3, 3> m(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9});
   ASSERT_EQ(m.size(), 9);
   ASSERT_EQ(m.rows(), 3);
@@ -28,7 +28,7 @@ TEST(StaticMatrix, containerConstructor) {
   ASSERT_EQ(m(0, 0), 1);
 }
 
-TEST(StaticMatrix, IdentityMethod) {
+TEST(FTStaticMatrix, IdentityMethod) {
   static_matrix<int, 3, 3> m = static_matrix<int, 3, 3>().identity();
   ASSERT_EQ(m.size(), 9);
   ASSERT_EQ(m.rows(), 3);
@@ -36,7 +36,7 @@ TEST(StaticMatrix, IdentityMethod) {
   ASSERT_EQ(m(2, 2), 1);
 }
 
-TEST(StaticMatrix, CopyConstructor) {
+TEST(FTStaticMatrix, CopyConstructor) {
   static_matrix<int, 3, 3> m1({1, 2, 3, 4, 5, 6, 7, 8, 9});
   static_matrix<int, 3, 3> m2 = m1;
   ASSERT_EQ(m2.size(), 9);
@@ -45,7 +45,7 @@ TEST(StaticMatrix, CopyConstructor) {
   ASSERT_EQ(m2(2, 2), 9);
 }
 
-TEST(StaticMatrix, CopyAssignment) {
+TEST(FTStaticMatrix, CopyAssignment) {
   static_matrix<int, 3, 3> m1({1, 2, 3, 4, 5, 6, 7, 8, 9});
   static_matrix<int, 3, 3> m2;
   m2 = m1;
@@ -55,20 +55,20 @@ TEST(StaticMatrix, CopyAssignment) {
   ASSERT_EQ(m2(2, 2), 9);
 }
 
-TEST(StaticMatrix, transformUnary) {
+TEST(FTStaticMatrix, transformUnary) {
   static_matrix<int, 3, 3> m({1, 2, 3, 4, 5, 6, 7, 8, 9});
   m.transform([](const int &item) { return item * 2; });
   ASSERT_EQ(m(0, 0), 2);
 }
 
-TEST(StaticMatrix, transformBinary) {
+TEST(FTStaticMatrix, transformBinary) {
   static_matrix<int, 3, 3> m1({1, 2, 3, 4, 5, 6, 7, 8, 9});
   static_matrix<int, 3, 3> m2({1, 2, 3, 4, 5, 6, 7, 8, 9});
   m1.transform(m2, [](const int &lhs, const int &rhs) { return lhs + rhs; });
   ASSERT_EQ(m1(2, 2), 18);
 }
 
-TEST(StaticMatrix, generate) {
+TEST(FTStaticMatrix, generate) {
   auto zero_operation = [] { return 0; };
 
   static_matrix<int, 3, 3> m(4);
@@ -76,7 +76,7 @@ TEST(StaticMatrix, generate) {
   ASSERT_EQ(m(0, 0), 0);
 }
 
-TEST(StaticMatrix, mathOperationsNumber) {
+TEST(FTStaticMatrix, mathOperationsNumber) {
   static_matrix<int, 3, 3> m(10);
   m.mul(2);
   ASSERT_EQ(m(0, 0), 20);
@@ -97,7 +97,7 @@ TEST(StaticMatrix, mathOperationsNumber) {
   ASSERT_EQ(m(0, 0), 10);
 }
 
-TEST(StaticMatrix, mulmatrix) {
+TEST(FTStaticMatrix, mulmatrix) {
   static_matrix<int, 3, 3> m1({1, 2, 3, 4, 5, 6, 7, 8, 9});
   static_matrix<int, 3, 3> m2({9, 8, 7, 6, 5, 4, 3, 2, 1});
   static_matrix<int, 3, 3> m3 = m1.mul(m2);
@@ -113,13 +113,13 @@ TEST(StaticMatrix, mulmatrix) {
   }
 }
 
-TEST(StaticMatrix, fillRandom) {
+TEST(FTStaticMatrix, fillRandom) {
   static_matrix<int, 3, 3> m;
   m.fill_random(5, 5);
   ASSERT_EQ(m(0, 2), 5);
 }
 
-TEST(StaticMatrix, roundItems) {
+TEST(FTStaticMatrix, roundItems) {
   static_matrix<double, 3, 3> m(1.9);
   m.to_round();
   auto res = std::all_of(m.begin(), m.end(), [&](const int &item) {
@@ -136,7 +136,7 @@ TEST(StaticMatrix, roundItems) {
   ASSERT_EQ(res, true);
 }
 
-TEST(StaticMatrix, floorItems) {
+TEST(FTStaticMatrix, floorItems) {
   static_matrix<double, 3, 3> m(1.9);
   m.to_floor();
   auto res = std::all_of(m.begin(), m.end(), [&](const int &item) {
@@ -153,7 +153,7 @@ TEST(StaticMatrix, floorItems) {
   ASSERT_EQ(res, true);
 }
 
-TEST(StaticMatrix, ceilItems) {
+TEST(FTStaticMatrix, ceilItems) {
   static_matrix<double, 3, 3> m(1.001);
   m.to_ceil();
   auto res = std::all_of(m.begin(), m.end(), [&](const int &item) {
@@ -170,13 +170,13 @@ TEST(StaticMatrix, ceilItems) {
   ASSERT_EQ(res, true);
 }
 
-TEST(StaticMatrix, sumItems) {
+TEST(FTStaticMatrix, sumItems) {
   static_matrix<double, 3, 3> m({1, 2, 3, 1, 2, 3, 1, 2, 3});
   int sum = m.sum();
   ASSERT_EQ(sum, 18);
 }
 
-TEST(StaticMatrix, transposematrix) {
+TEST(FTStaticMatrix, transposematrix) {
   static_matrix<double, 4, 3> m({1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3});
   static_matrix<double, 3, 4> transposed = m.transpose();
 
@@ -192,7 +192,7 @@ TEST(StaticMatrix, transposematrix) {
   }
 }
 
-TEST(StaticMatrix, minormatrix) {
+TEST(FTStaticMatrix, minormatrix) {
   static_matrix<int, 3, 3> m({1, 2, 3, 4, 5, 6, 7, 8, 9});
   static_matrix<int, 2, 2> minor = m.minor(0, 0);
   ASSERT_EQ(minor.size(), 4);
@@ -210,7 +210,7 @@ TEST(StaticMatrix, minormatrix) {
   }
 }
 
-TEST(StaticMatrix, determinant) {
+TEST(FTStaticMatrix, determinant) {
   static_matrix<int, 3, 3> m({3, 6, 2, 8, 6, 1, 9, 4, 7});
   double determinant1 = m.determinant_gaussian();
   double determinant2 = m.determinant_gaussian();
@@ -219,7 +219,7 @@ TEST(StaticMatrix, determinant) {
   ASSERT_DOUBLE_EQ(determinant2, -212.0);
 }
 
-TEST(StaticMatrix, trace) {
+TEST(FTStaticMatrix, trace) {
   static_matrix<int, 3, 3> m({
 								 1, 2, 3,
 								 4, 5, 6,
@@ -231,7 +231,7 @@ TEST(StaticMatrix, trace) {
   ASSERT_EQ(trace, trace_correct);
 }
 
-TEST(StaticMatrix, inverse) {
+TEST(FTStaticMatrix, inverse) {
   static_matrix<int, 3, 3> m({2, 5, 0, 0, 9, 7, 8, 1, 3});
   double determinant1 = m.determinant_gaussian();
   double determinant2 = m.determinant_laplacian();
@@ -256,7 +256,7 @@ TEST(StaticMatrix, inverse) {
   }
 }
 
-TEST(StaticMatrix, convestOtherType) {
+TEST(FTStaticMatrix, convestOtherType) {
   static_matrix<int, 3, 3> m({2, 5, 0, 0, 9, 7, 8, 1, 3});
   static_matrix<double, 3, 3> m_double = m.convert_to<double>();
 
@@ -270,7 +270,7 @@ TEST(StaticMatrix, convestOtherType) {
   }
 }
 
-TEST(StaticMatrix, convestToArray) {
+TEST(FTStaticMatrix, convestToArray) {
   static_matrix<int, 3, 3> m({2, 5, 0, 0, 9, 7, 8, 1, 3});
   std::array<int, 9> arr1 = m.to_array();
   std::array<double, 9> arr2 = m.to_array<double>();
@@ -287,7 +287,7 @@ TEST(StaticMatrix, convestToArray) {
   }
 }
 
-TEST(StaticMatrix, equality) {
+TEST(FTStaticMatrix, equality) {
   static_matrix<int, 3, 3> m({1, 2, 3, 4, 5, 6, 7, 8, 9});
   static_matrix<int, 3, 3> m2 = m;
 
@@ -298,7 +298,7 @@ TEST(StaticMatrix, equality) {
   ASSERT_EQ(equal, true);
 }
 
-TEST(StaticMatrix, join_right) {
+TEST(FTStaticMatrix, join_right) {
   static_matrix<int, 2, 2> matrix1({
 									   1, 2,
 									   5, 6
@@ -320,7 +320,7 @@ TEST(StaticMatrix, join_right) {
   ASSERT_EQ(equal, true);
 }
 
-TEST(StaticMatrix, join_left) {
+TEST(FTStaticMatrix, join_left) {
   static_matrix<int, 2, 2> matrix1({
 									   1, 2,
 									   5, 6
@@ -342,7 +342,7 @@ TEST(StaticMatrix, join_left) {
   ASSERT_EQ(equal, true);
 }
 
-TEST(StaticMatrix, join_top) {
+TEST(FTStaticMatrix, join_top) {
   static_matrix<int, 2, 2> matrix1({
 									   5, 6,
 									   7, 8
@@ -366,7 +366,7 @@ TEST(StaticMatrix, join_top) {
   ASSERT_EQ(equal, true);
 }
 
-TEST(StaticMatrix, join_bottom) {
+TEST(FTStaticMatrix, join_bottom) {
   static_matrix<int, 2, 2> matrix1({
 									   5, 6,
 									   7, 8
@@ -390,7 +390,7 @@ TEST(StaticMatrix, join_bottom) {
   ASSERT_EQ(equal, true);
 }
 
-TEST(StaticMatrix, swap_rows) {
+TEST(FTStaticMatrix, swap_rows) {
   static_matrix<int, 3, 3> m({
 								 1, 2, 3,
 								 4, 5, 6,
@@ -410,7 +410,7 @@ TEST(StaticMatrix, swap_rows) {
   ASSERT_TRUE(equal);
 }
 
-TEST(StaticMatrix, swap_cols) {
+TEST(FTStaticMatrix, swap_cols) {
   static_matrix<int, 3, 3> m({
 								 1, 4, 7,
 								 2, 5, 8,

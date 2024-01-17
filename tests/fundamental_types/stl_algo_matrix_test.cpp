@@ -5,7 +5,7 @@
 
 using namespace mtl;
 
-TEST(STL_ALGO, MATRIX_SORT_LESS) {
+TEST(FTSTLAlgo, MatrixSortLess) {
   matrix<int> m(3, 3, {
 	  9, 8, 7,
 	  6, 5, 4,
@@ -22,7 +22,7 @@ TEST(STL_ALGO, MATRIX_SORT_LESS) {
   ASSERT_TRUE(m == correct);
 }
 
-TEST(STL_ALGO, STATIC_MATRIX_SORT_LESS) {
+TEST(FTSTLAlgo, StaticMatrixSortLess) {
   static_matrix<int, 3, 3> m({
 								 9, 8, 7,
 								 6, 5, 4,
@@ -39,7 +39,7 @@ TEST(STL_ALGO, STATIC_MATRIX_SORT_LESS) {
   ASSERT_TRUE(m == correct);
 }
 
-TEST(STL_ALGO, MATRIX_SORT_GREATER_1) {
+TEST(FTSTLAlgo, MatrixSortGreater_1) {
   matrix<int> m(3, 3, {
 	  1, 2, 3,
 	  4, 5, 6,
@@ -56,7 +56,7 @@ TEST(STL_ALGO, MATRIX_SORT_GREATER_1) {
   ASSERT_TRUE(m == correct);
 }
 
-TEST(STL_ALGO, STATIC_MATRIX_SORT_GREATER_1) {
+TEST(FTSTLAlgo, StaticMatrixSortGreater_1) {
   static_matrix<int, 3, 3> m({
 								 1, 2, 3,
 								 4, 5, 6,
@@ -73,7 +73,7 @@ TEST(STL_ALGO, STATIC_MATRIX_SORT_GREATER_1) {
   ASSERT_TRUE(m == correct);
 }
 
-TEST(STL_ALGO, MATRIX_SORT_GREATER_2) {
+TEST(FTSTLAlgo, MatrixSortGreater_2) {
   matrix<int> m(3, 3, {
 	  1, 2, 3,
 	  4, 5, 6,
@@ -90,7 +90,7 @@ TEST(STL_ALGO, MATRIX_SORT_GREATER_2) {
   ASSERT_TRUE(m == correct);
 }
 
-TEST(STL_ALGO, STATIC_MATRIX_SORT_GREATER_2) {
+TEST(FTSTLAlgo, StaticMatrixSortGreater_2) {
   static_matrix<int, 3, 3> m({
 								 1, 2, 3,
 								 4, 5, 6,
@@ -107,7 +107,7 @@ TEST(STL_ALGO, STATIC_MATRIX_SORT_GREATER_2) {
   ASSERT_TRUE(m == correct);
 }
 
-TEST(STL_ALGO, MATRIX_FIND) {
+TEST(FTSTLAlgo, MatrixFind) {
   matrix<int> m(3, 3, {
 	  1, 2, 3,
 	  4, 5, 6,
@@ -121,7 +121,7 @@ TEST(STL_ALGO, MATRIX_FIND) {
   ASSERT_TRUE(it == m.end());
 }
 
-TEST(STL_ALGO, STATIC_MATRIX_FIND) {
+TEST(FTSTLAlgo, StaticMatrixFind) {
   static_matrix<int, 3, 3> m({
 								 1, 2, 3,
 								 4, 5, 6,
@@ -135,7 +135,7 @@ TEST(STL_ALGO, STATIC_MATRIX_FIND) {
   ASSERT_TRUE(it == m.end());
 }
 
-TEST(STL_ALGO, MATRIX_FIND_IF) {
+TEST(FTSTLAlgo, MatrixFindIf) {
   matrix<int> m(3, 3, {
 	  1, 2, 3,
 	  4, 5, 6,
@@ -154,7 +154,7 @@ TEST(STL_ALGO, MATRIX_FIND_IF) {
   ASSERT_TRUE(it == m.end());
 }
 
-TEST(STL_ALGO, STATIC_MATRIX_FIND_IF) {
+TEST(FTSTLAlgo, StaticMatrixFindIf) {
   static_matrix<int, 3, 3> m({
 								 1, 2, 3,
 								 4, 5, 6,
@@ -173,7 +173,7 @@ TEST(STL_ALGO, STATIC_MATRIX_FIND_IF) {
   ASSERT_TRUE(it == m.end());
 }
 
-TEST(STL_ALGO, MATRIX_COPY) {
+TEST(FTSTLAlgo, MatrixCopy) {
   matrix<int> m(3, 3, {
 	  1, 2, 3,
 	  4, 5, 6,
@@ -187,7 +187,7 @@ TEST(STL_ALGO, MATRIX_COPY) {
   ASSERT_TRUE(copy == m);
 }
 
-TEST(STL_ALGO, STATIC_MATRIX_COPY) {
+TEST(FTSTLAlgo, StaticMatrixCopy) {
   static_matrix<int, 3, 3> m({
 								 1, 2, 3,
 								 4, 5, 6,
@@ -201,7 +201,7 @@ TEST(STL_ALGO, STATIC_MATRIX_COPY) {
   ASSERT_TRUE(copy == m);
 }
 
-TEST(STL_ALGO, MATRIX_COUNT) {
+TEST(FTSTLAlgo, MatrixCount) {
   matrix<int> m(3, 3, {
 	  1, 1, 1,
 	  0, 0, 0,
@@ -216,7 +216,7 @@ TEST(STL_ALGO, MATRIX_COUNT) {
   ASSERT_TRUE(real_count == count);
 }
 
-TEST(STL_ALGO, STATIC_MATRIX_COUNT) {
+TEST(FTSTLAlgo, StaticMatrixCount) {
   static_matrix<int, 3, 3> m({
 								 1, 1, 1,
 								 0, 0, 0,
@@ -231,7 +231,7 @@ TEST(STL_ALGO, STATIC_MATRIX_COUNT) {
   ASSERT_TRUE(real_count == count);
 }
 
-TEST(STL_ALGO, MATRIX_COUNT_IF) {
+TEST(FTSTLAlgo, MatrixCountIf) {
   matrix<int> m(3, 3, {
 	  1, 2, 3,
 	  4, 5, 6,
@@ -249,7 +249,7 @@ TEST(STL_ALGO, MATRIX_COUNT_IF) {
   ASSERT_TRUE(real_count == count);
 }
 
-TEST(STL_ALGO, STATIC_MATRIX_COUNT_IF) {
+TEST(FTSTLAlgo, StaticMatrixCountIf) {
   static_matrix<int, 3, 3> m({
 								 1, 2, 3,
 								 4, 5, 6,
@@ -267,7 +267,7 @@ TEST(STL_ALGO, STATIC_MATRIX_COUNT_IF) {
   ASSERT_TRUE(real_count == count);
 }
 
-TEST(STL_ALGO, MATRIX_PARTITION) {
+TEST(FTSTLAlgo, MatrixPartition) {
   matrix<int> m(3, 3, {
 	  1, 2, 3,
 	  4, 5, 6,
@@ -291,7 +291,7 @@ TEST(STL_ALGO, MATRIX_PARTITION) {
   ASSERT_TRUE(count == even_count);
 }
 
-TEST(STL_ALGO, STATIC_MATRIX_PARTITION) {
+TEST(FTSTLAlgo, StaticMatrixPartition) {
   static_matrix<int, 3, 3> m({
 								 1, 2, 3,
 								 4, 5, 6,

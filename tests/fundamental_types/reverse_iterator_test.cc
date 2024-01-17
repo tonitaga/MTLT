@@ -5,7 +5,7 @@
 
 using namespace mtl;
 
-TEST(ReverseIterator, begin_matrix) {
+TEST(FTReverseIterator, begin_matrix) {
   matrix<int> m1(3, 3, {9, 8, 7, 6, 5, 4, 3, 2, 1});
   const matrix<int> m2(3, 3, {9, 8, 7, 6, 5, 4, 3, 2, 1});
 
@@ -25,7 +25,7 @@ TEST(ReverseIterator, begin_matrix) {
   ASSERT_EQ(*(++begin2), 2);
 }
 
-TEST(ReverseIterator, begin_static_matrix) {
+TEST(FTReverseIterator, begin_static_matrix) {
   static_matrix<int, 3, 3> m1({9, 8, 7, 6, 5, 4, 3, 2, 1});
   const static_matrix<int, 3, 3> m2({9, 8, 7, 6, 5, 4, 3, 2, 1});
 
@@ -45,7 +45,7 @@ TEST(ReverseIterator, begin_static_matrix) {
   ASSERT_EQ(*(++begin2), 2);
 }
 
-TEST(ReverseIterator, iter_tag) {
+TEST(FTReverseIterator, iter_tag) {
   bool is_same1 = std::is_same<static_matrix<int, 1, 1>::reverse_iterator::iterator_category,
 							   std::random_access_iterator_tag>::value;
   bool
@@ -55,7 +55,7 @@ TEST(ReverseIterator, iter_tag) {
   ASSERT_TRUE(is_same2);
 }
 
-TEST(ReverseIterator, distance) {
+TEST(FTReverseIterator, distance) {
   matrix<int> m1(3, 3, {9, 8, 7, 6, 5, 4, 3, 2, 1});
   static_matrix<int, 3, 3> m2({9, 8, 7, 6, 5, 4, 3, 2, 1});
 
@@ -66,7 +66,7 @@ TEST(ReverseIterator, distance) {
   ASSERT_EQ(std::distance(begin2, end2), 9);
 }
 
-TEST(ReverseIterator, container_creation) {
+TEST(FTReverseIterator, container_creation) {
   matrix<int> m1(3, 3, {9, 8, 7, 6, 5, 4, 3, 2, 1});
   static_matrix<int, 3, 3> m2({9, 8, 7, 6, 5, 4, 3, 2, 1});
 

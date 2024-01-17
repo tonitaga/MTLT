@@ -20,9 +20,9 @@
 
 #include <iostream>
 
-#include <mtl/experimental/matrix_type_traits.h>
+#include <mtl/matrix_type_traits.h>
 
-namespace mtl::experimental {
+namespace mtl {
 
 template<typename Head>
 void print(Head &&head) {
