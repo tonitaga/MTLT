@@ -1,6 +1,8 @@
 /*
- *        Copyright 2023, School21 Student Library
+ *        Copyright 2024, School21 (Sberbank) Student Library
  *        All rights reserved
+ *
+ *        MTLT - Matrix Template Library Tonitaga (STL Like)
  *
  *        Author:   Gubaydullin Nurislam aka tonitaga
  *        Email:    gubaydullin.nurislam@gmail.com
@@ -15,14 +17,14 @@
  *        STL Algorithms Library.
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_NORMAL_ITERATOR_H_
-#define MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_NORMAL_ITERATOR_H_
+#ifndef MTLT_MATRIX_NORMAL_ITERATOR_H_
+#define MTLT_MATRIX_NORMAL_ITERATOR_H_
 
 #include <iterator>
 
-#include <mtl/matrix_config.h>
+#include <mtlt/matrix_config.h>
 
-namespace mtl {
+namespace mtlt {
 template<typename Iterator>
 class matrix_normal_iterator {
 protected:
@@ -166,6 +168,7 @@ inline std::ptrdiff_t operator-(const matrix_normal_iterator<Iterator> &lhs,
 								const matrix_normal_iterator<Iterator> &rhs) {
   return lhs.Base() - rhs.Base();
 }
-}
 
-#endif //MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_NORMAL_ITERATOR_H_
+} // namespace mtlt end
+
+#endif // MTLT_MATRIX_NORMAL_ITERATOR_H_

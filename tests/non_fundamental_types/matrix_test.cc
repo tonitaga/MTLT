@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <mtl/matrix.h>
+#include <mtlt/matrix.h>
 
-using namespace mtl;
+using namespace mtlt;
 
 TEST(NFTDynamicmatrix, Emptymatrix) {
   matrix<std::string> m;

@@ -1,6 +1,8 @@
 /*
- *        Copyright 2023, School21 Student Library
+ *        Copyright 2024, School21 (Sberbank) Student Library
  *        All rights reserved
+ *
+ *        MTLT - Matrix Template Library Tonitaga (STL Like)
  *
  *        Author:   Gubaydullin Nurislam aka tonitaga
  *        Email:    gubaydullin.nurislam@gmail.com
@@ -15,14 +17,14 @@
  *        STL Algorithms Library.
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_EXPERIMENTAL_PRINT_H_
-#define MATRIX_TEMPLATE_LIBRARY_EXPERIMENTAL_PRINT_H_
+#ifndef MTLT_PRINT_H_
+#define MTLT_PRINT_H_
 
 #include <iostream>
 
-#include <mtl/matrix_type_traits.h>
+#include <mtlt/matrix_type_traits.h>
 
-namespace mtl {
+namespace mtlt {
 
 template<typename Head>
 void print(Head &&head) {
@@ -168,6 +170,6 @@ void print(std::stringstream &out, Head &&head, Tail &&...tail) {
   print(out, std::forward<Tail>(tail)...);
 }
 
-}
+} // namespace mtlt end
 
-#endif // MATRIX_TEMPLATE_LIBRARY_EXPERIMENTAL_PRINT_H_
+#endif // MTLT_PRINT_H_

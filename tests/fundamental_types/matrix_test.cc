@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <mtl/matrix.h>
+#include <mtlt/matrix.h>
 
-using namespace mtl;
+using namespace mtlt;
 
 TEST(FTDynamicmatrix, Emptymatrix) {
   matrix<int> m;

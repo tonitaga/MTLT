@@ -1,6 +1,8 @@
 /*
- *        Copyright 2023, School21 Student Library
+ *        Copyright 2024, School21 (Sberbank) Student Library
  *        All rights reserved
+ *
+ *        MTLT - Matrix Template Library Tonitaga (STL Like)
  *
  *        Author:   Gubaydullin Nurislam aka tonitaga
  *        Email:    gubaydullin.nurislam@gmail.com
@@ -9,14 +11,17 @@
  *        The Template Matrix Library for different types
  *        contains most of the operations on matrices.
  *
+ *        The matrix container class is a wrapper over a dynamic array,
+ * 		  it allows you to do all basic calculations and operations on matrices
+ *
  *        The Template Matrix library is written in the C++20 standard
  *        Supports C++11 C++14 C++17 C++20 C++23 versions. Also
  *        The Library is  written in STL style and supports
  *        STL Algorithms Library.
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_
-#define MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_
+#ifndef MTLT_MATRIX_H_
+#define MTLT_MATRIX_H_
 
 #include <cmath>
 #include <random>
@@ -32,13 +37,62 @@
 #include <concepts>
 #endif
 
-#include <mtl/matrix_normal_iterator.h>
-#include <mtl/matrix_reverse_iterator.h>
+#include <mtlt/matrix_normal_iterator.h>
+#include <mtlt/matrix_reverse_iterator.h>
 
-#include <mtl/matrix_config.h>
-#include <mtl/matrix_type_traits.h>
+#include <mtlt/matrix_config.h>
+#include <mtlt/matrix_type_traits.h>
 
-namespace mtl {
+namespace mtlt {
+
+/**
+ * @class matrix
+ *
+ * The matrix container class is a wrapper over a dynamic array,
+ * it allows you to do all basic calculations and operations on matrices
+ *
+ * @code
+ *
+ * mtlt::matrix<std::string> matrix; // OK
+ * mtlt::matrix<std::string> matrix(3, 3, "MTLT"); // OK
+ *
+ * mtlt::matrix<int> matrix(3, 3, {
+ * 		1, 2, 3,
+ * 		4, 5, 6,
+ * 		7, 8, 9
+ * }); // OK
+ *
+ * std::vector<int> vector {...};
+ * mtlt::matrix<int> matrix(3, 3, vector); // OK
+ *
+ * mtlt::static_matrix<int, 3, 3> static_matrix({...});
+ * mtlt::matrix<int> matrix(3, 3, static_matrix); // OK
+ *
+ * @endcode
+ *
+ */
+template<typename T>
+class matrix;
+
+/**
+ * @using fundamental_matrix
+ *
+ * This using is intended to control that the
+ * template parameter T is a fundamental type,
+ * otherwise a compilation error will be generated
+ * that you are creating an object from an incomplete type
+ *
+ * @code
+ *
+ * mtlt::fundamental_matrix<double> matrix(3, 3, 1.5); // OK
+ * mtlt::fundamental_matrix<std::string> matrix(3, 3, "MTLT"); // CE
+ *
+ * @endcode
+ */
+template<typename T>
+using fundamental_matrix = typename std::conditional<!std::is_fundamental<T>::value,
+													 detail::incomplete_compile_error_generation_type,
+													 matrix<T>>::type;
 
 template<typename T>
 class matrix final {
@@ -828,11 +882,6 @@ private:
 };
 
 template<typename T>
-using fundamental_matrix = typename std::conditional<!std::is_fundamental<T>::value,
-													 detail::incomplete_compile_error_generation_type,
-													 matrix<T>>::type;
-
-template<typename T>
 std::ostream &operator<<(std::ostream &out, const matrix<T> &rhs) {
   rhs.print(out);
   return out;
@@ -1035,6 +1084,7 @@ template<typename T>
 bool inline operator!=(const matrix<T> &lhs, const matrix<T> &rhs) {
   return !(lhs == rhs);
 }
-}
 
-#endif //MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_MATRIX_H_
+} // namespace mtlt end
+
+#endif //MTLT_MATRIX_H_

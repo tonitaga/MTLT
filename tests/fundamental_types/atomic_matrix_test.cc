@@ -2,9 +2,9 @@
 
 #include <thread>
 
-#include <mtl/atomic_matrix.h>
+#include <mtlt/atomic_matrix.h>
 
-using namespace mtl;
+using namespace mtlt;
 
 TEST(FTAtomicmatrix, Emptymatrix) {
   atomic_matrix<int> m;

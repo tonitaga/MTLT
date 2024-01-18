@@ -1,6 +1,8 @@
 /*
- *        Copyright 2023, School21 Student Library
+ *        Copyright 2024, School21 (Sberbank) Student Library
  *        All rights reserved
+ *
+ *        MTLT - Matrix Template Library Tonitaga (STL Like)
  *
  *        Author:   Gubaydullin Nurislam aka tonitaga
  *        Email:    gubaydullin.nurislam@gmail.com
@@ -15,10 +17,10 @@
  *        STL Algorithms Library.
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_EXPERIMENTAL_CONFIG_H_
-#define MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_EXPERIMENTAL_CONFIG_H_
+#ifndef MTLT_MATRIX_CONFIG_H_
+#define MTLT_MATRIX_CONFIG_H_
 
-namespace mtl {
+namespace mtlt {
 
 struct matrix_debug_settings {
   int width = 3;
@@ -78,4 +80,4 @@ struct matrix_debug_settings {
 #  endif
 #endif
 
-#endif // MATRIX_TEMPLATE_LIBRARY_CPP_MATRIX_EXPERIMENTAL_CONFIG_H_
+#endif // MTLT_MATRIX_CONFIG_H_

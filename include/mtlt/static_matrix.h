@@ -1,13 +1,19 @@
 /*
- *        Copyright 2023, School21 Student Library
+ *        Copyright 2024, School21 (Sberbank) Student Library
  *        All rights reserved
+ *
+ *        MTLT - Matrix Template Library Tonitaga (STL Like)
  *
  *        Author:   Gubaydullin Nurislam aka tonitaga
  *        Email:    gubaydullin.nurislam@gmail.com
  *        Telegram: @tonitaga
  *
- *        The Template Matrix Library for fundamental types
+ *        The Template Matrix Library for different types
  *        contains most of the operations on matrices.
+ *
+ *        The static_matrix container class is a wrapper over a static array
+ *        that allows you to do compile-time calculations,
+ *        supports all basic matrix operations
  *
  *        The Template Matrix library is written in the C++20 standard
  *        Supports C++11 C++14 C++17 C++20 C++23 versions. Also
@@ -15,15 +21,10 @@
  *        STL Algorithms Library.
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_STATIC_MATRIX_H_
-#define MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_STATIC_MATRIX_H_
+#ifndef MTLT_STATIC_MATRIX_H_
+#define MTLT_STATIC_MATRIX_H_
 
 #include <array>
-
-#if __cplusplus > 201703L
-#include <concepts>
-#endif
-
 #include <cmath>
 #include <random>
 #include <chrono>
@@ -33,13 +34,63 @@
 #include <algorithm>
 #include <type_traits>
 
-#include <mtl/matrix_normal_iterator.h>
-#include <mtl/matrix_reverse_iterator.h>
+#if __cplusplus > 201703L
+#include <concepts>
+#endif
 
-#include <mtl/matrix_type_traits.h>
-#include <mtl/matrix_config.h>
+#include <mtlt/matrix_config.h>
+#include <mtlt/matrix_type_traits.h>
+#include <mtlt/matrix_normal_iterator.h>
+#include <mtlt/matrix_reverse_iterator.h>
 
-namespace mtl {
+namespace mtlt {
+
+/**
+ * @class static_matrix
+ *
+ * The static_matrix container class is a wrapper over a static array
+ * that allows you to do compile-time calculations,
+ * supports all basic matrix operations
+ *
+ * @code
+ *
+ * mtlt::static_matrix<std::string, 3, 3> matrix; // OK
+ * mtlt::static_matrix<std::string, 3, 3> matrix("MTLT"); // OK
+ *
+ * mtlt::static_matrix<int, 3, 3> matrix({
+ * 		1, 2, 3,
+ * 		4, 5, 6,
+ * 		7, 8, 9
+ * }); // OK
+ *
+ * std::array<int, 9> array {...};
+ * mtlt::static_matrix<int, 3, 3> matrix(array); // OK
+ *
+ * @endcode
+ *
+ */
+template<typename T, std::size_t Rows, std::size_t Cols>
+class static_matrix;
+
+/**
+ * @using fundamental_static_matrix
+ *
+ * This using is intended to control that the
+ * template parameter T is a fundamental type,
+ * otherwise a compilation error will be generated
+ * that you are creating an object from an incomplete type
+ *
+ * @code
+ *
+ * mtlt::fundamental_static_matrix<double, 3, 3> matrix(1.5); // OK
+ * mtlt::fundamental_static_matrix<std::string, 3, 3> matrix("MTLT"); // CE
+ *
+ * @endcode
+ */
+template<typename T, std::size_t Rows, std::size_t Cols>
+using fundamental_static_matrix = typename std::conditional<!std::is_fundamental<T>::value,
+															detail::incomplete_compile_error_generation_type,
+															static_matrix<T, Rows, Cols>>::type;
 
 template<typename T, std::size_t Rows, std::size_t Cols>
 class static_matrix final {
@@ -94,7 +145,7 @@ public:
 				  "Container::value_type must be convertible to T");
 
 	if (Rows * Cols != container.size())
-	  throw std::logic_error("");
+	  throw std::logic_error("container has more/less items than in matrix");
 
 	std::copy(container.begin(), container.end(), begin());
   }
@@ -107,7 +158,7 @@ public:
 				  "Container::value_type must be convertible to T");
 
 	if (Rows * Cols != container.size())
-	  throw std::logic_error("");
+	  throw std::logic_error("container has more/less items than in matrix");
 
 	std::copy(container.begin(), container.end(), begin());
   }
@@ -788,11 +839,6 @@ private:
   value_type data_[Rows * Cols]{};
 };
 
-template<typename T, std::size_t Rows, std::size_t Cols>
-using fundamental_static_matrix = typename std::conditional<!std::is_fundamental<T>::value,
-															detail::incomplete_compile_error_generation_type,
-															static_matrix<T, Rows, Cols>>::type;
-
 #if __cplusplus > 201703L
 template<typename T, std::size_t Rows, std::size_t Cols>
 std::ostream &operator<<(std::ostream &out, const static_matrix<T, Rows, Cols> &rhs) {
@@ -1025,6 +1071,7 @@ public:
 public:
   T value_;
 };
-}
 
-#endif //MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_STATIC_MATRIX_H_
+} // namespace mtlt end
+
+#endif // MTLT_STATIC_MATRIX_H_

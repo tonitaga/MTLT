@@ -1,9 +1,9 @@
-#include <mtl/matrix.h>
-#include <mtl/static_matrix.h>
+#include <mtlt/matrix.h>
+#include <mtlt/static_matrix.h>
 
 #include <gtest/gtest.h>
 
-using namespace mtl;
+using namespace mtlt;
 
 TEST(FTReverseIterator, begin_matrix) {
   matrix<int> m1(3, 3, {9, 8, 7, 6, 5, 4, 3, 2, 1});

@@ -1,6 +1,8 @@
 /*
- *        Copyright 2023, School21 Student Library
+ *        Copyright 2024, School21 (Sberbank) Student Library
  *        All rights reserved
+ *
+ *        MTLT - Matrix Template Library Tonitaga (STL Like)
  *
  *        Author:   Gubaydullin Nurislam aka tonitaga
  *        Email:    gubaydullin.nurislam@gmail.com
@@ -15,20 +17,20 @@
  *        STL Algorithms Library.
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_EXPERIMENTAL_TYPE_TRAITS_H_
-#define MATRIX_TEMPLATE_LIBRARY_EXPERIMENTAL_TYPE_TRAITS_H_
+#ifndef MTLT_MATRIX_TYPE_TRAITS_H_
+#define MTLT_MATRIX_TYPE_TRAITS_H_
 
 #include <atomic>
 #include <ostream>
 #include <type_traits>
 
-#include <mtl/matrix_config.h>
+#include <mtlt/matrix_config.h>
 
 #if __cplusplus > 201703L
 #include <concepts>
 #endif // __cplusplus > 201703L
 
-namespace mtl {
+namespace mtlt {
 
 /**
  * @struct is_atomic
@@ -39,7 +41,7 @@ namespace mtl {
  * Write for your Atomic class the specialization
  *
  * @code
- * namespace mtl::experimental {
+ * namespace mtlt {
  * template<typename T>
  * struct is_atomic<YourAtomic<T>> : std::true_type {};
  * }
@@ -202,8 +204,8 @@ namespace detail {
 
 struct incomplete_compile_error_generation_type;
 
-}
+} // namespace detail end
 
-} // namespace mtl::experimental end
+} // namespace mtlt end
 
-#endif //MATRIX_TEMPLATE_LIBRARY_EXPERIMENTAL_TYPE_TRAITS_H_
+#endif // MTLT_MATRIX_TYPE_TRAITS_H_

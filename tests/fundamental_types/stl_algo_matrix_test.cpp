@@ -1,9 +1,9 @@
-#include <mtl/matrix.h>
-#include <mtl/static_matrix.h>
+#include <mtlt/matrix.h>
+#include <mtlt/static_matrix.h>
 
 #include <gtest/gtest.h>
 
-using namespace mtl;
+using namespace mtlt;
 
 TEST(FTSTLAlgo, MatrixSortLess) {
   matrix<int> m(3, 3, {

@@ -1,6 +1,8 @@
 /*
- *        Copyright 2023, School21 Student Library
+ *        Copyright 2024, School21 (Sberbank) Student Library
  *        All rights reserved
+ *
+ *        MTLT - Matrix Template Library Tonitaga (STL Like)
  *
  *        Author:   Gubaydullin Nurislam aka tonitaga
  *        Email:    gubaydullin.nurislam@gmail.com
@@ -9,14 +11,19 @@
  *        The Template Matrix Library for Atomic types
  *        contains most of the operations on matrices.
  *
+ *        The atomic_matrix class is a wrapper over a dynamic array of atomic types,
+ * 		  the methods calculating operations and base methods are not atomic,
+ *        added only so that there is compatibility with other matrices.
+ *        Use operator() for atomic operations
+ *
  *        The Template Matrix library is written in the C++20 standard
  *        Supports C++11 C++14 C++17 C++20 C++23 versions. Also
  *        The Library is  written in STL style and supports
  *        STL Algorithms Library.
 */
 
-#ifndef MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_ATOMIC_MATRIX_H_
-#define MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_ATOMIC_MATRIX_H_
+#ifndef MTLT_ATOMIC_MATRIX_H_
+#define MTLT_ATOMIC_MATRIX_H_
 
 #include <cmath>
 #include <random>
@@ -32,15 +39,61 @@
 #include <concepts>
 #endif
 
-#include <mtl/matrix_normal_iterator.h>
-#include <mtl/matrix_reverse_iterator.h>
+#include <mtlt/matrix_config.h>
+#include <mtlt/matrix_type_traits.h>
+#include <mtlt/matrix_normal_iterator.h>
+#include <mtlt/matrix_reverse_iterator.h>
 
-#include <mtl/matrix_config.h>
-#include <mtl/matrix_type_traits.h>
+namespace mtlt {
 
-namespace mtl {
-
+/**
+ * @class atomic_matrix
+ *
+ * The atomic_matrix class is a wrapper over a dynamic array of atomic types,
+ * the methods calculating operations and base methods are not atomic,
+ * added only so that there is compatibility with other matrices.
+ * Use operator() for atomic operations
+ *
+ * @tparam Atomic atomic template class
+ *
+ * @code
+ *
+ * mtlt::atomic_matrix<int> matrix(3, 3, 1); // OK
+ * mtlt::atomic_matrix<std::string> matrix(3, 3, "MTLT"); // CE because std::string is not trivial copyable object
+ *
+ * matrix.inverse(); // OK, but non atomic operations there
+ * matrix(0, 0).fetch_add(4); // OK, atomic operation
+ *
+ * @endcode
+ */
 template<typename T, template<typename> class Atomic = std::atomic>
+class atomic_matrix;
+
+/**
+ * @using fundamental_atomic_matrix
+ *
+ * This using is intended to control that the
+ * template parameter T is a fundamental type,
+ * otherwise a compilation error will be generated
+ * that you are creating an object from an incomplete type
+ *
+ * @code
+ *
+ * mtlt::fundamental_matrix<double> matrix(3, 3, 1.5); // OK
+ * mtlt::fundamental_matrix<std::array<int, 3>> matrix(3, 3, std::array<int, 9>{
+ * 		1, 2, 3,
+ * 		4, 5, 6,
+ * 		7, 8, 9
+ * }); // CE
+ *
+ * @endcode
+ */
+template<typename T, template<typename> class Atomic = std::atomic>
+using fundamental_atomic_matrix = typename std::conditional<!std::is_fundamental<T>::value,
+															detail::incomplete_compile_error_generation_type,
+															atomic_matrix<T, Atomic>>::type;
+
+template<typename T, template<typename> class Atomic>
 class atomic_matrix final {
 public:
   static_assert(is_atomic<Atomic<T>>::value,
@@ -861,11 +914,6 @@ private:
   pointer data_ = nullptr;
 };
 
-template<typename T, template<typename> class Atomic = std::atomic>
-using fundamental_atomic_matrix = typename std::conditional<!std::is_fundamental<T>::value,
-															detail::incomplete_compile_error_generation_type,
-															atomic_matrix<T, Atomic>>::type;
-
 template<typename T, template<typename> class Atomic>
 std::ostream &operator<<(std::ostream &out, const atomic_matrix<T, Atomic> &rhs) {
   rhs.print(out);
@@ -1070,6 +1118,6 @@ bool inline operator!=(const atomic_matrix<T, Atomic> &lhs, const atomic_matrix<
   return !(lhs == rhs);
 }
 
-}
+} // namespace mtlt end
 
-#endif // MATRIX_TEMPLATE_LIBRARY_CPP_EXPERIMENTAL_ATOMIC_MATRIX_H_
+#endif // MTLT_ATOMIC_MATRIX_H_

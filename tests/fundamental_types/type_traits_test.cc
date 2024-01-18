@@ -1,8 +1,8 @@
-#include <mtl/matrix_type_traits.h>
+#include <mtlt/matrix_type_traits.h>
 
 #include <gtest/gtest.h>
 
-using namespace mtl;
+using namespace mtlt;
 
 TEST(FTTypeTraits, StdAtomic) {
   constexpr bool is_atomic1 = is_atomic<std::atomic<int>>::value;
@@ -21,7 +21,7 @@ public:
   using value_type = T;
 };
 
-namespace mtl {
+namespace mtlt {
 
 template <typename T>
 struct is_atomic<AnotherAtomic<T>> : std::true_type {};
