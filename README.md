@@ -4,8 +4,6 @@ MTL is a header-only template matrix library that supports fundamental data type
 
 ## Install and Configuration
 
-https://docs.google.com/forms/d/e/1FAIpQLSd0vjXfPHgJQsCu574f5omKuZmqpOQTyK043JY2RG73BaYdeg/viewform?usp=sf_link
-
 #### 1. vcpkg and cmake
 
 ```shell
