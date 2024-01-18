@@ -9,7 +9,7 @@ MTL is a header-only template matrix library that supports fundamental data type
 ```shell
 git clone https://github.com/Microsoft/vcpkg.git
 .\vcpkg\bootstrap-vcpkg.bat
-vcpkg install mtl
+vcpkg install mtlt
 ```
 
 Then configure in your project CMakeLists.txt
@@ -18,24 +18,25 @@ Then configure in your project CMakeLists.txt
 cmake_minimum_required(VERSION 3.16...3.5)
 project(PROJECT)
 
-find_package(mtl REQUIRED)
+find_package(mtlt REQUIRED)
 
 add_executable(${PROJECT_NAME} main.cc)
-target_link_libraries(${PROJECT_NAME} PRIVATE mtl::mtl)
+target_link_libraries(${PROJECT_NAME} PRIVATE mtlt::mtlt)
 ```
 
 Write simple source code in main.cc for check
 ```c++
-#include <mtl/matrix.h>
+#include <mtlt/matrix.h>
+#include <mtlt/print.h> // For mtlt::print
 
 int main() {
-  mtl::matrix<int> matrix(3, 3, {
+  mtlt::matrix<int> matrix(3, 3, {
 	1, 2, 3,
 	4, 5, 6,
 	7, 8, 9
   });
   
-  mtl::print(matrix);
+  mtlt::print(matrix);
 }
 ```
 
