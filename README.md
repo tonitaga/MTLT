@@ -1,6 +1,6 @@
-# MTL - Matrix Template Library
+# MTLT - Matrix Template Library Tonitaga
 
-MTL is a header-only template matrix library that supports fundamental data types, and has been C++ standard since 11
+MTLT is a header-only template matrix library that supports different data types, and has been C++ standard since 11
 
 ## Install and Configuration
 
@@ -15,7 +15,7 @@ vcpkg install mtlt
 Then configure in your project CMakeLists.txt
 
 ```cmake
-cmake_minimum_required(VERSION 3.16...3.5)
+cmake_minimum_required(VERSION 3.5...3.16)
 project(PROJECT)
 
 find_package(mtlt REQUIRED)
