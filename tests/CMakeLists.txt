@@ -18,6 +18,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_executable(${PROJECT_NAME}
+        fundamental_types/adapters_test.cc
         fundamental_types/atomic_matrix_test.cc
         fundamental_types/reverse_iterator_test.cc
         fundamental_types/normal_iterator_test.cc
