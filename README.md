@@ -58,12 +58,8 @@ git submodule add https://github.com/tonitaga/Matrix-Template-Library-CPP.git
 
 Configure CMakeLists.txt
 ```cmake
-cmake_minimum_required(VERSION 3.16...3.5)
-project(PROJECT)
-
-include_directories(third_party/Matrix-Template-Library-CPP/include)
-
-add_executable(${PROJECT_NAME} main.cc)
+add_subdirectory(third_party/MTLT)
+target_link_libraries(${PROJECT_NAME} PRIVATE mtlt::mtlt)
 ```
 
 Build your program using cmake
